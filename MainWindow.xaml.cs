@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace powerful_youtube_dl
 {
@@ -8,6 +9,8 @@ namespace powerful_youtube_dl
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static string ytDlPath;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -15,26 +18,32 @@ namespace powerful_youtube_dl
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog dialog = new Microsoft.Win32.OpenFileDialog();
 
+            dialog.DefaultExt = ".exe";
+            dialog.Filter = "Exe Files (*.exe)|*.exe";
 
+            Nullable<bool> result = dialog.ShowDialog();
 
-            // Set filter for file extension and default file extension 
-            dlg.DefaultExt = ".exe";
-            dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
-
-
-            // Display OpenFileDialog by calling ShowDialog method 
-            Nullable<bool> result = dlg.ShowDialog();
-
-
-            // Get the selected file name and display in a TextBox 
             if (result == true)
             {
-                // Open document 
-                string filename = dlg.FileName;
-                //textBox1.Text = filename;
+                ytDlPath = dialog.FileName;
+                ytDLabel.Content = dialog.SafeFileName; ;
             }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                DialogResult result = dialog.ShowDialog();
+                localization.Content = dialog.SelectedPath;
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            string a = HTTP.GET("https://www.youtube.com/watch?v=1dpVmOPQt6I");
         }
     }
 }
