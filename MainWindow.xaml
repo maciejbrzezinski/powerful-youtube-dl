@@ -5,17 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:powerful_youtube_dl"
         mc:Ignorable="d"
-        Title="MainWindow" Height="447.788" Width="559">
+        Title="MainWindow" Height="458.513" Width="1028.181">
     <Grid>
         <Label Content="Wybierz plik youtube-dl.exe" x:Name="ytDLabel"  x:FieldModifier="public" HorizontalAlignment="Center" Margin="241,10,148,0" VerticalAlignment="Top" AutomationProperties.Name="ytDLabel" Width="163" MaxWidth="571"/>
         <Button Content="Wybierz plik" HorizontalAlignment="Center" Margin="147,13,316,0" VerticalAlignment="Top" Width="89" Click="Button_Click"/>
-        <TextBox x:Name="link" x:FieldModifier="public" HorizontalAlignment="Left" Height="23" Margin="10,45,0,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" VerticalAlignment="Top" Width="452"/>
-        <Button Content="Załaduj" HorizontalAlignment="Left" Margin="467,47,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
-        <ListBox x:Name="playlist" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="10,73,0,0" VerticalAlignment="Top" Width="141"/>
-        <ListBox x:Name="videos" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="156,73,0,0" VerticalAlignment="Top" Width="386"/>
-        <Button Content="Dodaj do pobrania" HorizontalAlignment="Left" Margin="10,213,0,0" VerticalAlignment="Top" Width="532"/>
-        <ListBox x:Name="queue" x:FieldModifier="public" HorizontalAlignment="Left" Height="143" Margin="10,239,0,0" VerticalAlignment="Top" Width="532"/>
-        <Button Content="Pobierz" HorizontalAlignment="Left" Margin="467,387,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
+        <TextBox x:Name="link" x:FieldModifier="public" HorizontalAlignment="Left" Height="23" Margin="10,45,0,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" VerticalAlignment="Top" Width="817" GotFocus="link_GotFocus" MouseDoubleClick="link_GotFocus" MouseRightButtonDown="link_GotFocus" MouseRightButtonUp="link_GotFocus"/>
+        <Button Content="Załaduj" HorizontalAlignment="Left" Margin="832,44,0,0" VerticalAlignment="Top" Width="178" Click="Button_Click_2"/>
+        <ListBox x:Name="playlist" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="10,73,0,0" VerticalAlignment="Top" Width="141" ItemsSource="{Binding _listOfPlayListsCheckBox}" SelectionChanged="playlist_SelectionChanged" >
+            <ListBox.DataContext>
+                <local:PlayList/>
+            </ListBox.DataContext>
+        </ListBox>
+        <ListBox x:Name="videos" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="156,73,0,0" VerticalAlignment="Top" Width="854"  ItemsSource="{Binding _listOfVideosCheckBox}" >
+            <ListBox.DataContext>
+                <local:Video/>
+            </ListBox.DataContext>
+        </ListBox>
+        <Button Content="Dodaj do pobrania" HorizontalAlignment="Left" Margin="10,213,0,0" VerticalAlignment="Top" Width="1000"/>
+        <ListBox x:Name="queue" x:FieldModifier="public" HorizontalAlignment="Left" Height="143" Margin="10,239,0,0" VerticalAlignment="Top" Width="1000"/>
+        <Button Content="Pobierz" HorizontalAlignment="Left" Margin="832,390,0,0" VerticalAlignment="Top" Width="178" Height="23"/>
         <Button Content="Wybierz" HorizontalAlignment="Left" Margin="10,387,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
         <Label x:Name="localization" x:FieldModifier="public" Content="Wybierz lokalizację pobierania" HorizontalAlignment="Left" Margin="90,384,0,0" VerticalAlignment="Top" Width="372" MaxWidth="372"/>
 

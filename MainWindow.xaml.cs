@@ -11,6 +11,7 @@ namespace powerful_youtube_dl
     {
         public static string ytDlPath;
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -43,7 +44,41 @@ namespace powerful_youtube_dl
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            string a = HTTP.GET("https://www.youtube.com/watch?v=1dpVmOPQt6I");
+            string url = link.Text;
+            if(url.Contains(" "))
+                Error("Podany link jest nieprawidłowy!");
+            else if (url.Contains("channel") || url.Contains("user"))
+                new User(url);
+            else if (url.Contains("watch"))
+                new Video(url);
+            else if (url.Contains("playlist") || url.Contains("list"))
+                new PlayList(url);
+            else
+                Error("Podany link jest nieprawidłowy!");
+        }
+
+        public static void Error(string err)
+        {
+            System.Windows.Forms.MessageBox.Show(err, "Błąd!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        
+
+        private void link_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (link.Text == "Link do kanału, playlisty lub video")
+                link.Text = "";
+            link.SelectAll();
+        }
+
+        private void playlist_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            int index = playlist.SelectedIndex;
+            Video._listOfVideosCheckBox.Clear();
+            foreach (System.Windows.Controls.CheckBox chec in PlayList._listOfPlayLists[index]._listOfVideosInPlayListCheckBox)
+                Video._listOfVideosCheckBox.Add(chec);
+            videos.ScrollIntoView(videos.Items[0]);
+            //UpdateLayout();
+
         }
     }
 }
