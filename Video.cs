@@ -68,8 +68,8 @@ namespace powerful_youtube_dl
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/c "+MainWindow.ytDlPath+" -x -o '"+MainWindow.downloadPath+this.ToString()+".mp3' https://www.youtube.com/watch?v="+videoID+" /T";
+            startInfo.FileName = MainWindow.ytDlPath;
+            startInfo.Arguments = " -x -o \""+MainWindow.downloadPath+this.ToString()+".mp4\" https://www.youtube.com/watch?v="+videoID;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
