@@ -27,7 +27,7 @@ namespace powerful_youtube_dl
             string id;
             id = link.Substring(link.IndexOf("v=") + 2, 11);
             videoID = id;
-            videoTitle = getTitle(id);
+            videoTitle = getTitle();
             check = new CheckBox();
             check.Click += new RoutedEventHandler(checkChanged);
             check.Content = videoTitle;
@@ -46,19 +46,36 @@ namespace powerful_youtube_dl
             _listOfVideosCheckBox.Add(check);
         }
 
-        private string getTitle(string id)
+        private string getTitle()
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/c D:\\youtube-dl.exe --get-title \"https://www.youtube.com/watch?v=" + id + " /T";
+            startInfo.Arguments = "/c D:\\youtube-dl.exe --get-title \"https://www.youtube.com/watch?v=" + videoID + " /T";
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
             process.StartInfo = startInfo;
             process.Start();
-            process.WaitForExit(); var output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+            string output = process.StandardOutput.ReadToEnd();
+            if (output.Contains("\n"))
+                output = output.Substring(0, output.Length - 1);
             return output;
+        }
+
+        public void Download()
+        {
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/c "+MainWindow.ytDlPath+" -x -o '"+MainWindow.downloadPath+this.ToString()+".mp3' https://www.youtube.com/watch?v="+videoID+" /T";
+            startInfo.RedirectStandardOutput = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
         }
 
         override

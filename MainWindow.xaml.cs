@@ -10,7 +10,7 @@ namespace powerful_youtube_dl
     public partial class MainWindow : Window
     {
         public static string ytDlPath;
-
+        public static string downloadPath;
 
         public MainWindow()
         {
@@ -39,6 +39,7 @@ namespace powerful_youtube_dl
             {
                 DialogResult result = dialog.ShowDialog();
                 localization.Content = dialog.SelectedPath;
+                downloadPath = dialog.SelectedPath;
             }
         }
 
@@ -77,8 +78,21 @@ namespace powerful_youtube_dl
             foreach (System.Windows.Controls.CheckBox chec in PlayList._listOfPlayLists[index]._listOfVideosInPlayListCheckBox)
                 Video._listOfVideosCheckBox.Add(chec);
             videos.ScrollIntoView(videos.Items[0]);
-            //UpdateLayout();
+        }
 
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            Download.Load();
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            Download.Delete(queue.SelectedIndex);
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            Download.DownloadQueue();
         }
     }
 }
