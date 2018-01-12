@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace powerful_youtube_dl
 {
@@ -9,12 +11,24 @@ namespace powerful_youtube_dl
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string ytDlPath;
-        public static string downloadPath;
+        public static string ytDlPath = "";
+        public static string downloadPath = "";
 
         public MainWindow()
         {
             InitializeComponent();
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
+            ytDlPath = key.GetValue("ytdlexe", "").ToString();
+            if (ytDlPath == "")
+                ytDLabel.Content = "Wybierz plik youtube-dl.exe";
+            else
+                ytDLabel.Content = Path.GetFileName(ytDlPath);
+
+            downloadPath = key.GetValue("dlpath", "").ToString();
+            if (downloadPath == "")
+                localization.Content = "Wybierz lokalizację pobierania";
+            else
+                localization.Content = downloadPath;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -29,7 +43,9 @@ namespace powerful_youtube_dl
             if (result == true)
             {
                 ytDlPath = dialog.FileName;
-                ytDLabel.Content = dialog.SafeFileName; ;
+                ytDLabel.Content = dialog.SafeFileName;
+                RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
+                key.SetValue("ytdlexe", ytDlPath);
             }
         }
 
@@ -40,13 +56,15 @@ namespace powerful_youtube_dl
                 DialogResult result = dialog.ShowDialog();
                 localization.Content = dialog.SelectedPath;
                 downloadPath = dialog.SelectedPath;
+                RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
+                key.SetValue("dlpath", downloadPath);
             }
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             string url = link.Text;
-            if(url.Contains(" "))
+            if (url.Contains(" "))
                 Error("Podany link jest nieprawidłowy!");
             else if (url.Contains("channel") || url.Contains("user"))
                 new User(url);
@@ -62,7 +80,7 @@ namespace powerful_youtube_dl
         {
             System.Windows.Forms.MessageBox.Show(err, "Błąd!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        
+
 
         private void link_GotFocus(object sender, RoutedEventArgs e)
         {

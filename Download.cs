@@ -35,8 +35,39 @@ namespace powerful_youtube_dl
 
         public static void DownloadQueue()
         {
-            foreach (Video v in toDownload)
-                v.Download();
+            if (CheckFields())
+            {
+                foreach (Video v in toDownload)
+                    v.Download();
+            }
+        }
+
+        public static bool CheckFields()
+        {
+            string response = "";
+            bool allowDownload = true;
+            int count = 1;
+            if (!MainWindow.ytDlPath.Contains("youtube-dl.exe"))
+            {
+                response += count + ". Nie wybrano youtube-dl.exe!\n\n";
+                count++;
+                allowDownload = false;
+            }
+            if (MainWindow.downloadPath == "")
+            {
+                response += count + ". Nie wybrano lokalizacji zapisywania plików!\n\n";
+                count++;
+                allowDownload = false;
+            }
+            if (toDownload.Count == 0)
+            {
+                response += count + ". Nie dodano żadnego elementu do pobrania!";
+                count++;
+                allowDownload = false;
+            }
+            if (response != "")
+                MainWindow.Error(response);
+            return allowDownload;
         }
     }
 }

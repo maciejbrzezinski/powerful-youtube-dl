@@ -15,6 +15,7 @@ namespace powerful_youtube_dl
         public ObservableCollection<CheckBox> _listOfVideosInPlayListCheckBox = new ObservableCollection<CheckBox>();
         public string playListID, playListURL, playListTitle;
         public bool toDownload = false;
+        public static bool isSingleVideosPlayListExists = false;
 
         public CheckBox check;
 
@@ -28,7 +29,7 @@ namespace powerful_youtube_dl
             string id = link.Substring(link.IndexOf("list=") + 5, 34); //34
             playListID = id;
             bool isPlayListExisting = false;
-            foreach(PlayList exists in _listOfPlayLists)
+            foreach (PlayList exists in _listOfPlayLists)
             {
                 if (exists.playListID == playListID)
                 {
@@ -63,6 +64,28 @@ namespace powerful_youtube_dl
             _listOfPlayLists.Add(this);
         }
 
+        public PlayList(Video video)
+        {
+            if (!isSingleVideosPlayListExists)
+            {
+                isSingleVideosPlayListExists = true;
+                playListTitle = "Pojedyncze";
+                check = new CheckBox();
+                check.Click += new RoutedEventHandler(checkChanged);
+                check.Content = playListTitle;
+                _listOfPlayListsCheckBox.Add(check);
+                _listOfPlayLists.Add(this);
+            }
+            foreach (PlayList pl in _listOfPlayLists)
+            {
+                if (pl.playListTitle == "Pojedyncze")
+                {
+                    pl._listOfVideosInPlayListCheckBox.Add(video.check);
+                    pl._listOfVideosInPlayList.Add(video);
+                }
+            }
+        }
+
         private string getTitle(string id)
         {
             string html = HTTP.GET("https://www.youtube.com/playlist?list=" + id);
@@ -73,30 +96,31 @@ namespace powerful_youtube_dl
 
         private void getPlayListVideos(string json)
         {
-                JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-                var result = jsSerializer.DeserializeObject(json);
-                Dictionary<string, object> obj2 = new Dictionary<string, object>();
-                obj2 = (Dictionary<string, object>)(result);
+            JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+            var result = jsSerializer.DeserializeObject(json);
+            Dictionary<string, object> obj2 = new Dictionary<string, object>();
+            obj2 = (Dictionary<string, object>)(result);
 
-                System.Object[] val = (System.Object[])obj2["items"];
+            System.Object[] val = (System.Object[])obj2["items"];
 
-                //List<object> val = (List<object>)obj2["items"];
-                foreach (object item in val)
-                {
-                    Dictionary<string, object> vid = (Dictionary<string, object>)item;
-                    Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
-                    string title = temp["title"].ToString(); // resourceId -> videoId
-                    Dictionary<string, object> vid2 = (Dictionary<string, object>)temp["resourceId"];
-                    //  System.Object[] temp2 = (System.Object[])vid2["resourceId"];
-                    string id = vid2["videoId"].ToString();
-                    Video toAdd = new Video(id, title);
-                    _listOfVideosInPlayListCheckBox.Add(toAdd.check);
-                    _listOfVideosInPlayList.Add(toAdd);
-                }
+            //List<object> val = (List<object>)obj2["items"];
+            foreach (object item in val)
+            {
+                Dictionary<string, object> vid = (Dictionary<string, object>)item;
+                Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
+                string title = temp["title"].ToString(); // resourceId -> videoId
+                Dictionary<string, object> vid2 = (Dictionary<string, object>)temp["resourceId"];
+                //  System.Object[] temp2 = (System.Object[])vid2["resourceId"];
+                string id = vid2["videoId"].ToString();
+                Video toAdd = new Video(id, title);
+                toAdd.playList = playListTitle;
+                _listOfVideosInPlayListCheckBox.Add(toAdd.check);
+                _listOfVideosInPlayList.Add(toAdd);
+            }
             try
             {
                 string nextPage = obj2["nextPageToken"].ToString();
-                getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken="+nextPage+"&playlistId="+playListID+"&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
+                getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=" + nextPage + "&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
             }
             catch { }
         }

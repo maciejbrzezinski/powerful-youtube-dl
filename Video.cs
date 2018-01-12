@@ -13,6 +13,7 @@ namespace powerful_youtube_dl
 
         public static List<Video> _listOfVideos = new List<Video>();
         public string videoID, videoTitle;
+        public string playList = "Pojedyncze";
         public bool toDownload = false;
 
         public CheckBox check;
@@ -33,6 +34,7 @@ namespace powerful_youtube_dl
             check.Content = videoTitle;
             _listOfVideos.Add(this);
             _listOfVideosCheckBox.Add(check);
+            PlayList play = new PlayList(this);
         }
 
         public Video(string id, string title)
@@ -69,7 +71,7 @@ namespace powerful_youtube_dl
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = MainWindow.ytDlPath;
-            startInfo.Arguments = " -x -o \""+MainWindow.downloadPath+this.ToString()+".mp4\" https://www.youtube.com/watch?v="+videoID;
+            startInfo.Arguments = " -x -o \""+MainWindow.downloadPath+"\\"+playList+"\\"+this.ToString()+".mp4\" https://www.youtube.com/watch?v="+videoID;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
