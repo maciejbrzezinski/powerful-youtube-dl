@@ -3,13 +3,11 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using MahApps.Metro.Controls;
 
 namespace powerful_youtube_dl
 {
-    /// <summary>
-    /// Logika interakcji dla klasy MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow 
     {
         public static string ytDlPath = "";
         public static string downloadPath = "";

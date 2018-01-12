@@ -53,7 +53,7 @@ namespace powerful_youtube_dl
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/c D:\\youtube-dl.exe --get-title \"https://www.youtube.com/watch?v=" + videoID + " /T";
+            startInfo.Arguments = "/c " + MainWindow.ytDlPath + " --get-title \"https://www.youtube.com/watch?v=" + videoID + " /T";
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
@@ -71,7 +71,7 @@ namespace powerful_youtube_dl
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = MainWindow.ytDlPath;
-            startInfo.Arguments = " -x -o \""+MainWindow.downloadPath+"\\"+playList+"\\"+this.ToString()+".mp4\" https://www.youtube.com/watch?v="+videoID;
+            startInfo.Arguments = " -x -o \"" + MainWindow.downloadPath + "\\" + playList + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
@@ -83,7 +83,10 @@ namespace powerful_youtube_dl
         override
         public string ToString()
         {
-            return videoTitle;
+            string toReturn = videoTitle;
+            toReturn = toReturn.Replace(@"\", @" ");
+            toReturn = toReturn.Replace(@"/", @" ");
+            return toReturn;
         }
 
         private void checkChanged(object sender, RoutedEventArgs e)

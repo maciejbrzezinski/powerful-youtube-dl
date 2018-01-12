@@ -29,8 +29,12 @@ namespace powerful_youtube_dl
 
         public static void Delete(int index)
         {
-            _listOfVideosToDownload.RemoveAt(index);
-            toDownload.RemoveAt(index);
+            try
+            {
+                _listOfVideosToDownload.RemoveAt(index);
+                toDownload.RemoveAt(index);
+            }
+            catch { }
         }
 
         public static void DownloadQueue()
@@ -38,7 +42,11 @@ namespace powerful_youtube_dl
             if (CheckFields())
             {
                 foreach (Video v in toDownload)
+                {
                     v.Download();
+                    _listOfVideosToDownload.Remove(v.ToString());
+                }
+                toDownload = new List<Video>();
             }
         }
 
