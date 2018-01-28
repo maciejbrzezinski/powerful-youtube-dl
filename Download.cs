@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace powerful_youtube_dl
 {
     public class Download
     {
-        public static ObservableCollection<string> _listOfVideosToDownload { get; set; }
-
         private static List<Video> toDownload = new List<Video>();
-
-        public Download() { _listOfVideosToDownload = new ObservableCollection<string>(); }
 
         public static void Load()
         {
@@ -21,7 +18,10 @@ namespace powerful_youtube_dl
             {
                 if ((bool)video.check.IsChecked && !toDownload.Contains(video))
                 {
-                    _listOfVideosToDownload.Add(video.ToString());
+                    // _listOfVideosToDownload.Add(video.ToString());
+                    ListViewItemMy pos = new ListViewItemMy { title = video.videoTitle, duration = video.videoDuration, status = "---" };
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToQueue(pos);
+                    video.position = pos;
                     toDownload.Add(video);
                 }
             }
@@ -31,7 +31,7 @@ namespace powerful_youtube_dl
         {
             try
             {
-                _listOfVideosToDownload.RemoveAt(index);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromQueue(index);
                 toDownload.RemoveAt(index);
             }
             catch { }
@@ -44,7 +44,8 @@ namespace powerful_youtube_dl
                 foreach (Video v in toDownload)
                 {
                     v.Download();
-                    _listOfVideosToDownload.Remove(v.ToString());
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromQueue(v.position);
+                    Thread.Sleep(100);
                 }
                 toDownload = new List<Video>();
             }

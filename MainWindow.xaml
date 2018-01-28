@@ -11,9 +11,9 @@
         <Label Content="Wybierz plik youtube-dl.exe" x:Name="ytDLabel"  x:FieldModifier="public" HorizontalAlignment="Center" Margin="105,14,752,0" VerticalAlignment="Top" AutomationProperties.Name="ytDLabel" Width="163" MaxWidth="571"/>
         <Button Content="Wybierz plik" HorizontalAlignment="Center" Margin="11,13,920,0" VerticalAlignment="Top" Width="89" Click="Button_Click"/>
         <Label x:Name="localization" x:FieldModifier="public" Content="Wybierz lokalizację pobierania" HorizontalAlignment="Left" Margin="376,14,0,0" VerticalAlignment="Top" Width="372" MaxWidth="372"/>
-        <Button Content="Wybierz" HorizontalAlignment="Left" Margin="296,13,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
+        <Button Content="Wybierz" HorizontalAlignment="Left" Margin="296,13,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
 
-        <TabControl HorizontalAlignment="Left" Height="296" Margin="10,45,0,0" VerticalAlignment="Top" Width="1000">
+        <TabControl x:Name="tabs" HorizontalAlignment="Left" Height="296" Margin="10,45,0,0" VerticalAlignment="Top" Width="1000">
             <TabItem Header="Dodaj">
                 <Grid Background="#FFE5E5E5">
                     <TextBox x:Name="link" x:FieldModifier="public" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" VerticalAlignment="Top" Width="817" GotFocus="link_GotFocus" MouseDoubleClick="link_GotFocus" MouseRightButtonDown="link_GotFocus" MouseRightButtonUp="link_GotFocus"/>
@@ -29,20 +29,24 @@
                         </ListBox.DataContext>
                     </ListBox>
                     <Button Content="Dodaj zaznaczone do kolejki" HorizontalAlignment="Left" Margin="10,181,0,0" VerticalAlignment="Top" Width="973" Click="Button_Click_3" Height="60" FontSize="24"/>
+
                 </Grid>
             </TabItem>
             <TabItem Header="Kolejka">
                 <Grid Background="#FFE5E5E5">
-                    <ListBox x:Name="queue" x:FieldModifier="public" HorizontalAlignment="Left" Height="139" Margin="10,10,0,0" VerticalAlignment="Top" Width="850" ItemsSource="{Binding _listOfVideosToDownload}" BorderBrush="#FFE0E0E0" Background="White" OpacityMask="Black" BorderThickness="1" >
-                        <ListBox.DataContext>
-                            <local:Download/>
-                        </ListBox.DataContext>
-                    </ListBox>
-                    <Button Content="Pobierz" HorizontalAlignment="Left" Margin="10,154,0,0" VerticalAlignment="Top" Width="973" Height="60" Click="Button_Click_5" FontSize="24"/>
+                    <ListView x:Name="kolejka" x:FieldModifier="public" HorizontalAlignment="Left" Height="139" Margin="10,10,0,0" VerticalAlignment="Top" Width="850">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Tytuł" Width="700" DisplayMemberBinding="{Binding title}"/>
+                                <GridViewColumn Header="Czas trwania" Width="75" DisplayMemberBinding="{Binding duration}"/>
+                                <GridViewColumn Header="Status" Width="75" DisplayMemberBinding="{Binding status}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Button x:Name="buttonDownload" x:FieldModifier="public" Content="Pobierz" HorizontalAlignment="Left" Margin="10,154,0,0" VerticalAlignment="Top" Width="973" Height="60" Click="Button_Click_5" FontSize="24"/>
                     <Button Content="Usuń" HorizontalAlignment="Left" Margin="865,10,0,0" VerticalAlignment="Top" Width="118" Height="139" Click="Button_Click_4" FontSize="24"/>
                 </Grid>
             </TabItem>
         </TabControl>
     </Grid>
 </Controls:MetroWindow>
-    

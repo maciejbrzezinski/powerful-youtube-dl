@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using Microsoft.Win32;
-using MahApps.Metro.Controls;
+//using MahApps.Metro.Controls;
 
 namespace powerful_youtube_dl
 {
@@ -65,11 +65,35 @@ namespace powerful_youtube_dl
             if (url.Contains(" "))
                 Error("Podany link jest nieprawidłowy!");
             else if (url.Contains("channel") || url.Contains("user"))
-                new User(url);
+            {
+                int wynik = Dialog.Prompt("Co dokładnie ma zostać pobrane:", "Powerful YouTube DL", "Wszystkie playlisty użytkownika", "Wszystkie materiały dodane przez użytkownika");
+                if (wynik == 0)
+                    new User(url);
+                else if (wynik == 1)
+                    new PlayList(url);         ///////////////////////// ZROBIĆ POBIERANIE WSZYSTKICH DODANYCH PLIKÓW 
+                else
+                    System.Windows.MessageBox.Show("Powerful YouTube DL", "Wystąpił błąd!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             else if (url.Contains("watch"))
-                new Video(url);
+            {
+                int wynik = -1;
+                if (url.Contains("list"))
+                {
+                    wynik = Dialog.Prompt("Co dokładnie ma zostać pobrane:", "Powerful YouTube DL", "Tylko piosenka, bez playlisty", "Cała playlista na której umieszczona jest piosenka");
+                    if (wynik == 0)
+                        new Video(url);
+                    else if (wynik == 1)
+                        new PlayList(url);
+                    else
+                        System.Windows.MessageBox.Show("Powerful YouTube DL", "Wystąpił błąd!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                    new Video(url);
+            }
             else if (url.Contains("playlist") || url.Contains("list"))
+            {
                 new PlayList(url);
+            }
             else
                 Error("Podany link jest nieprawidłowy!");
         }
@@ -99,16 +123,41 @@ namespace powerful_youtube_dl
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             Download.Load();
+            tabs.SelectedIndex = 1;
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            Download.Delete(queue.SelectedIndex);
+            Download.Delete(kolejka.SelectedIndex);
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            Download.DownloadQueue();
+            if (buttonDownload.Content.ToString() != "Stop")
+            {
+                buttonDownload.Content = "Stop";
+                Download.DownloadQueue();
+            }
+            else
+            {
+                buttonDownload.Content = "Pobierz";
+            }
+        }
+
+        public void addVideoToQueue(ListViewItemMy video)
+        {
+            kolejka.Items.Add(video);
+        }
+
+        public void deleteVideoFromQueue(int index)
+        {
+            kolejka.Items.RemoveAt(index);
+        }
+
+        public void deleteVideoFromQueue(ListViewItemMy pos)
+        {
+            int ind = kolejka.Items.IndexOf(pos);
+            kolejka.Items.RemoveAt(ind);
         }
     }
 }

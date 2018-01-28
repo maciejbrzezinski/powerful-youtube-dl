@@ -11,10 +11,12 @@ namespace powerful_youtube_dl
     {
         public static ObservableCollection<CheckBox> _listOfVideosCheckBox { get; set; }
 
+
         public static List<Video> _listOfVideos = new List<Video>();
-        public string videoID, videoTitle;
+        public string videoID, videoTitle, videoDuration;
         public string playList = "Pojedyncze";
         public bool toDownload = false;
+        public ListViewItemMy position = null;
 
         public CheckBox check;
 
@@ -27,25 +29,33 @@ namespace powerful_youtube_dl
         {
             string id;
             id = link.Substring(link.IndexOf("v=") + 2, 11);
-            videoID = id;
-            videoTitle = getTitle();
-            check = new CheckBox();
-            check.Click += new RoutedEventHandler(checkChanged);
-            check.Content = videoTitle;
-            _listOfVideos.Add(this);
-            _listOfVideosCheckBox.Add(check);
-            PlayList play = new PlayList(this);
+            if (!isVideoLoaded(id))
+            {
+                videoID = id;
+                videoTitle = getTitle();
+                videoDuration = getDuration();
+                check = new CheckBox();
+                check.Click += new RoutedEventHandler(checkChanged);
+                check.Content = videoTitle;
+                _listOfVideos.Add(this);
+                _listOfVideosCheckBox.Add(check);
+                PlayList play = new PlayList(this);
+            }
         }
 
         public Video(string id, string title)
         {
-            videoID = id;
-            videoTitle = title;
-            check = new CheckBox();
-            check.Click += new RoutedEventHandler(checkChanged);
-            check.Content = videoTitle;
-            _listOfVideos.Add(this);
-            _listOfVideosCheckBox.Add(check);
+            if (!isVideoLoaded(id))
+            {
+                videoID = id;
+                videoTitle = title;
+                videoDuration = getDuration();
+                check = new CheckBox();
+                check.Click += new RoutedEventHandler(checkChanged);
+                check.Content = videoTitle;
+                _listOfVideos.Add(this);
+                _listOfVideosCheckBox.Add(check);
+            }
         }
 
         private string getTitle()
@@ -63,6 +73,26 @@ namespace powerful_youtube_dl
             string output = process.StandardOutput.ReadToEnd();
             if (output.Contains("\n"))
                 output = output.Substring(0, output.Length - 1);
+            return output;
+        }
+
+        private string getDuration()
+        {
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/c " + MainWindow.ytDlPath + " --get-duration \"https://www.youtube.com/watch?v=" + videoID + " /T";
+            startInfo.RedirectStandardOutput = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
+            string output = process.StandardOutput.ReadToEnd();
+            if (output.Contains("\n"))
+                output = output.Substring(0, output.Length - 1);
+            if (output.Length == 2)
+                output = "0:" + output;
             return output;
         }
 
@@ -93,5 +123,16 @@ namespace powerful_youtube_dl
         {
             toDownload = (bool)((CheckBox)sender).IsChecked;
         }
+
+        private bool isVideoLoaded(string id)
+        {
+            foreach (Video v in _listOfVideos)
+            {
+                if (v.videoID == id)
+                    return true;
+            }
+            return false;
+        }
+
     }
 }
