@@ -67,12 +67,10 @@ namespace powerful_youtube_dl
             else if (url.Contains("channel") || url.Contains("user"))
             {
                 int wynik = Dialog.Prompt("Co dokładnie ma zostać pobrane:", "Powerful YouTube DL", "Wszystkie playlisty użytkownika", "Wszystkie materiały dodane przez użytkownika");
-                if (wynik == 0)
-                    new User(url);
-                else if (wynik == 1)
-                    new PlayList(url);         ///////////////////////// ZROBIĆ POBIERANIE WSZYSTKICH DODANYCH PLIKÓW 
-                else
-                    System.Windows.MessageBox.Show("Powerful YouTube DL", "Wystąpił błąd!", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (wynik == 0 || wynik ==1)
+                    new User(url, wynik);    ///////////////////////// ZROBIĆ POBIERANIE WSZYSTKICH DODANYCH PLIKÓW 
+                else if(wynik ==3)
+                    System.Windows.MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else if (url.Contains("watch"))
             {
@@ -84,8 +82,8 @@ namespace powerful_youtube_dl
                         new Video(url);
                     else if (wynik == 1)
                         new PlayList(url);
-                    else
-                        System.Windows.MessageBox.Show("Powerful YouTube DL", "Wystąpił błąd!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    else if (wynik ==3)
+                        System.Windows.MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                     new Video(url);

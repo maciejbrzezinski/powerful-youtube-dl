@@ -94,6 +94,8 @@ namespace powerful_youtube_dl
             return html.Substring(start, end);
         }
 
+        private static int licznik = 0;
+
         private void getPlayListVideos(string json)
         {
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
@@ -106,23 +108,27 @@ namespace powerful_youtube_dl
             //List<object> val = (List<object>)obj2["items"];
             foreach (object item in val)
             {
+                licznik++;
                 Dictionary<string, object> vid = (Dictionary<string, object>)item;
                 Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
                 string title = temp["title"].ToString(); // resourceId -> videoId
                 Dictionary<string, object> vid2 = (Dictionary<string, object>)temp["resourceId"];
                 //  System.Object[] temp2 = (System.Object[])vid2["resourceId"];
                 string id = vid2["videoId"].ToString();
-                Video toAdd = new Video(id, title);
+                Video toAdd = new Video(id);
                 toAdd.playList = playListTitle;
                 _listOfVideosInPlayListCheckBox.Add(toAdd.check);
                 _listOfVideosInPlayList.Add(toAdd);
             }
+            Video.getParamsOfVideos();
+            Video.videoIDsToGetParams = new List<Video>();
             try
             {
                 string nextPage = obj2["nextPageToken"].ToString();
                 getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=" + nextPage + "&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
             }
             catch { }
+
         }
 
         private void checkChanged(object sender, RoutedEventArgs e)
