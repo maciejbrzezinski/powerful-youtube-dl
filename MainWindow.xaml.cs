@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
+using MahApps.Metro.Controls;
 using Microsoft.Win32;
 //using MahApps.Metro.Controls;
 
 namespace powerful_youtube_dl
 {
-    public partial class MainWindow 
+    public partial class MainWindow
     {
         public static string ytDlPath = "";
         public static string downloadPath = "";
@@ -15,6 +18,7 @@ namespace powerful_youtube_dl
         public MainWindow()
         {
             InitializeComponent();
+
             RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
             ytDlPath = key.GetValue("ytdlexe", "").ToString();
             if (ytDlPath == "")
@@ -61,15 +65,20 @@ namespace powerful_youtube_dl
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            loadURL();
+        }
+
+        private void loadURL()
+        {
             string url = link.Text;
             if (url.Contains(" "))
                 Error("Podany link jest nieprawidłowy!");
             else if (url.Contains("channel") || url.Contains("user"))
             {
                 int wynik = Dialog.Prompt("Co dokładnie ma zostać pobrane:", "Powerful YouTube DL", "Wszystkie playlisty użytkownika", "Wszystkie materiały dodane przez użytkownika");
-                if (wynik == 0 || wynik ==1)
+                if (wynik == 0 || wynik == 1)
                     new User(url, wynik);    ///////////////////////// ZROBIĆ POBIERANIE WSZYSTKICH DODANYCH PLIKÓW 
-                else if(wynik ==3)
+                else if (wynik == 3)
                     System.Windows.MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else if (url.Contains("watch"))
@@ -82,7 +91,7 @@ namespace powerful_youtube_dl
                         new Video(url);
                     else if (wynik == 1)
                         new PlayList(url);
-                    else if (wynik ==3)
+                    else if (wynik == 3)
                         System.Windows.MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
@@ -94,6 +103,8 @@ namespace powerful_youtube_dl
             }
             else
                 Error("Podany link jest nieprawidłowy!");
+            Video.getParamsOfVideos();
+            Video.videoIDsToGetParams = new List<Video>();
         }
 
         public static void Error(string err)
@@ -112,9 +123,9 @@ namespace powerful_youtube_dl
         private void playlist_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             int index = playlist.SelectedIndex;
-            Video._listOfVideosCheckBox.Clear();
-            foreach (System.Windows.Controls.CheckBox chec in PlayList._listOfPlayLists[index]._listOfVideosInPlayListCheckBox)
-                Video._listOfVideosCheckBox.Add(chec);
+            deleteAllVideosFromList();
+            foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList)
+                addVideoToList(vid.position);
             videos.ScrollIntoView(videos.Items[0]);
         }
 
@@ -146,6 +157,10 @@ namespace powerful_youtube_dl
         {
             kolejka.Items.Add(video);
         }
+        public void addVideoToList(ListViewItemMy videom)
+        {
+            videos.Items.Add(videom);
+        }
 
         public void deleteVideoFromQueue(int index)
         {
@@ -156,6 +171,19 @@ namespace powerful_youtube_dl
         {
             int ind = kolejka.Items.IndexOf(pos);
             kolejka.Items.RemoveAt(ind);
+        }
+
+        public void deleteAllVideosFromList()
+        {
+            videos.Items.Clear();
+        }
+
+        public void changeCheckVideos(bool isTrue)
+        {
+            System.Windows.Controls.ItemCollection a = videos.Items;
+           //videos.Items.Refresh
+            foreach (Video vid in videos.Items)
+                vid.position.check = isTrue;
         }
     }
 }

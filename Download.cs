@@ -16,12 +16,9 @@ namespace powerful_youtube_dl
         {
             foreach (Video video in Video._listOfVideos)
             {
-                if ((bool)video.check.IsChecked && !toDownload.Contains(video))
+                if ((bool)video.position.check && !toDownload.Contains(video))
                 {
-                    // _listOfVideosToDownload.Add(video.ToString());
-                    ListViewItemMy pos = new ListViewItemMy { title = video.videoTitle, duration = video.videoDuration, status = "---" };
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToQueue(pos);
-                    video.position = pos;
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToQueue(video.position);
                     toDownload.Add(video);
                 }
             }

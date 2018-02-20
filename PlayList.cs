@@ -12,7 +12,7 @@ namespace powerful_youtube_dl
         public static List<PlayList> _listOfPlayLists = new List<PlayList>();
 
         public List<Video> _listOfVideosInPlayList = new List<Video>();
-        public ObservableCollection<CheckBox> _listOfVideosInPlayListCheckBox = new ObservableCollection<CheckBox>();
+        //public ObservableCollection<CheckBox> _listOfVideosInPlayListCheckBox = new ObservableCollection<CheckBox>();
         public string playListID, playListURL, playListTitle;
         public bool toDownload = false;
         public static bool isSingleVideosPlayListExists = false;
@@ -80,7 +80,7 @@ namespace powerful_youtube_dl
             {
                 if (pl.playListTitle == "Pojedyncze")
                 {
-                    pl._listOfVideosInPlayListCheckBox.Add(video.check);
+                    //pl._listOfVideosInPlayListCheckBox.Add(video.check);
                     pl._listOfVideosInPlayList.Add(video);
                 }
             }
@@ -117,11 +117,10 @@ namespace powerful_youtube_dl
                 string id = vid2["videoId"].ToString();
                 Video toAdd = new Video(id);
                 toAdd.playList = playListTitle;
-                _listOfVideosInPlayListCheckBox.Add(toAdd.check);
+                //_listOfVideosInPlayListCheckBox.Add(toAdd.checkbox);
                 _listOfVideosInPlayList.Add(toAdd);
             }
-            Video.getParamsOfVideos();
-            Video.videoIDsToGetParams = new List<Video>();
+
             try
             {
                 string nextPage = obj2["nextPageToken"].ToString();
@@ -135,7 +134,8 @@ namespace powerful_youtube_dl
         {
             toDownload = (bool)((CheckBox)sender).IsChecked;
             foreach (Video vid in _listOfVideosInPlayList)
-                vid.check.IsChecked = toDownload;
+                vid.position.check = toDownload;
+            ((MainWindow)System.Windows.Application.Current.MainWindow).videos.Items.Refresh();
         }
 
         override

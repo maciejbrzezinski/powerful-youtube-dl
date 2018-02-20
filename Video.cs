@@ -11,7 +11,7 @@ namespace powerful_youtube_dl
 {
     public class Video
     {
-        public static ObservableCollection<CheckBox> _listOfVideosCheckBox { get; set; }
+        // public static ObservableCollection<CheckBox> _listOfVideosCheckBox { get; set; }
 
         public static List<Video> _listOfVideos = new List<Video>();
         public string videoID, videoTitle, videoDuration;
@@ -19,45 +19,35 @@ namespace powerful_youtube_dl
         public bool toDownload = false;
         public ListViewItemMy position = null;
 
-        public CheckBox check;
+        public CheckBox checkbox;
 
         public static List<Video> videoIDsToGetParams = new List<Video>();
 
         public Video()
         {
-            _listOfVideosCheckBox = new ObservableCollection<CheckBox>();
+            // _listOfVideosCheckBox = new ObservableCollection<CheckBox>();
         }
 
         public Video(string linkOrID)
         {
+            // if(_listOfVideosCheckBox==null)
+            //_listOfVideosCheckBox = new ObservableCollection<CheckBox>();
             string id;
             if (linkOrID.Length != 11)
                 id = linkOrID.Substring(linkOrID.IndexOf("v=") + 2, 11);
             else
                 id = linkOrID;
-            videoID = id;
-            addToGetParams(this);
-            check = new CheckBox();
-            check.Click += new RoutedEventHandler(checkChanged);
-            check.Content = videoTitle;
-            _listOfVideos.Add(this);
-            _listOfVideosCheckBox.Add(check);
-        }
-
-      /*  public Video(string id, string title)
-        {
             if (!isVideoLoaded(id))
             {
                 videoID = id;
-                videoTitle = title;
-                videoDuration = getDuration(videoID);
-                check = new CheckBox();
-                check.Click += new RoutedEventHandler(checkChanged);
-                check.Content = videoTitle;
+                addToGetParams(this);
+                PlayList play = new PlayList(this);
+                ListViewItemMy pos = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false };
+                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToList(pos);
+                position = pos;
                 _listOfVideos.Add(this);
-                _listOfVideosCheckBox.Add(check);
             }
-        }*/
+        }
 
         private static void addToGetParams(Video v)
         {
@@ -66,32 +56,58 @@ namespace powerful_youtube_dl
 
         public static void getParamsOfVideos()
         {
-            string IDs = "";
+            //string IDs = "";
+            List<string> IDs = new List<string>();
+            IDs.Add("");
+            int ktoryJuz = 0;
+
             for (int i = 0; i < videoIDsToGetParams.Count; i++)
             {
-                if (i == 0)
-                    IDs = videoIDsToGetParams[i].videoID;
+                int index = IDs.Count - 1;
+                if (ktoryJuz == 0)
+                    IDs[index] = videoIDsToGetParams[i].videoID;
                 else
-                    IDs += @"%2C" + videoIDsToGetParams[i].videoID;
+                    IDs[index] += @"%2C" + videoIDsToGetParams[i].videoID;
+                ktoryJuz++;
+                if (ktoryJuz == 50)
+                {
+                    IDs.Add("");
+                    ktoryJuz = 0;
+                }
             }
-            string json = HTTP.GET("https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id="+IDs+"&fields=items(contentDetails%2Fduration%2Cid%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o");
-
-            JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-            var result = jsSerializer.DeserializeObject(json);
-            Dictionary<string, object> obj2 = new Dictionary<string, object>();
-            obj2 = (Dictionary<string, object>)(result);
-
-            System.Object[] val = (System.Object[])obj2["items"];
-
-            for (int i = 0; i < val.Length; i++)
+            for (int j = 0; j < IDs.Count; j++)
             {
-                Dictionary<string, object> vid = (Dictionary<string, object>)val[i];
-                Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
-                Dictionary<string, object> temp2 = (Dictionary<string, object>)vid["contentDetails"];
+                string json = HTTP.GET("https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=" + IDs[j] + "&fields=items(contentDetails%2Fduration%2Cid%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o");
 
-                videoIDsToGetParams[i].videoTitle = temp["title"].ToString();
-                videoIDsToGetParams[i].videoDuration = decryptDuration(temp2["duration"].ToString());
-                videoIDsToGetParams[i].check.Content = videoIDsToGetParams[i].videoTitle;
+                JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                var result = jsSerializer.DeserializeObject(json);
+                Dictionary<string, object> obj2 = new Dictionary<string, object>();
+                obj2 = (Dictionary<string, object>)(result);
+
+                System.Object[] val = (System.Object[])obj2["items"];
+
+                for (int i = 0; i < val.Length; i++)
+                {
+                    Dictionary<string, object> vid = (Dictionary<string, object>)val[i];
+                    Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
+                    Dictionary<string, object> temp2 = (Dictionary<string, object>)vid["contentDetails"];
+
+                    videoIDsToGetParams[i].videoTitle = temp["title"].ToString();
+                    videoIDsToGetParams[i].videoDuration = decryptDuration(temp2["duration"].ToString());
+                    if (videoIDsToGetParams[i].position == null)
+                    {
+                        videoIDsToGetParams[i].position = new ListViewItemMy
+                        {
+                            title = videoIDsToGetParams[i].position.title
+                            ,
+                            duration = videoIDsToGetParams[i].position.duration
+                            ,
+                            status = "---"
+                        };
+                    }
+                    videoIDsToGetParams[i].position.title = videoIDsToGetParams[i].videoTitle;
+                    videoIDsToGetParams[i].position.duration = videoIDsToGetParams[i].videoDuration;
+                }
             }
         }
 
@@ -104,9 +120,9 @@ namespace powerful_youtube_dl
             string seconds = "";
             try
             {
-                 seconds = tmp.Substring(tmp.IndexOf("M") < 0 ? 0 : tmp.IndexOf("M")+1, tmp.IndexOf("S")-2);
-                 minutes = tmp.Substring(tmp.IndexOf("H") > 0 ? 0 : tmp.IndexOf("H")+1, tmp.IndexOf("M")) + ":";
-                 hours = tmp.Substring(0, tmp.IndexOf("H")) + ":";
+                seconds = tmp.Substring(tmp.IndexOf("M") < 0 ? 0 : tmp.IndexOf("M") + 1, tmp.IndexOf("S") - 2);
+                minutes = tmp.Substring(tmp.IndexOf("H") > 0 ? 0 : tmp.IndexOf("H") + 1, tmp.IndexOf("M")) + ":";
+                hours = tmp.Substring(0, tmp.IndexOf("H")) + ":";
             }
             catch { }
             if (seconds.Length == 1)
