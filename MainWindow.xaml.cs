@@ -126,10 +126,13 @@ namespace powerful_youtube_dl
         private void playlist_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             int index = playlist.SelectedIndex;
-            deleteAllVideosFromList();
-            foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList)
-                addVideoToList(vid.position);
-            addVideos.Items.Refresh();
+            if (index != -1)
+            {
+                deleteAllVideosFromList();
+                foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList)
+                    addVideoToList(vid.position);
+                addVideos.Items.Refresh();
+            }
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)

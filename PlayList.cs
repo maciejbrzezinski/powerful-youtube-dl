@@ -48,8 +48,8 @@ namespace powerful_youtube_dl
                 getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
-                if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex = 0;
+               // if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
             }
             else
                 MainWindow.Error("Ta playlista jest już dodana!");
@@ -65,8 +65,8 @@ namespace powerful_youtube_dl
             getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
             _listOfPlayListsCheckBox.Add(check);
             _listOfPlayLists.Add(this);
-            if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
-                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex = 0;
+           // if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
+                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
         }
 
         public PlayList(Video video)
@@ -91,8 +91,8 @@ namespace powerful_youtube_dl
                     pl._listOfVideosInPlayList.Add(video);
                 }
             }
-            if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
-                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex = 0;
+           // if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
+                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
         }
 
         private string getTitle(string id)
