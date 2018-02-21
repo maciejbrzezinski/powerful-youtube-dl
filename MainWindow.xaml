@@ -51,7 +51,7 @@
             </TabItem>
             <TabItem Header="Kolejka">
                 <Grid Background="#FFE5E5E5">
-                    <ListView x:Name="kolejka" x:FieldModifier="public" HorizontalAlignment="Left" Height="139" Margin="10,10,0,0" VerticalAlignment="Top" Width="850">
+                    <ListView x:Name="kolejka" x:FieldModifier="public" HorizontalAlignment="Left" Height="404" Margin="10,10,0,0" VerticalAlignment="Top" Width="931">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Tytuł" Width="700" DisplayMemberBinding="{Binding title}"/>
@@ -60,8 +60,8 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Button x:Name="buttonDownload" x:FieldModifier="public" Content="Pobierz" HorizontalAlignment="Left" Margin="10,154,0,0" VerticalAlignment="Top" Width="973" Height="60" Click="Button_Click_5" FontSize="24"/>
-                    <Button Content="Usuń" HorizontalAlignment="Left" Margin="865,10,0,0" VerticalAlignment="Top" Width="118" Height="139" Click="Button_Click_4" FontSize="24"/>
+                    <Button x:Name="buttonDownload" x:FieldModifier="public" Content="Pobierz" HorizontalAlignment="Left" Margin="10,419,0,0" VerticalAlignment="Top" Width="1054" Height="60" Click="Button_Click_5" FontSize="24"/>
+                    <Button Content="Usuń" HorizontalAlignment="Left" Margin="946,140,0,0" VerticalAlignment="Top" Width="118" Height="139" Click="Button_Click_4" FontSize="24"/>
                 </Grid>
             </TabItem>
         </TabControl>

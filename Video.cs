@@ -89,6 +89,7 @@ namespace powerful_youtube_dl
                 for (int i = 0; i < val.Length; i++)
                 {
                     int current = -1;
+                    int current2 = -1;
                     Dictionary<string, object> vid = (Dictionary<string, object>)val[i];
                     string id = vid["id"].ToString();
                     for (int d = 0; d < _listOfVideos.Count; d++)
@@ -99,9 +100,17 @@ namespace powerful_youtube_dl
                             break;
                         }
                     }
+                    for (int d = 0; d < videoIDsToGetParams.Count; d++)
+                    {
+                        if (videoIDsToGetParams[d].videoID == id)
+                        {
+                            current2 = d;
+                            break;
+                        }
+                    }
                     Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
                     Dictionary<string, object> temp2 = (Dictionary<string, object>)vid["contentDetails"];
-
+                    videoIDsToGetParams[current2].videoTitle = temp["title"].ToString();
                     _listOfVideos[current].videoTitle = temp["title"].ToString();
                     _listOfVideos[current].videoDuration = decryptDuration(temp2["duration"].ToString());
                     if (_listOfVideos[current].position == null)
@@ -118,6 +127,23 @@ namespace powerful_youtube_dl
                     _listOfVideos[current].position.title = _listOfVideos[current].videoTitle;
                     _listOfVideos[current].position.duration = _listOfVideos[current].videoDuration;
                 }
+            }
+            removeNotWorkingVideos();
+        }
+
+        private static void removeNotWorkingVideos()
+        {
+            foreach (PlayList p in PlayList._listOfPlayLists)
+            {
+                List<Video> newListOfVideos = new List<Video>();
+                foreach (Video v in p._listOfVideosInPlayList)
+                {
+                    if (v.videoTitle != null)
+                        newListOfVideos.Add(v);
+                    else
+                        ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
+                }
+                p._listOfVideosInPlayList = newListOfVideos;
             }
         }
 

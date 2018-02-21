@@ -112,19 +112,6 @@ namespace powerful_youtube_dl
             System.Windows.Forms.MessageBox.Show(err, "Błąd!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-
-        private void link_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (link.Text == "Link do kanału, playlisty lub video" || link.Text == "")
-            {
-                if (checkIfYoutubeURL())
-                    link.Text = System.Windows.Clipboard.GetText();
-                else
-                    link.Text = "";
-            }
-            link.SelectAll();
-        }
-
         private bool checkIfYoutubeURL()
         {
             string url = System.Windows.Clipboard.GetText();
@@ -142,7 +129,6 @@ namespace powerful_youtube_dl
             deleteAllVideosFromList();
             foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList)
                 addVideoToList(vid.position);
-            // addVideos.ScrollIntoView(addVideos.Items[0]);
             addVideos.Items.Refresh();
         }
 
@@ -198,6 +184,13 @@ namespace powerful_youtube_dl
             kolejka.Items.Refresh();
         }
 
+        public void deleteVideoFromAdd(ListViewItemMy pos)
+        {
+            int ind = addVideos.Items.IndexOf(pos);
+            addVideos.Items.RemoveAt(ind);
+            addVideos.Items.Refresh();
+        }
+
         public void deleteAllVideosFromList()
         {
             addVideos.Items.Clear();
@@ -214,10 +207,20 @@ namespace powerful_youtube_dl
 
         private void link_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            linkHandler();
+        }
+        private void link_GotFocus(object sender, RoutedEventArgs e)
+        {
+            linkHandler();
+        }
+        private void linkHandler()
+        {
             if (link.Text == "Link do kanału, playlisty lub video" || link.Text == "")
             {
                 if (checkIfYoutubeURL())
                     link.Text = System.Windows.Clipboard.GetText();
+                else
+                    link.Text = "";
             }
             link.SelectAll();
         }
