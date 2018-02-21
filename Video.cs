@@ -14,8 +14,9 @@ namespace powerful_youtube_dl
         // public static ObservableCollection<CheckBox> _listOfVideosCheckBox { get; set; }
 
         public static List<Video> _listOfVideos = new List<Video>();
+
         public string videoID, videoTitle, videoDuration;
-        public string playList = "Pojedyncze";
+        public PlayList playList = null;
         public bool toDownload = false;
         public ListViewItemMy position = null;
 
@@ -30,8 +31,6 @@ namespace powerful_youtube_dl
 
         public Video(string linkOrID)
         {
-            // if(_listOfVideosCheckBox==null)
-            //_listOfVideosCheckBox = new ObservableCollection<CheckBox>();
             string id;
             if (linkOrID.Length != 11)
                 id = linkOrID.Substring(linkOrID.IndexOf("v=") + 2, 11);
@@ -41,11 +40,12 @@ namespace powerful_youtube_dl
             {
                 videoID = id;
                 addToGetParams(this);
-                PlayList play = new PlayList(this);
                 ListViewItemMy pos = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false };
                 ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToList(pos);
                 position = pos;
                 _listOfVideos.Add(this);
+                PlayList play = new PlayList(this);
+                playList = PlayList.singleVideos;
             }
         }
 
@@ -88,25 +88,35 @@ namespace powerful_youtube_dl
 
                 for (int i = 0; i < val.Length; i++)
                 {
+                    int current = -1;
                     Dictionary<string, object> vid = (Dictionary<string, object>)val[i];
+                    string id = vid["id"].ToString();
+                    for (int d = 0; d < _listOfVideos.Count; d++)
+                    {
+                        if (_listOfVideos[d].videoID == id)
+                        {
+                            current = d;
+                            break;
+                        }
+                    }
                     Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
                     Dictionary<string, object> temp2 = (Dictionary<string, object>)vid["contentDetails"];
 
-                    videoIDsToGetParams[i].videoTitle = temp["title"].ToString();
-                    videoIDsToGetParams[i].videoDuration = decryptDuration(temp2["duration"].ToString());
-                    if (videoIDsToGetParams[i].position == null)
+                    _listOfVideos[current].videoTitle = temp["title"].ToString();
+                    _listOfVideos[current].videoDuration = decryptDuration(temp2["duration"].ToString());
+                    if (_listOfVideos[current].position == null)
                     {
-                        videoIDsToGetParams[i].position = new ListViewItemMy
+                        _listOfVideos[current].position = new ListViewItemMy
                         {
-                            title = videoIDsToGetParams[i].position.title
+                            title = _listOfVideos[current].position.title
                             ,
-                            duration = videoIDsToGetParams[i].position.duration
+                            duration = _listOfVideos[current].position.duration
                             ,
                             status = "---"
                         };
                     }
-                    videoIDsToGetParams[i].position.title = videoIDsToGetParams[i].videoTitle;
-                    videoIDsToGetParams[i].position.duration = videoIDsToGetParams[i].videoDuration;
+                    _listOfVideos[current].position.title = _listOfVideos[current].videoTitle;
+                    _listOfVideos[current].position.duration = _listOfVideos[current].videoDuration;
                 }
             }
         }
@@ -155,7 +165,7 @@ namespace powerful_youtube_dl
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = MainWindow.ytDlPath;
-            startInfo.Arguments = " -x -o \"" + MainWindow.downloadPath + "\\" + playList + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
+            startInfo.Arguments = " -x -o \"" + MainWindow.downloadPath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;

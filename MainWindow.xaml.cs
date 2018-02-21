@@ -115,9 +115,25 @@ namespace powerful_youtube_dl
 
         private void link_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (link.Text == "Link do kanału, playlisty lub video")
-                link.Text = "";
+            if (link.Text == "Link do kanału, playlisty lub video" || link.Text == "")
+            {
+                if (checkIfYoutubeURL())
+                    link.Text = System.Windows.Clipboard.GetText();
+                else
+                    link.Text = "";
+            }
             link.SelectAll();
+        }
+
+        private bool checkIfYoutubeURL()
+        {
+            string url = System.Windows.Clipboard.GetText();
+            if (url.Contains("playlist") || url.Contains("list") || url.Contains("watch") || url.Contains("channel") || url.Contains("user"))
+            {
+                if (url.Contains("youtu"))
+                    return true;
+            }
+            return false;
         }
 
         private void playlist_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -126,7 +142,8 @@ namespace powerful_youtube_dl
             deleteAllVideosFromList();
             foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList)
                 addVideoToList(vid.position);
-            videos.ScrollIntoView(videos.Items[0]);
+            // addVideos.ScrollIntoView(addVideos.Items[0]);
+            addVideos.Items.Refresh();
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -138,6 +155,8 @@ namespace powerful_youtube_dl
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             Download.Delete(kolejka.SelectedIndex);
+            kolejka.Items.Refresh();
+
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
@@ -156,34 +175,51 @@ namespace powerful_youtube_dl
         public void addVideoToQueue(ListViewItemMy video)
         {
             kolejka.Items.Add(video);
+            kolejka.Items.Refresh();
+
         }
         public void addVideoToList(ListViewItemMy videom)
         {
-            videos.Items.Add(videom);
+            addVideos.Items.Add(videom);
+            addVideos.Items.Refresh();
+
         }
 
         public void deleteVideoFromQueue(int index)
         {
             kolejka.Items.RemoveAt(index);
+            kolejka.Items.Refresh();
         }
 
         public void deleteVideoFromQueue(ListViewItemMy pos)
         {
             int ind = kolejka.Items.IndexOf(pos);
             kolejka.Items.RemoveAt(ind);
+            kolejka.Items.Refresh();
         }
 
         public void deleteAllVideosFromList()
         {
-            videos.Items.Clear();
+            addVideos.Items.Clear();
+            addVideos.Items.Refresh();
         }
 
         public void changeCheckVideos(bool isTrue)
         {
-            System.Windows.Controls.ItemCollection a = videos.Items;
-           //videos.Items.Refresh
-            foreach (Video vid in videos.Items)
+            System.Windows.Controls.ItemCollection a = addVideos.Items;
+            foreach (Video vid in addVideos.Items)
                 vid.position.check = isTrue;
+            kolejka.Items.Refresh();
+        }
+
+        private void link_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (link.Text == "Link do kanału, playlisty lub video" || link.Text == "")
+            {
+                if (checkIfYoutubeURL())
+                    link.Text = System.Windows.Clipboard.GetText();
+            }
+            link.SelectAll();
         }
     }
 }

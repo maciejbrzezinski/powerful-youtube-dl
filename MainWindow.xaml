@@ -6,24 +6,24 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:powerful_youtube_dl"
         mc:Ignorable="d"
-        Title="Powerful YouTube DL" Height="382.013" Width="1028.181" BorderBrush="Black" BorderThickness="1,0,1,1" ResizeMode="CanMinimize">
+        Title="Powerful YouTube DL" Height="631.013" Width="1108.181" BorderBrush="Black" BorderThickness="1,0,1,1" ResizeMode="CanMinimize">
     <Grid>
-        <Label Content="Wybierz plik youtube-dl.exe" x:Name="ytDLabel"  x:FieldModifier="public" HorizontalAlignment="Center" Margin="105,14,752,0" VerticalAlignment="Top" AutomationProperties.Name="ytDLabel" Width="163" MaxWidth="571"/>
-        <Button Content="Wybierz plik" HorizontalAlignment="Center" Margin="11,13,920,0" VerticalAlignment="Top" Width="89" Click="Button_Click"/>
-        <Label x:Name="localization" x:FieldModifier="public" Content="Wybierz lokalizację pobierania" HorizontalAlignment="Left" Margin="376,14,0,0" VerticalAlignment="Top" Width="372" MaxWidth="372"/>
-        <Button Content="Wybierz" HorizontalAlignment="Left" Margin="296,13,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
+        <Label Content="Wybierz plik youtube-dl.exe" x:Name="ytDLabel"  x:FieldModifier="public" HorizontalAlignment="Left" Margin="105,14,752,0" VerticalAlignment="Top" AutomationProperties.Name="ytDLabel" Width="163" MaxWidth="571"/>
+        <Button Content="Wybierz plik" HorizontalAlignment="Left" Margin="11,13,920,0" VerticalAlignment="Top" Width="89" Click="Button_Click"/>
+        <Label x:Name="localization" x:FieldModifier="public" Content="Wybierz lokalizację pobierania" HorizontalAlignment="Left" Margin="466,14,0,0" VerticalAlignment="Top" Width="372" MaxWidth="372"/>
+        <Button Content="Wybierz" HorizontalAlignment="Left" Margin="386,13,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
 
-        <TabControl x:Name="tabs" HorizontalAlignment="Left" Height="296" Margin="10,45,0,0" VerticalAlignment="Top" Width="1000">
+        <TabControl x:Name="tabs" HorizontalAlignment="Left" Height="534" Margin="10,45,0,0" VerticalAlignment="Top" Width="1080">
             <TabItem Header="Dodaj">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="link" x:FieldModifier="public" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" VerticalAlignment="Top" Width="817" GotFocus="link_GotFocus" MouseDoubleClick="link_GotFocus" MouseRightButtonDown="link_GotFocus" MouseRightButtonUp="link_GotFocus"/>
-                    <Button Content="Załaduj" HorizontalAlignment="Left" Margin="832,9,0,0" VerticalAlignment="Top" Width="151" Click="Button_Click_2"/>
-                    <ListBox x:Name="playlist" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="10,41,0,0" VerticalAlignment="Top" Width="141" ItemsSource="{Binding _listOfPlayListsCheckBox}" SelectionChanged="playlist_SelectionChanged" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" >
+                    <TextBox x:Name="link" x:FieldModifier="public" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" VerticalAlignment="Top" Width="863" GotFocus="link_GotFocus" MouseDoubleClick="link_GotFocus" MouseRightButtonDown="link_GotFocus" MouseRightButtonUp="link_GotFocus" MouseLeftButtonDown="link_MouseLeftButtonDown"/>
+                    <Button Content="Załaduj" HorizontalAlignment="Left" Margin="878,10,0,0" VerticalAlignment="Top" Width="186" Click="Button_Click_2"/>
+                    <ListBox x:Name="playlist" x:FieldModifier="public" HorizontalAlignment="Left" Height="373" Margin="10,41,0,0" VerticalAlignment="Top" Width="141" ItemsSource="{Binding _listOfPlayListsCheckBox}" SelectionChanged="playlist_SelectionChanged" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" >
                         <ListBox.DataContext>
                             <local:PlayList/>
                         </ListBox.DataContext>
                     </ListBox>
-                    <ListView x:Name="videos" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="156,41,0,0" VerticalAlignment="Top" Width="827">
+                    <ListView x:Name="addVideos" x:FieldModifier="public" HorizontalAlignment="Left" Height="373" Margin="156,41,0,0" VerticalAlignment="Top" Width="908">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="">
@@ -32,19 +32,20 @@
                                             <CheckBox Margin="5, 0" IsChecked="{Binding check}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
-                                </GridViewColumn>                                
+                                </GridViewColumn>
                                 <GridViewColumn Header="Tytuł" Width="700" DisplayMemberBinding="{Binding title}"/>
                                 <GridViewColumn Header="Czas trwania" Width="75" DisplayMemberBinding="{Binding duration}"/>
                                 <GridViewColumn Header="Status" Width="75" DisplayMemberBinding="{Binding status}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <!--<ListBox x:Name="videos" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="156,41,0,0" VerticalAlignment="Top" Width="827"  ItemsSource="{Binding _listOfVideosCheckBox}" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" >--><!--
+                    <!--<ListBox x:Name="videos" x:FieldModifier="public" HorizontalAlignment="Left" Height="135" Margin="156,41,0,0" VerticalAlignment="Top" Width="827"  ItemsSource="{Binding _listOfVideosCheckBox}" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" >-->
+                    <!--
                         <ListBox.DataContext>
                             <local:Video/>
                         </ListBox.DataContext>
                     </ListBox>-->
-                    <Button Content="Dodaj zaznaczone do kolejki" HorizontalAlignment="Left" Margin="10,181,0,0" VerticalAlignment="Top" Width="973" Click="Button_Click_3" Height="60" FontSize="24"/>
+                    <Button Content="Dodaj zaznaczone do kolejki" HorizontalAlignment="Left" Margin="10,419,0,0" VerticalAlignment="Top" Width="1054" Click="Button_Click_3" Height="60" FontSize="24"/>
 
                 </Grid>
             </TabItem>

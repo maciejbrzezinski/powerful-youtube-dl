@@ -6,10 +6,11 @@ using System.Web.Script.Serialization;
 
 namespace powerful_youtube_dl
 {
-    class PlayList
+    public class PlayList
     {
         public static ObservableCollection<CheckBox> _listOfPlayListsCheckBox { get; set; }
         public static List<PlayList> _listOfPlayLists = new List<PlayList>();
+        public static PlayList singleVideos = null;
 
         public List<Video> _listOfVideosInPlayList = new List<Video>();
         //public ObservableCollection<CheckBox> _listOfVideosInPlayListCheckBox = new ObservableCollection<CheckBox>();
@@ -47,6 +48,8 @@ namespace powerful_youtube_dl
                 getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
+                if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex = 0;
             }
             else
                 MainWindow.Error("Ta playlista jest już dodana!");
@@ -62,6 +65,8 @@ namespace powerful_youtube_dl
             getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
             _listOfPlayListsCheckBox.Add(check);
             _listOfPlayLists.Add(this);
+            if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
+                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex = 0;
         }
 
         public PlayList(Video video)
@@ -75,6 +80,8 @@ namespace powerful_youtube_dl
                 check.Content = playListTitle;
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
+                video.playList = this;
+                singleVideos = this;
             }
             foreach (PlayList pl in _listOfPlayLists)
             {
@@ -84,6 +91,8 @@ namespace powerful_youtube_dl
                     pl._listOfVideosInPlayList.Add(video);
                 }
             }
+            if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
+                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex = 0;
         }
 
         private string getTitle(string id)
@@ -104,8 +113,7 @@ namespace powerful_youtube_dl
             obj2 = (Dictionary<string, object>)(result);
 
             System.Object[] val = (System.Object[])obj2["items"];
-
-            //List<object> val = (List<object>)obj2["items"];
+            
             foreach (object item in val)
             {
                 licznik++;
@@ -113,11 +121,10 @@ namespace powerful_youtube_dl
                 Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
                 string title = temp["title"].ToString(); // resourceId -> videoId
                 Dictionary<string, object> vid2 = (Dictionary<string, object>)temp["resourceId"];
-                //  System.Object[] temp2 = (System.Object[])vid2["resourceId"];
                 string id = vid2["videoId"].ToString();
                 Video toAdd = new Video(id);
-                toAdd.playList = playListTitle;
-                //_listOfVideosInPlayListCheckBox.Add(toAdd.checkbox);
+                toAdd.playList._listOfVideosInPlayList.Remove(toAdd);
+                toAdd.playList = this;
                 _listOfVideosInPlayList.Add(toAdd);
             }
 
@@ -135,7 +142,7 @@ namespace powerful_youtube_dl
             toDownload = (bool)((CheckBox)sender).IsChecked;
             foreach (Video vid in _listOfVideosInPlayList)
                 vid.position.check = toDownload;
-            ((MainWindow)System.Windows.Application.Current.MainWindow).videos.Items.Refresh();
+            ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
         }
 
         override
