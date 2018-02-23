@@ -21,7 +21,9 @@ namespace powerful_youtube_dl
             {
                 int start = link.IndexOf("nnel/") + 5;
                 int finish = link.Substring(start).IndexOf("?");
-                if (finish > 0)
+                if(finish == -1)
+                    finish = link.Substring(start).IndexOf("/");
+                if (finish != -1)
                     userID = link.Substring(start, finish);
                 else
                     userID = link.Substring(start);
@@ -83,7 +85,7 @@ namespace powerful_youtube_dl
 
         private void getUserUploadedVideos(string json)
         {
-
+            PlayList user = new PlayList();
         }
 
         private string getUserID(string title)

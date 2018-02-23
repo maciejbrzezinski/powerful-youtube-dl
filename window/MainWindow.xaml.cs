@@ -88,7 +88,7 @@ namespace powerful_youtube_dl
                 {
                     wynik = Dialog.Prompt("Co dokładnie ma zostać pobrane:", "Powerful YouTube DL", "Tylko piosenka, bez playlisty", "Cała playlista na której umieszczona jest piosenka");
                     if (wynik == 0)
-                        new Video(url);
+                        new PlayList(new Video(url));
                     else if (wynik == 1)
                         new PlayList(url);
                     else if (wynik == 3)
@@ -183,15 +183,21 @@ namespace powerful_youtube_dl
         public void deleteVideoFromQueue(ListViewItemMy pos)
         {
             int ind = kolejka.Items.IndexOf(pos);
-            kolejka.Items.RemoveAt(ind);
-            kolejka.Items.Refresh();
+            if (ind > -1)
+            {
+                kolejka.Items.RemoveAt(ind);
+                kolejka.Items.Refresh();
+            }
         }
 
         public void deleteVideoFromAdd(ListViewItemMy pos)
         {
             int ind = addVideos.Items.IndexOf(pos);
-            addVideos.Items.RemoveAt(ind);
-            addVideos.Items.Refresh();
+            if (ind > -1)
+            {
+                addVideos.Items.RemoveAt(ind);
+                addVideos.Items.Refresh();
+            }
         }
 
         public void deleteAllVideosFromList()

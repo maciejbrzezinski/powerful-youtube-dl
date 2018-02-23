@@ -40,12 +40,8 @@ namespace powerful_youtube_dl
             {
                 videoID = id;
                 addToGetParams(this);
-                ListViewItemMy pos = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false };
-                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToList(pos);
-                position = pos;
+                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false };
                 _listOfVideos.Add(this);
-                PlayList play = new PlayList(this);
-                playList = PlayList.singleVideos;
             }
         }
 

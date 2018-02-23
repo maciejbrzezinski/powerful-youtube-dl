@@ -16,7 +16,6 @@ namespace powerful_youtube_dl
         //public ObservableCollection<CheckBox> _listOfVideosInPlayListCheckBox = new ObservableCollection<CheckBox>();
         public string playListID, playListURL, playListTitle;
         public bool toDownload = false;
-        public static bool isSingleVideosPlayListExists = false;
 
         public CheckBox check;
 
@@ -28,18 +27,9 @@ namespace powerful_youtube_dl
         public PlayList(string link)
         {
             string id = link.Substring(link.IndexOf("list=") + 5, 34); //34
-            playListID = id;
-            bool isPlayListExisting = false;
-            foreach (PlayList exists in _listOfPlayLists)
+            if (!checkIfPlayListExists(id))
             {
-                if (exists.playListID == playListID)
-                {
-                    isPlayListExisting = true;
-                    break;
-                }
-            }
-            if (!isPlayListExisting)
-            {
+                playListID = id;
                 playListURL = link;
                 playListTitle = getTitle(id);
                 check = new CheckBox();
@@ -48,8 +38,7 @@ namespace powerful_youtube_dl
                 getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
-               // if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
+                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
             }
             else
                 MainWindow.Error("Ta playlista jest już dodana!");
@@ -57,42 +46,52 @@ namespace powerful_youtube_dl
 
         public PlayList(string id, string title)
         {
-            playListID = id;
-            playListTitle = title;
-            check = new CheckBox();
-            check.Click += new RoutedEventHandler(checkChanged);
-            check.Content = playListTitle;
-            getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-            _listOfPlayListsCheckBox.Add(check);
-            _listOfPlayLists.Add(this);
-           // if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
+            if (!checkIfPlayListExists(id))
+            {
+                playListID = id;
+                playListTitle = title;
+                check = new CheckBox();
+                check.Click += new RoutedEventHandler(checkChanged);
+                check.Content = playListTitle;
+                getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
+                _listOfPlayListsCheckBox.Add(check);
+                _listOfPlayLists.Add(this);
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
+            }
+            else
+                MainWindow.Error("Playlista o nazwie "+title+" jest już dodana!");
         }
 
         public PlayList(Video video)
         {
-            if (!isSingleVideosPlayListExists)
+            if (video.position != null)
             {
-                isSingleVideosPlayListExists = true;
-                playListTitle = "Pojedyncze";
-                check = new CheckBox();
-                check.Click += new RoutedEventHandler(checkChanged);
-                check.Content = playListTitle;
-                _listOfPlayListsCheckBox.Add(check);
-                _listOfPlayLists.Add(this);
-                video.playList = this;
-                singleVideos = this;
-            }
-            foreach (PlayList pl in _listOfPlayLists)
-            {
-                if (pl.playListTitle == "Pojedyncze")
+                if (singleVideos == null)
                 {
-                    //pl._listOfVideosInPlayListCheckBox.Add(video.check);
-                    pl._listOfVideosInPlayList.Add(video);
+                    playListTitle = "Pojedyncze";
+                    check = new CheckBox();
+                    check.Click += new RoutedEventHandler(checkChanged);
+                    check.Content = playListTitle;
+                    _listOfPlayListsCheckBox.Add(check);
+                    _listOfPlayLists.Add(this);
+                    singleVideos = this;
+                }
+                video.playList = singleVideos;
+                singleVideos._listOfVideosInPlayList.Add(video);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = singleVideos.check;
+            }
+        }
+
+        private bool checkIfPlayListExists(string id)
+        {
+            foreach (PlayList exists in _listOfPlayLists)
+            {
+                if (exists.playListID == id)
+                {
+                    return true;
                 }
             }
-           // if (((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedIndex == -1)
-                ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
+            return false;
         }
 
         private string getTitle(string id)
@@ -113,7 +112,7 @@ namespace powerful_youtube_dl
             obj2 = (Dictionary<string, object>)(result);
 
             System.Object[] val = (System.Object[])obj2["items"];
-            
+
             foreach (object item in val)
             {
                 licznik++;
@@ -123,7 +122,6 @@ namespace powerful_youtube_dl
                 Dictionary<string, object> vid2 = (Dictionary<string, object>)temp["resourceId"];
                 string id = vid2["videoId"].ToString();
                 Video toAdd = new Video(id);
-                toAdd.playList._listOfVideosInPlayList.Remove(toAdd);
                 toAdd.playList = this;
                 _listOfVideosInPlayList.Add(toAdd);
             }

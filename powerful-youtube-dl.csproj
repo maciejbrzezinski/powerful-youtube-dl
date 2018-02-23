@@ -62,7 +62,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo_ytdl_d4Q_icon.ico</ApplicationIcon>
+    <ApplicationIcon>something\logo_ytdl_d4Q_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
@@ -106,32 +106,32 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="window\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Dialog.xaml.cs">
+    <Compile Include="window\Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Download.cs" />
-    <Compile Include="HTTP.cs" />
-    <Compile Include="ListViewItemMy.cs" />
-    <Compile Include="PlayList.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="Video.cs" />
-    <Page Include="Dialog.xaml">
+    <Compile Include="thinkingPart\Download.cs" />
+    <Compile Include="web\HTTP.cs" />
+    <Compile Include="window\ListViewItemMy.cs" />
+    <Compile Include="thinkingPart\PlayList.cs" />
+    <Compile Include="thinkingPart\User.cs" />
+    <Compile Include="thinkingPart\Video.cs" />
+    <Page Include="window\Dialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="window\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="window\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="window\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -154,15 +154,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="powerful-youtube-dl_TemporaryKey.pfx" />
+    <None Include="something\packages.config" />
+    <None Include="something\powerful-youtube-dl_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="window\App.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -177,10 +177,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="logo_ytdl_d4Q_icon.ico" />
+    <Resource Include="something\logo_ytdl_d4Q_icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="youtube-dl.exe">
+    <Content Include="something\youtube-dl.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

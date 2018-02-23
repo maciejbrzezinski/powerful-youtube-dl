@@ -18,7 +18,7 @@
                 <Grid Background="#FFE5E5E5">
                     <TextBox x:Name="link" x:FieldModifier="public" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" VerticalAlignment="Top" Width="863" GotFocus="link_GotFocus" MouseDoubleClick="link_GotFocus" MouseRightButtonDown="link_GotFocus" MouseRightButtonUp="link_GotFocus" MouseLeftButtonDown="link_MouseLeftButtonDown"/>
                     <Button Content="Załaduj" HorizontalAlignment="Left" Margin="878,10,0,0" VerticalAlignment="Top" Width="186" Click="Button_Click_2"/>
-                    <ListBox x:Name="playlist" x:FieldModifier="public" HorizontalAlignment="Left" Height="373" Margin="15,36,0,0" VerticalAlignment="Top" Width="141" ItemsSource="{Binding _listOfPlayListsCheckBox}" SelectionChanged="playlist_SelectionChanged" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" SelectedIndex="1" >
+                    <ListBox x:Name="playlist" x:FieldModifier="public" HorizontalAlignment="Left" Height="373" Margin="10,41,0,0" VerticalAlignment="Top" Width="141" ItemsSource="{Binding _listOfPlayListsCheckBox}" SelectionChanged="playlist_SelectionChanged" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" SelectedIndex="1" >
                         <ListBox.DataContext>
                             <local:PlayList/>
                         </ListBox.DataContext>
