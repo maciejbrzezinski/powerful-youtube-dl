@@ -19,9 +19,9 @@ namespace powerful_youtube_dl
         public PlayList playList = null;
         public bool toDownload = false;
         public ListViewItemMy position = null;
-
         public CheckBox checkbox;
 
+        public static int currentlyDownloading = 0;
 
         public static List<Video> videoIDsToGetParams = new List<Video>();
 
@@ -202,35 +202,49 @@ namespace powerful_youtube_dl
             //process.Start();
             Thread ths = new Thread(() =>
             {
-                bool ret = process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                process.WaitForExit();
+                while (true)
+                {
+                    if (currentlyDownloading < 1)
+                    {
+                        currentlyDownloading++;
+                        bool ret = process.Start();
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
 
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                  DispatcherPriority.Background,
-                  new Action(() =>
-                  {
-                      int ind = ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.IndexOf(position);
-                      if (ind > -1)
-                      {
-                          ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.RemoveAt(ind);
-                          ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
-                      }
-                  }));
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                          DispatcherPriority.Background,
+                          new Action(() =>
+                          {
+                              int ind = ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.IndexOf(position);
+                              if (ind > -1)
+                              {
+                                  ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.RemoveAt(ind);
+                                  ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
+                              }
+                          }));
+                        currentlyDownloading--;
+                        break;
+                    }
+                    else
+                    {
+                        Thread.Sleep(1000);
+                    }
+                }
             });
             ths.Start();
         }
 
+
         private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
         {
             System.Windows.Application.Current.Dispatcher.BeginInvoke(
-      DispatcherPriority.Background,
-       new Action(() =>
-       {
-           position.status = getPercent(e.Data);
-           ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
-       }));
+        DispatcherPriority.Background,
+        new Action(() =>
+        {
+            position.status = getPercent(e.Data);
+            ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
+        }));
             Console.WriteLine(e.Data);
         }
 

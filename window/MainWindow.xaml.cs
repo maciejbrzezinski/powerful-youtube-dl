@@ -20,7 +20,9 @@ namespace powerful_youtube_dl
         public MainWindow()
         {
             InitializeComponent();
-
+            //Properties.Settings.Default.dlp = "siema";
+             //Properties.Settings.Default.Save();
+            System.Windows.MessageBox.Show(Properties.Settings.Default.dlpath);
             RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
             ytDlPath = key.GetValue("ytdlexe", "").ToString();
             if (ytDlPath == "")

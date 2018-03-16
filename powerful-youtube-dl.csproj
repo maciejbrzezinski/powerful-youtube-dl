@@ -155,6 +155,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="something\packages.config" />
     <None Include="something\powerful-youtube-dl_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
