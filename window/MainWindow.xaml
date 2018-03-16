@@ -11,7 +11,7 @@
         <Label Content="Wybierz plik youtube-dl.exe" x:Name="ytDLabel"  x:FieldModifier="public" HorizontalAlignment="Left" Margin="105,14,752,0" VerticalAlignment="Top" AutomationProperties.Name="ytDLabel" Width="163" MaxWidth="571"/>
         <Button Content="Wybierz plik" HorizontalAlignment="Left" Margin="11,13,920,0" VerticalAlignment="Top" Width="89" Click="Button_Click"/>
         <Label x:Name="localization" x:FieldModifier="public" Content="Wybierz lokalizację pobierania" HorizontalAlignment="Left" Margin="466,14,0,0" VerticalAlignment="Top" Width="372" MaxWidth="372"/>
-        <Button Content="Wybierz" HorizontalAlignment="Left" Margin="386,13,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
+        <Button Content="Wybierz" HorizontalAlignment="Left" Margin="386,13,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
 
         <TabControl x:Name="tabs" HorizontalAlignment="Left" Height="534" Margin="10,45,0,0" VerticalAlignment="Top" Width="1080">
             <TabItem Header="Dodaj">

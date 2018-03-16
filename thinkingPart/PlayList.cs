@@ -26,7 +26,12 @@ namespace powerful_youtube_dl
 
         public PlayList(string link)
         {
-            string id = link.Substring(link.IndexOf("list=") + 5, 34); //34
+            string id = "";
+            try
+            {
+                id = link.Substring(link.IndexOf("list=") + 5, 34); //24
+            }
+            catch { id = link.Substring(link.IndexOf("list=") + 5, 24); }
             if (!checkIfPlayListExists(id))
             {
                 playListID = id;
@@ -78,6 +83,8 @@ namespace powerful_youtube_dl
                 }
                 video.playList = singleVideos;
                 singleVideos._listOfVideosInPlayList.Add(video);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToList(video.position);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = singleVideos.check;
             }
         }

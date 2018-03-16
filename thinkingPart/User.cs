@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows;
 
-namespace powerful_youtube_dl
+namespace powerful_youtube_dl.thinkingPart
 {
     class User
     {
@@ -85,7 +85,27 @@ namespace powerful_youtube_dl
 
         private void getUserUploadedVideos(string json)
         {
-            PlayList user = new PlayList();
+            JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+            var result = jsSerializer.DeserializeObject(json);
+            Dictionary<string, object> obj2 = (Dictionary<string, object>)(result);
+
+            System.Object[] val = (System.Object[])obj2["items"];
+            
+            string id = "";
+            string title = "";
+            try
+            {
+                Dictionary<string, object> idJ = (Dictionary<string, object>)val.GetValue(0);
+                id = idJ["id"].ToString();
+                System.Object v = (System.Object)idJ["snippet"];
+                Dictionary<string, object> vJ = (Dictionary<string, object>)v;
+                title = vJ["title"].ToString();
+
+            }
+            finally { }
+            id = id.Substring(2);
+            id = "UU" + id;
+            PlayList user = new PlayList(id, title);
         }
 
         private string getUserID(string title)

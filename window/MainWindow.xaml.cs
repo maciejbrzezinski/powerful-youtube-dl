@@ -4,8 +4,10 @@ using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using MahApps.Metro.Controls;
 using Microsoft.Win32;
+using powerful_youtube_dl.thinkingPart;
 //using MahApps.Metro.Controls;
 
 namespace powerful_youtube_dl
@@ -56,10 +58,13 @@ namespace powerful_youtube_dl
             using (var dialog = new FolderBrowserDialog())
             {
                 DialogResult result = dialog.ShowDialog();
-                localization.Content = dialog.SelectedPath;
-                downloadPath = dialog.SelectedPath;
-                RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
-                key.SetValue("dlpath", downloadPath);
+                if (dialog.SelectedPath != "")
+                {
+                    localization.Content = dialog.SelectedPath;
+                    downloadPath = dialog.SelectedPath;
+                    RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
+                    key.SetValue("dlpath", downloadPath);
+                }
             }
         }
 
@@ -182,12 +187,39 @@ namespace powerful_youtube_dl
 
         public void deleteVideoFromQueue(ListViewItemMy pos)
         {
-            int ind = kolejka.Items.IndexOf(pos);
-            if (ind > -1)
+            
+            if (System.Windows.Application.Current.Dispatcher.CheckAccess())
             {
-                kolejka.Items.RemoveAt(ind);
-                kolejka.Items.Refresh();
+                int ind = kolejka.Items.IndexOf(pos);
+                if (ind > -1)
+                {
+                    kolejka.Items.RemoveAt(ind);
+                    kolejka.Items.Refresh();
+                }
             }
+            else
+            {
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                  DispatcherPriority.Background,
+                  new Action(() => {
+                      int ind = this.kolejka.Items.IndexOf(pos);
+                      if (ind > -1)
+                      {
+                          this.kolejka.Items.RemoveAt(ind);
+                          this.kolejka.Items.Refresh();
+                      }
+                  }));
+            }
+        }
+
+        public void setDownloadState(ListViewItemMy pos, String value)
+        {
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                  DispatcherPriority.Background,
+                  new Action(() => {
+                      pos.status = value;
+                      this.kolejka.Items.Refresh();
+                  }));
         }
 
         public void deleteVideoFromAdd(ListViewItemMy pos)

@@ -1,11 +1,11 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Windows.Threading;
 
 namespace powerful_youtube_dl
 {
@@ -21,6 +21,7 @@ namespace powerful_youtube_dl
         public ListViewItemMy position = null;
 
         public CheckBox checkbox;
+
 
         public static List<Video> videoIDsToGetParams = new List<Video>();
 
@@ -191,9 +192,63 @@ namespace powerful_youtube_dl
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
+
+            startInfo.RedirectStandardError = true;
+            startInfo.RedirectStandardInput = true;
+            process.OutputDataReceived += cmd_DataReceived;
+            process.EnableRaisingEvents = true;
+
             process.StartInfo = startInfo;
-            process.Start();
-            process.WaitForExit();
+            //process.Start();
+            Thread ths = new Thread(() =>
+            {
+                bool ret = process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                  DispatcherPriority.Background,
+                  new Action(() =>
+                  {
+                      int ind = ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.IndexOf(position);
+                      if (ind > -1)
+                      {
+                          ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.RemoveAt(ind);
+                          ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
+                      }
+                  }));
+            });
+            ths.Start();
+        }
+
+        private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
+        {
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(
+      DispatcherPriority.Background,
+       new Action(() =>
+       {
+           position.status = getPercent(e.Data);
+           ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
+       }));
+            Console.WriteLine(e.Data);
+        }
+
+        private static string getPercent(string value)
+        {
+            if (value != null)
+            {
+                string start = "[download]   ";
+                string end = " of";
+                int st = value.IndexOf(start) + start.Length;
+                int en = value.IndexOf(end);
+                if (st > -1 && en > st)
+                {
+                    value = value.Substring(st, 5);
+                    return value;
+                }
+            }
+            return "---";
         }
 
         override

@@ -41,7 +41,6 @@ namespace powerful_youtube_dl
                 foreach (Video v in toDownload)
                 {
                     v.Download();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromQueue(v.position);
                     Thread.Sleep(100);
                 }
                 toDownload = new List<Video>();
