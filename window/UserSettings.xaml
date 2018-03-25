@@ -1,0 +1,31 @@
+﻿<Controls:MetroWindow x:Class="powerful_youtube_dl.window.UserSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:powerful_youtube_dl.window"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        mc:Ignorable="d"
+        Title="Settings" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" VerticalAlignment="Top" Height="356">
+    <Grid x:Name="grid1" Width="500" VerticalAlignment="Top">
+        <Grid x:Name="ytdlexe" Margin="10,10,10,0" Height="43" VerticalAlignment="Top">
+            <TextBox x:Name="textYTDL" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Ścierzka do youtube-dl.exe" VerticalAlignment="Top" Width="369"/>
+            <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,5,0" VerticalAlignment="Top" Width="91" Height="26" Click="selectYoutubeDLPath"/>
+        </Grid>
+        <Grid x:Name="dlpath" Margin="10,63,10,0" Height="43" VerticalAlignment="Top">
+            <TextBox x:Name="textDestination" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Ścierzka do miejsca gdzie zapisywać utwory" VerticalAlignment="Top" Width="369"/>
+            <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,5,0" VerticalAlignment="Top" Width="91" Height="26" Click="selectDestinationFolder"/>
+        </Grid>
+        <Grid x:Name="maxdl" Margin="10,116,10,0" Height="43" VerticalAlignment="Top">
+            <TextBox x:Name="textMaxDownloads" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Maksymalna ilość jednoczesnych pobierań" VerticalAlignment="Top" TextChanged="setMaxDownloads"/>
+        </Grid>
+        <Grid x:Name="boolean" Margin="10,164,10,10" VerticalAlignment="Top" ContextMenuClosing="checkChanged">
+            <CheckBox x:Name="playlistAsFolder" Content="Twórz oddzielny folder dla każdej playlisty" Margin="10,10,10,0" VerticalAlignment="Top" BorderThickness="0,0,1,2" Click="checkChanged"/>
+            <CheckBox x:Name="autoLoadLink" Content="Automatycznie ładowanie informacji, od razu po wklejeniu linku, bez naciskania przycisku" Margin="10,33,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
+            <CheckBox x:Name="startwithsystem" Content="Uruchamiaj program przy starcie Windows" Margin="10,56,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
+            <CheckBox x:Name="startminimized" Content="Uruchamiaj zminimalizowany" Margin="30,79,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
+            <CheckBox x:Name="dlhistory" Content="Twórz historię pobierania i statystyki" Margin="10,102,10,-2" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
+            <CheckBox x:Name="dotray" Content="Minimalizuj program, do traya" Margin="10,125,10,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged"/>
+        </Grid>
+    </Grid>
+</Controls:MetroWindow>

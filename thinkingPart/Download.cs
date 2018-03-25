@@ -52,7 +52,7 @@ namespace powerful_youtube_dl
             string response = "";
             bool allowDownload = true;
             int count = 1;
-            if (!MainWindow.ytDlPath.Contains("youtube-dl.exe"))
+            if (!Properties.Settings.Default.ytdlexe.Contains("youtube-dl.exe"))
             {
                 response += count + ". Nie wybrano youtube-dl.exe!\n\n";
                 count++;

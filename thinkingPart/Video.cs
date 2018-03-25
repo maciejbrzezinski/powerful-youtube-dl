@@ -187,7 +187,7 @@ namespace powerful_youtube_dl
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = MainWindow.ytDlPath;
+            startInfo.FileName = Properties.Settings.Default.ytdlexe;
             startInfo.Arguments = " -x -o \"" + MainWindow.downloadPath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;

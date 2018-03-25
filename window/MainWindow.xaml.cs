@@ -14,59 +14,20 @@ namespace powerful_youtube_dl
 {
     public partial class MainWindow
     {
-        public static string ytDlPath = "";
+        // public static string ytDlPath = "";
         public static string downloadPath = "";
+        public static int maxDownloads = 1;
 
         public MainWindow()
         {
             InitializeComponent();
-            //Properties.Settings.Default.dlp = "siema";
-             //Properties.Settings.Default.Save();
-            System.Windows.MessageBox.Show(Properties.Settings.Default.dlpath);
-            RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
-            ytDlPath = key.GetValue("ytdlexe", "").ToString();
-            if (ytDlPath == "")
-                ytDLabel.Content = "Wybierz plik youtube-dl.exe";
-            else
-                ytDLabel.Content = Path.GetFileName(ytDlPath);
 
-            downloadPath = key.GetValue("dlpath", "").ToString();
-            if (downloadPath == "")
-                localization.Content = "Wybierz lokalizację pobierania";
-            else
-                localization.Content = downloadPath;
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Microsoft.Win32.OpenFileDialog dialog = new Microsoft.Win32.OpenFileDialog();
-
-            dialog.DefaultExt = ".exe";
-            dialog.Filter = "Exe Files (*.exe)|*.exe";
-
-            Nullable<bool> result = dialog.ShowDialog();
-
-            if (result == true)
+            if (Properties.Settings.Default.firstRun == true)
             {
-                ytDlPath = dialog.FileName;
-                ytDLabel.Content = dialog.SafeFileName;
-                RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
-                key.SetValue("ytdlexe", ytDlPath);
-            }
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                DialogResult result = dialog.ShowDialog();
-                if (dialog.SelectedPath != "")
-                {
-                    localization.Content = dialog.SelectedPath;
-                    downloadPath = dialog.SelectedPath;
-                    RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Powerful YouTube Dl", true);
-                    key.SetValue("dlpath", downloadPath);
-                }
+                window.UserSettings ss = new window.UserSettings();
+                ss.ShowDialog();
+                Properties.Settings.Default.firstRun = false;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -189,7 +150,7 @@ namespace powerful_youtube_dl
 
         public void deleteVideoFromQueue(ListViewItemMy pos)
         {
-            
+
             if (System.Windows.Application.Current.Dispatcher.CheckAccess())
             {
                 int ind = kolejka.Items.IndexOf(pos);
@@ -203,7 +164,8 @@ namespace powerful_youtube_dl
             {
                 System.Windows.Application.Current.Dispatcher.BeginInvoke(
                   DispatcherPriority.Background,
-                  new Action(() => {
+                  new Action(() =>
+                  {
                       int ind = this.kolejka.Items.IndexOf(pos);
                       if (ind > -1)
                       {
@@ -218,7 +180,8 @@ namespace powerful_youtube_dl
         {
             System.Windows.Application.Current.Dispatcher.BeginInvoke(
                   DispatcherPriority.Background,
-                  new Action(() => {
+                  new Action(() =>
+                  {
                       pos.status = value;
                       this.kolejka.Items.Refresh();
                   }));
