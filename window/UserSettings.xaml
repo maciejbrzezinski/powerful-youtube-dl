@@ -45,9 +45,8 @@
             </Grid>
             <CheckBox x:Name="startwithsystem" Content="Uruchamiaj program przy starcie Windows" Margin="10,133,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
             <CheckBox x:Name="startminimized" Content="Uruchamiaj zminimalizowany" Margin="10,156,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
-            <CheckBox x:Name="dlhistory" Content="Twórz historię pobierania i statystyki" Margin="10,179,10,-2" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
-            <CheckBox x:Name="dotray" Content="Minimalizuj program, do traya" Margin="10,202,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
-            <CheckBox x:Name="closeToTray" Content="Zamykaj program do traya" Margin="10,225,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <CheckBox x:Name="dotray" Content="Minimalizuj program, do traya" Margin="10,179,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <CheckBox x:Name="closeToTray" Content="Zamykaj program do traya" Margin="10,202,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
         </Grid>
     </Grid>
 </Controls:MetroWindow>

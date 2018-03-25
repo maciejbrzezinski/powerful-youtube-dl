@@ -110,18 +110,6 @@ namespace powerful_youtube_dl.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool dlHistory {
-            get {
-                return ((bool)(this["dlHistory"]));
-            }
-            set {
-                this["dlHistory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool toTray {
             get {
                 return ((bool)(this["toTray"]));
@@ -224,6 +212,18 @@ namespace powerful_youtube_dl.Properties {
             }
             set {
                 this["autoDownload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int sumDownloadedVideos {
+            get {
+                return ((int)(this["sumDownloadedVideos"]));
+            }
+            set {
+                this["sumDownloadedVideos"] = value;
             }
         }
     }

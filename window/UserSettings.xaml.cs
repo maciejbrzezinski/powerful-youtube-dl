@@ -56,8 +56,7 @@ namespace powerful_youtube_dl.window
                 startminimized.IsEnabled = true;
             else
                 startminimized.IsEnabled = false;
-
-            dlhistory.IsChecked = Properties.Settings.Default.dlHistory;
+            
             dotray.IsChecked = Properties.Settings.Default.toTray;
             startminimized.IsChecked = Properties.Settings.Default.startMinimalized;
             closeToTray.IsChecked = Properties.Settings.Default.closeToTray;
@@ -148,10 +147,6 @@ namespace powerful_youtube_dl.window
                         }
                         catch { }
                     }
-                    break;
-                case "dlhistory":
-                    Properties.Settings.Default.dlHistory = (bool)check.IsChecked;
-                    Properties.Settings.Default.Save();
                     break;
                 case "dotray":
                     Properties.Settings.Default.toTray = (bool)check.IsChecked;

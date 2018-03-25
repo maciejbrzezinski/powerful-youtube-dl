@@ -44,6 +44,7 @@ namespace powerful_youtube_dl
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
+                MainWindow.stats.loadedPlaylist(this);
             }
             else
                 MainWindow.Error("Ta playlista jest już dodana!");
@@ -62,6 +63,7 @@ namespace powerful_youtube_dl
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
+                MainWindow.stats.loadedPlaylist(this);
             }
             else
                 MainWindow.Error("Playlista o nazwie "+title+" jest już dodana!");

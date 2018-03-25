@@ -27,13 +27,13 @@
                                 <GridViewColumn Header="">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox Margin="5, 0" IsChecked="{Binding check}"/>
+                                            <CheckBox Margin="0" IsChecked="{Binding check}" VerticalAlignment="Top"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Tytuł" Width="700" DisplayMemberBinding="{Binding title}"/>
-                                <GridViewColumn Header="Czas trwania" Width="64" DisplayMemberBinding="{Binding duration}"/>
-                                <GridViewColumn Header="Status" Width="75" DisplayMemberBinding="{Binding status}"/>
+                                <GridViewColumn Header="Tytuł" Width="557" DisplayMemberBinding="{Binding title}"/>
+                                <GridViewColumn Header="Czas trwania" Width="115" DisplayMemberBinding="{Binding duration}"/>
+                                <GridViewColumn Header="Status" Width="100" DisplayMemberBinding="{Binding status}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -44,7 +44,7 @@
                     <ListView x:Name="kolejka" x:FieldModifier="public" Margin="10,10,133,80" MinHeight="300" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsTextSearchCaseSensitive="True" ControlzEx:KeyboardNavigationEx.AlwaysShowFocusVisual="True">
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
-                                <GridViewColumn x:Name="kot1" Header="Tytuł" Width="650" DisplayMemberBinding="{Binding title}"/>
+                                <GridViewColumn Header="Tytuł" Width="650" DisplayMemberBinding="{Binding title}"/>
                                 <GridViewColumn Header="Czas trwania" Width="110" DisplayMemberBinding="{Binding duration}"/>
                                 <GridViewColumn Header="Status" Width="69" DisplayMemberBinding="{Binding status}"/>
                             </GridView>

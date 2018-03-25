@@ -18,11 +18,13 @@ namespace powerful_youtube_dl
              public static string downloadPath = Properties.Settings.Default.dlpath;
              public static int maxDownloads = Properties.Settings.Default.maxDownloading;*/
         System.Windows.Forms.NotifyIcon ni = null;
+        public static Statistics stats = null;
 
         public MainWindow()
         {
             InitializeComponent();
             startTray();
+            stats = new Statistics();
 
             if (Properties.Settings.Default.firstRun)
             {
@@ -166,11 +168,13 @@ namespace powerful_youtube_dl
             if (buttonDownload.Content.ToString() != "Stop")
             {
                 buttonDownload.Content = "Stop";
+                Video.acceptDownload = true;
                 Download.DownloadQueue();
             }
             else
             {
                 buttonDownload.Content = "Pobierz";
+                Video.acceptDownload = false;
             }
         }
 
@@ -285,7 +289,14 @@ namespace powerful_youtube_dl
                 {
                     link.Text = System.Windows.Clipboard.GetText();
                     if (Properties.Settings.Default.autoLoadLink)
+                    {
                         loadURL();
+                        if (Properties.Settings.Default.autoDownload)
+                        {
+                            Download.Load();
+                            Download.DownloadQueue();
+                        }
+                    }
                 }
                 else
                     link.Text = "";

@@ -20,6 +20,8 @@ namespace powerful_youtube_dl
         public bool toDownload = false;
         public ListViewItemMy position = null;
         public CheckBox checkbox;
+        public static bool acceptDownload = false;
+        public string downloadPath;
 
         public static int currentlyDownloading = 0;
 
@@ -41,7 +43,7 @@ namespace powerful_youtube_dl
             {
                 videoID = id;
                 addToGetParams(this);
-                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false };
+                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = true };
                 _listOfVideos.Add(this);
             }
         }
@@ -123,6 +125,7 @@ namespace powerful_youtube_dl
                     }
                     _listOfVideos[current].position.title = _listOfVideos[current].videoTitle;
                     _listOfVideos[current].position.duration = _listOfVideos[current].videoDuration;
+                    MainWindow.stats.loadedVideo(_listOfVideos[current]);
                 }
             }
             removeNotWorkingVideos();
@@ -138,7 +141,11 @@ namespace powerful_youtube_dl
                     if (v.videoTitle != null)
                         newListOfVideos.Add(v);
                     else
+                    {
+                        MainWindow.stats.notWorkingVideo(v);
+                        v.position.check = false;
                         ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
+                    }
                 }
                 p._listOfVideosInPlayList = newListOfVideos;
             }
@@ -189,9 +196,15 @@ namespace powerful_youtube_dl
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = Properties.Settings.Default.ytdlexe;
             if (Properties.Settings.Default.plAsFolder)
+            {
+                downloadPath = Properties.Settings.Default.dlpath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3";
                 startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.dlpath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
+            }
             else
+            {
+                downloadPath = Properties.Settings.Default.dlpath + "\\" + this.ToString() + ".mp3";
                 startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.dlpath + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
+            }
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
@@ -209,6 +222,7 @@ namespace powerful_youtube_dl
                 {
                     if (currentlyDownloading < Properties.Settings.Default.maxDownloading)
                     {
+                        MainWindow.stats.beginDownload(this);
                         currentlyDownloading++;
                         bool ret = process.Start();
                         process.BeginOutputReadLine();
@@ -226,6 +240,7 @@ namespace powerful_youtube_dl
                                   ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
                               }
                           }));
+                        MainWindow.stats.completeDownload(this);
                         currentlyDownloading--;
                         break;
                     }
@@ -241,14 +256,24 @@ namespace powerful_youtube_dl
 
         private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-        DispatcherPriority.Background,
-        new Action(() =>
-        {
-            position.status = getPercent(e.Data);
-            ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
-        }));
-            Console.WriteLine(e.Data);
+            Process process = (Process)sender;
+            if (!acceptDownload)
+                try
+                {
+                    process.Kill();
+                }
+                catch { }
+            else
+            {
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(
+            DispatcherPriority.Background,
+            new Action(() =>
+            {
+                position.status = getPercent(e.Data);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
+            }));
+                Console.WriteLine(e.Data);
+            }
         }
 
         private static string getPercent(string value)
