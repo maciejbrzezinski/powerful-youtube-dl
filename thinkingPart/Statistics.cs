@@ -27,8 +27,7 @@ namespace powerful_youtube_dl.thinkingPart
                 txtWriter.WriteLine("   {0}", logMessage);
                 txtWriter.WriteLine("-------------------------------");
             }
-            catch (Exception ex)
-            { }
+            catch { }
         }
 
         private void generateLog(string operationName, string message)
@@ -46,7 +45,7 @@ namespace powerful_youtube_dl.thinkingPart
         public void completeDownload(Video video)
         {
             Properties.Settings.Default.sumDownloadedVideos++;
-            string message = "Pomyślnie pobrano: " + video.videoTitle + " (" + video.videoDuration + ")\n   " + video.downloadPath;
+            string message = "Pomyślnie pobrano: " + video.videoTitle + " (" + video.videoDuration + ")\r\n   " + video.downloadPath;
             generateLog("Pobrano plik", message);
         }
 
@@ -70,7 +69,7 @@ namespace powerful_youtube_dl.thinkingPart
 
         public void beginDownload(Video video)
         {
-            string message = "Rozpoczęto pobieranie: " + video.videoTitle + " (" + video.videoDuration + ")\n   " + video.downloadPath;
+            string message = "Rozpoczęto pobieranie: " + video.videoTitle + " (" + video.videoDuration + ")\r\n   " + video.downloadPath;
             generateLog("Pobieranie pliku", message);
         }
     }

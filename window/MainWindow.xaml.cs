@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using MahApps.Metro.Controls;
@@ -110,7 +111,7 @@ namespace powerful_youtube_dl
                         System.Windows.MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
-                    new Video(url);
+                    new PlayList(new Video(url));
             }
             else if (url.Contains("playlist") || url.Contains("list"))
             {
@@ -325,6 +326,38 @@ namespace powerful_youtube_dl
                 textChanged = true;
                 linkHandler();
                 textChanged = false;
+            }
+        }
+
+        private bool UserFilter(object item)
+        {
+            if (String.IsNullOrEmpty(search.Text))
+                return true;
+            else
+                return ((item as ListViewItemMy).title.IndexOf(search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private void searchAfterSubmit(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key != System.Windows.Input.Key.Enter) return;
+
+            if (addVideos != null)
+            {
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(addVideos.Items);
+                if (view != null)
+                {
+                    view.Filter = UserFilter;
+                    CollectionViewSource.GetDefaultView(addVideos.Items).Refresh();
+                }
+            }
+        }
+
+        private void search_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox)sender;
+            if (box.Text == "Przeszukaj listę")
+            {
+                box.SelectAll();
             }
         }
     }

@@ -44,6 +44,8 @@ namespace powerful_youtube_dl
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
+                Properties.Settings.Default.playlists.Add(playListID);
+                Properties.Settings.Default.Save();
                 MainWindow.stats.loadedPlaylist(this);
             }
             else
@@ -63,6 +65,8 @@ namespace powerful_youtube_dl
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
+                Properties.Settings.Default.playlists.Add(playListID);
+                Properties.Settings.Default.Save();
                 MainWindow.stats.loadedPlaylist(this);
             }
             else

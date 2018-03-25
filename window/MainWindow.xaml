@@ -15,13 +15,14 @@
                 <Grid Background="#FFE5E5E5" Margin="0">
                     <Button Content="Dodaj zaznaczone do kolejki" Margin="10,0,10,10" Click="Button_Click_3" FontSize="24" MinHeight="0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="60"/>
                     <TextBox x:Name="link" x:FieldModifier="public" Margin="10,10,206,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" GotFocus="link_GotFocus" MouseDoubleClick="link_GotFocus" MouseRightButtonDown="link_GotFocus" MouseRightButtonUp="link_GotFocus" MouseLeftButtonDown="link_MouseLeftButtonDown" VerticalAlignment="Top" Height="27" TextChanged="link_TextChanged"/>
+                    <TextBox x:Name="search" x:FieldModifier="public" Margin="170,47,10,80" TextWrapping="Wrap" Text="Przeszukaj listę" Height="27" VerticalAlignment="Top" BorderThickness="0.1" KeyUp="searchAfterSubmit" GotMouseCapture="search_GotMouseCapture"/>
                     <Button Content="Załaduj" Margin="0,10,10,0" VerticalAlignment="Top" Width="186" Click="Button_Click_2" Height="27" HorizontalAlignment="Right"/>
                     <ListBox x:Name="playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding _listOfPlayListsCheckBox}" SelectionChanged="playlist_SelectionChanged" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" SelectedIndex="1" HorizontalAlignment="Left" >
                         <ListBox.DataContext>
                             <local:PlayList/>
                         </ListBox.DataContext>
                     </ListBox>
-                    <ListView x:Name="addVideos" x:FieldModifier="public" Margin="170,47,10,80" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" MinHeight="300">
+                    <ListView x:Name="addVideos" x:FieldModifier="public" Margin="170,84,10,80" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" MinHeight="300" BorderThickness="0">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="">
