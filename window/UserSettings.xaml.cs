@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,12 +27,14 @@ namespace powerful_youtube_dl.window
             getSettings();
         }
 
+        RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
         private void getSettings()
         {
             string ytDlPath = Properties.Settings.Default.ytdlexe;
             string downloadPath = Properties.Settings.Default.dlpath;
             int maxDownloads = Properties.Settings.Default.maxDownloading;
-            
+
             if (ytDlPath != "")
                 textYTDL.Text = ytDlPath;
 
@@ -43,6 +46,10 @@ namespace powerful_youtube_dl.window
 
             playlistAsFolder.IsChecked = Properties.Settings.Default.plAsFolder;
             autoLoadLink.IsChecked = Properties.Settings.Default.autoLoadLink;
+            if ((bool)autoLoadLink.IsChecked)
+                hierarchia.IsEnabled = true;
+            else
+                hierarchia.IsEnabled = false;
 
             startwithsystem.IsChecked = Properties.Settings.Default.startWithSystem;
             if ((bool)startwithsystem.IsChecked)
@@ -53,16 +60,18 @@ namespace powerful_youtube_dl.window
             dlhistory.IsChecked = Properties.Settings.Default.dlHistory;
             dotray.IsChecked = Properties.Settings.Default.toTray;
             startminimized.IsChecked = Properties.Settings.Default.startMinimalized;
-        }
+            closeToTray.IsChecked = Properties.Settings.Default.closeToTray;
 
-        public static void getSettingsValues()
-        {
-            
-        }
+            autoStartDownload.IsChecked = Properties.Settings.Default.autoDownload;
+            if ((bool)autoStartDownload.IsChecked)
+                hierarchyFields.IsEnabled = true;
+            else
+                hierarchyFields.IsEnabled = false;
 
-        private void Button_DownloadPath(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("KLIK");
+            hierSingleVideo.Text = Properties.Settings.Default.hierSingleVideo.ToString();
+            hierSinglePlaylist.Text = Properties.Settings.Default.hierSinglePlaylist.ToString();
+            hierAllPlaylists.Text = Properties.Settings.Default.hierAllPlaylists.ToString();
+            hierAllUsersVideos.Text = Properties.Settings.Default.hierAllUsersVideos.ToString();
         }
 
         private void selectYoutubeDLPath(object sender, RoutedEventArgs e)
@@ -90,7 +99,6 @@ namespace powerful_youtube_dl.window
                 if (dialog.SelectedPath != "")
                 {
                     textDestination.Text = dialog.SelectedPath;
-                    MainWindow.downloadPath = dialog.SelectedPath;
                     Properties.Settings.Default.dlpath = dialog.SelectedPath;
                     Properties.Settings.Default.Save();
                 }
@@ -111,7 +119,8 @@ namespace powerful_youtube_dl.window
         private void checkChanged(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.CheckBox check = (System.Windows.Controls.CheckBox)sender;
-            switch (check.Name) {
+            switch (check.Name)
+            {
                 case "playlistAsFolder":
                     Properties.Settings.Default.plAsFolder = (bool)check.IsChecked;
                     Properties.Settings.Default.Save();
@@ -119,14 +128,26 @@ namespace powerful_youtube_dl.window
                 case "autoLoadLink":
                     Properties.Settings.Default.autoLoadLink = (bool)check.IsChecked;
                     Properties.Settings.Default.Save();
+                    if ((bool)check.IsChecked)
+                        hierarchia.IsEnabled = true;
+                    else
+                    {
+                        hierarchia.IsEnabled = false;
+                    }
                     break;
                 case "startwithsystem":
                     Properties.Settings.Default.startWithSystem = (bool)check.IsChecked;
                     Properties.Settings.Default.Save();
                     if ((bool)check.IsChecked)
-                        startminimized.IsEnabled = true;
+                        rkApp.SetValue("PowerfulYTDownloader", System.Windows.Forms.Application.ExecutablePath);
                     else
-                        startminimized.IsEnabled = false;
+                    {
+                        try
+                        {
+                            rkApp.DeleteValue("PowerfulYTDownloader");
+                        }
+                        catch { }
+                    }
                     break;
                 case "dlhistory":
                     Properties.Settings.Default.dlHistory = (bool)check.IsChecked;
@@ -140,7 +161,110 @@ namespace powerful_youtube_dl.window
                     Properties.Settings.Default.startMinimalized = (bool)check.IsChecked;
                     Properties.Settings.Default.Save();
                     break;
+                case "closeToTray":
+                    Properties.Settings.Default.closeToTray = (bool)check.IsChecked;
+                    Properties.Settings.Default.Save();
+                    break;
+                case "autoStartDownload":
+                    Properties.Settings.Default.autoDownload = (bool)check.IsChecked;
+                    Properties.Settings.Default.Save();
+                    if ((bool)check.IsChecked)
+                        hierarchyFields.IsEnabled = true;
+                    else
+                        hierarchyFields.IsEnabled = false;
+                    break;
             }
+        }
+
+        private void hierarchyChange(object sender, TextChangedEventArgs e)
+        {
+            System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox)sender;
+            saveHierarchy(box);
+        }
+
+        private void saveHierarchy(System.Windows.Controls.TextBox box)
+        {
+            switch (box.Name)
+            {
+                case "hierSingleVideo":
+                    Properties.Settings.Default.hierSingleVideo = getIntegerValue(hierSingleVideo.Text);
+                    Properties.Settings.Default.Save();
+                    break;
+                case "hierSinglePlaylist":
+                    Properties.Settings.Default.hierSinglePlaylist = getIntegerValue(hierSinglePlaylist.Text);
+                    Properties.Settings.Default.Save();
+                    break;
+                case "hierAllPlaylists":
+                    Properties.Settings.Default.hierAllPlaylists = getIntegerValue(hierAllPlaylists.Text);
+                    Properties.Settings.Default.Save();
+                    break;
+                case "hierAllUsersVideos":
+                    Properties.Settings.Default.hierAllUsersVideos = getIntegerValue(hierAllUsersVideos.Text);
+                    Properties.Settings.Default.Save();
+                    break;
+            }
+        }
+
+        private int getIntegerValue(string value)
+        {
+            short a = 0;
+            Int16.TryParse(value, out a);
+            return a;
+        }
+
+        private void checkRestFields(int value, System.Windows.Controls.TextBox t1, System.Windows.Controls.TextBox t2, System.Windows.Controls.TextBox t3)
+        {
+            if (getIntegerValue(t1.Text) == value)
+            {
+                t1.Text = vTemp;
+                saveHierarchy(t1);
+            }
+            else if (getIntegerValue(t2.Text) == value)
+            {
+                t2.Text = vTemp;
+                saveHierarchy(t2);
+            }
+            else if (getIntegerValue(t3.Text) == value)
+            {
+                t3.Text = vTemp;
+                saveHierarchy(t3);
+            }
+        }
+
+        private void checkIfProperlyValue(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox)sender;
+            int a = getIntegerValue(box.Text);
+            if (a == 1 || a == 2 || a == 3 || a == 4)
+            {
+                switch (box.Name)
+                {
+                    case "hierSingleVideo":
+                        Properties.Settings.Default.hierSingleVideo = a;
+                        checkRestFields(a, hierSinglePlaylist, hierAllPlaylists, hierAllUsersVideos);
+                        break;
+                    case "hierSinglePlaylist":
+                        Properties.Settings.Default.hierSinglePlaylist = a;
+                        checkRestFields(a, hierSingleVideo, hierAllPlaylists, hierAllUsersVideos);
+                        break;
+                    case "hierAllPlaylists":
+                        Properties.Settings.Default.hierAllPlaylists = a;
+                        checkRestFields(a, hierSinglePlaylist, hierSingleVideo, hierAllUsersVideos);
+                        break;
+                    case "hierAllUsersVideos":
+                        Properties.Settings.Default.hierAllUsersVideos = a;
+                        checkRestFields(a, hierSinglePlaylist, hierAllPlaylists, hierSingleVideo);
+                        break;
+                }
+            }
+            else
+                box.Text = vTemp;
+        }
+        private string vTemp = "";
+
+        private void saveValueGotFocus(object sender, RoutedEventArgs e)
+        {
+            vTemp = ((System.Windows.Controls.TextBox)sender).Text;
         }
     }
 }

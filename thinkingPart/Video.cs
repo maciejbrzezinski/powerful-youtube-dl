@@ -188,7 +188,10 @@ namespace powerful_youtube_dl
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = Properties.Settings.Default.ytdlexe;
-            startInfo.Arguments = " -x -o \"" + MainWindow.downloadPath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
+            if (Properties.Settings.Default.plAsFolder)
+                startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.dlpath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
+            else
+                startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.dlpath + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
@@ -204,7 +207,7 @@ namespace powerful_youtube_dl
             {
                 while (true)
                 {
-                    if (currentlyDownloading < 1)
+                    if (currentlyDownloading < Properties.Settings.Default.maxDownloading)
                     {
                         currentlyDownloading++;
                         bool ret = process.Start();

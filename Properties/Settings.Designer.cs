@@ -154,5 +154,77 @@ namespace powerful_youtube_dl.Properties {
                 this["firstRun"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool closeToTray {
+            get {
+                return ((bool)(this["closeToTray"]));
+            }
+            set {
+                this["closeToTray"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int hierSingleVideo {
+            get {
+                return ((int)(this["hierSingleVideo"]));
+            }
+            set {
+                this["hierSingleVideo"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int hierSinglePlaylist {
+            get {
+                return ((int)(this["hierSinglePlaylist"]));
+            }
+            set {
+                this["hierSinglePlaylist"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int hierAllPlaylists {
+            get {
+                return ((int)(this["hierAllPlaylists"]));
+            }
+            set {
+                this["hierAllPlaylists"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        public int hierAllUsersVideos {
+            get {
+                return ((int)(this["hierAllUsersVideos"]));
+            }
+            set {
+                this["hierAllUsersVideos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool autoDownload {
+            get {
+                return ((bool)(this["autoDownload"]));
+            }
+            set {
+                this["autoDownload"] = value;
+            }
+        }
     }
 }

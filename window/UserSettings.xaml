@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:powerful_youtube_dl.window"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="Settings" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" VerticalAlignment="Top" Height="356">
-    <Grid x:Name="grid1" Width="500" VerticalAlignment="Top">
+        Title="Settings" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" VerticalAlignment="Top">
+    <Grid x:Name="grid1" VerticalAlignment="Top">
         <Grid x:Name="ytdlexe" Margin="10,10,10,0" Height="43" VerticalAlignment="Top">
             <TextBox x:Name="textYTDL" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Ścierzka do youtube-dl.exe" VerticalAlignment="Top" Width="369"/>
             <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,5,0" VerticalAlignment="Top" Width="91" Height="26" Click="selectYoutubeDLPath"/>
@@ -21,11 +21,33 @@
         </Grid>
         <Grid x:Name="boolean" Margin="10,164,10,10" VerticalAlignment="Top" ContextMenuClosing="checkChanged">
             <CheckBox x:Name="playlistAsFolder" Content="Twórz oddzielny folder dla każdej playlisty" Margin="10,10,10,0" VerticalAlignment="Top" BorderThickness="0,0,1,2" Click="checkChanged"/>
-            <CheckBox x:Name="autoLoadLink" Content="Automatycznie ładowanie informacji, od razu po wklejeniu linku, bez naciskania przycisku" Margin="10,33,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
-            <CheckBox x:Name="startwithsystem" Content="Uruchamiaj program przy starcie Windows" Margin="10,56,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
-            <CheckBox x:Name="startminimized" Content="Uruchamiaj zminimalizowany" Margin="30,79,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
-            <CheckBox x:Name="dlhistory" Content="Twórz historię pobierania i statystyki" Margin="10,102,10,-2" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged"/>
-            <CheckBox x:Name="dotray" Content="Minimalizuj program, do traya" Margin="10,125,10,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged"/>
+            <CheckBox x:Name="autoLoadLink" Content="Automatycznie ładowanie informacji, od razu po wklejeniu linku, bez naciskania przycisku" Margin="10,33,10,0" VerticalAlignment="Top" BorderThickness="0,0,1,2" Click="checkChanged"/>
+            <Grid x:Name="hierarchia" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <CheckBox x:Name="autoStartDownload" Content="Automatycznie rozpoczynaj pobieranie w podanej hierarchii:" Margin="30,56,10,0" VerticalAlignment="Top" BorderThickness="0,0,1,2" Click="checkChanged"/>
+                <Grid x:Name="hierarchyFields">
+                    <Grid Margin="50,79,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Label Content="Pojedyncze video" HorizontalAlignment="Left"/>
+                        <TextBox x:Name="hierSingleVideo" HorizontalAlignment="Left" Height="23" Margin="107,0,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="40" BorderThickness="1,1,0,0" LostFocus="checkIfProperlyValue" GotFocus="saveValueGotFocus"/>
+                    </Grid>
+                    <Grid Margin="250,79,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Label Content="Cała Playlista" HorizontalAlignment="Left"/>
+                        <TextBox x:Name="hierSinglePlaylist" HorizontalAlignment="Left" Height="23" Margin="84,0,0,0" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="40" BorderThickness="1,1,0,0" LostFocus="checkIfProperlyValue" GotFocus="saveValueGotFocus"/>
+                    </Grid>
+                    <Grid Margin="50,102,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Label Content="Wszystkie playlisty usera" HorizontalAlignment="Left"/>
+                        <TextBox x:Name="hierAllPlaylists" HorizontalAlignment="Left" Height="23" Margin="145,0,-25,0" TextWrapping="Wrap" Text="3" VerticalAlignment="Top" Width="40" BorderThickness="1,1,0,0" LostFocus="checkIfProperlyValue" GotFocus="saveValueGotFocus"/>
+                    </Grid>
+                    <Grid Margin="250,102,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Label Content="Wszystkie video usera" HorizontalAlignment="Left"/>
+                        <TextBox x:Name="hierAllUsersVideos" HorizontalAlignment="Left" Height="23" Margin="131,0,-24,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="40" BorderThickness="1,1,0,0" LostFocus="checkIfProperlyValue" GotFocus="saveValueGotFocus"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <CheckBox x:Name="startwithsystem" Content="Uruchamiaj program przy starcie Windows" Margin="10,133,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
+            <CheckBox x:Name="startminimized" Content="Uruchamiaj zminimalizowany" Margin="10,156,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
+            <CheckBox x:Name="dlhistory" Content="Twórz historię pobierania i statystyki" Margin="10,179,10,-2" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
+            <CheckBox x:Name="dotray" Content="Minimalizuj program, do traya" Margin="10,202,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <CheckBox x:Name="closeToTray" Content="Zamykaj program do traya" Margin="10,225,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
         </Grid>
     </Grid>
 </Controls:MetroWindow>

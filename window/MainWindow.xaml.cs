@@ -14,21 +14,66 @@ namespace powerful_youtube_dl
 {
     public partial class MainWindow
     {
-        // public static string ytDlPath = "";
-        public static string downloadPath = "";
-        public static int maxDownloads = 1;
+        /*     public static string ytDlPath = Properties.Settings.Default.ytdlexe;
+             public static string downloadPath = Properties.Settings.Default.dlpath;
+             public static int maxDownloads = Properties.Settings.Default.maxDownloading;*/
+        System.Windows.Forms.NotifyIcon ni = null;
 
         public MainWindow()
         {
             InitializeComponent();
+            startTray();
 
-            if (Properties.Settings.Default.firstRun == true)
+            if (Properties.Settings.Default.firstRun)
             {
                 window.UserSettings ss = new window.UserSettings();
                 ss.ShowDialog();
                 Properties.Settings.Default.firstRun = false;
                 Properties.Settings.Default.Save();
             }
+
+            if (Properties.Settings.Default.startMinimalized && Properties.Settings.Default.startWithSystem)
+                Hide();
+        }
+
+        private void closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Properties.Settings.Default.closeToTray)
+            {
+                Hide();
+                e.Cancel = true;
+            }
+        }
+
+        private void tryToTray(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized && Properties.Settings.Default.toTray)
+                this.Hide();
+        }
+
+        private void trayDoubleClick(object sender, EventArgs args)
+        {
+            this.Show();
+            this.WindowState = WindowState.Normal;
+        }
+
+        private void startTray()
+        {
+            if (ni == null)
+            {
+                ni = new System.Windows.Forms.NotifyIcon();
+                ni.Icon = new System.Drawing.Icon(@"C:\Users\miejs\Documents\GitHub\powerful-youtube-dl\something\logo_ytdl_d4Q_icon.ico");
+                ni.Visible = true;
+                ni.ContextMenu = createMenu();
+                ni.DoubleClick += trayDoubleClick;
+            }
+        }
+
+        private ContextMenu createMenu()
+        {
+            ContextMenu menu = new System.Windows.Forms.ContextMenu();
+            menu.MenuItems.Add("Wyjdź", (s, e) => System.Windows.Application.Current.Shutdown());
+            return menu;
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -213,22 +258,63 @@ namespace powerful_youtube_dl
 
         private void link_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            linkHandler();
+            if (!textChanged)
+            {
+                textChanged = true;
+                linkHandler();
+                textChanged = false;
+            }
         }
+
         private void link_GotFocus(object sender, RoutedEventArgs e)
         {
-            linkHandler();
+            if (!textChanged)
+            {
+                textChanged = true;
+                linkHandler();
+                textChanged = false;
+            }
         }
+
         private void linkHandler()
         {
-            if (link.Text == "Link do kanału, playlisty lub video" || link.Text == "")
+            if (PlayList._listOfPlayListsCheckBox != null && tmpURL != link.Text)
             {
+                tmpURL = link.Text;
                 if (checkIfYoutubeURL())
+                {
                     link.Text = System.Windows.Clipboard.GetText();
+                    if (Properties.Settings.Default.autoLoadLink)
+                        loadURL();
+                }
                 else
                     link.Text = "";
             }
             link.SelectAll();
+        }
+
+        private void openSetting(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            tabs.SelectedIndex = index;
+            window.UserSettings ss = new window.UserSettings();
+            ss.ShowDialog();
+        }
+        private int index = 0;
+        private void saveTab(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            index = tabs.SelectedIndex;
+        }
+
+        private string tmpURL = "";
+        private static bool textChanged = false;
+        private void link_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (!textChanged)
+            {
+                textChanged = true;
+                linkHandler();
+                textChanged = false;
+            }
         }
     }
 }
