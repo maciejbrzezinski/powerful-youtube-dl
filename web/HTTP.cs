@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,6 +11,7 @@ namespace powerful_youtube_dl
 {
     class HTTP
     {
+        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static string GET(string uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
@@ -23,6 +25,7 @@ namespace powerful_youtube_dl
             }
         }
 
+        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public string Post(string uri, string data, string contentType)
         {
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);

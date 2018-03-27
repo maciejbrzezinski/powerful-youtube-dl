@@ -10,17 +10,18 @@ namespace powerful_youtube_dl.thinkingPart
 {
     public class Statistics
     {
-        private string m_exePath = string.Empty;
+        public static string logPath = string.Empty;
 
         public Statistics()
         {
-            m_exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            logPath = Properties.Settings.Default.logsDestination;
         }
 
-        public void Log(string operationName, string logMessage, TextWriter txtWriter)
+        public static void Log(string operationName, string logMessage, TextWriter txtWriter)
         {
             try
             {
+
                 txtWriter.Write("\r\n" + "{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
                 txtWriter.WriteLine(" : " + operationName);
                 txtWriter.WriteLine("  ");
@@ -30,47 +31,56 @@ namespace powerful_youtube_dl.thinkingPart
             catch { }
         }
 
-        private void generateLog(string operationName, string message)
+        public static void GenerateLog(string operationName, string message)
         {
-            try
+            if (Properties.Settings.Default.createLogs)
             {
-                using (StreamWriter w = File.AppendText(m_exePath + "\\" + "Logs.txt"))
+                try
                 {
-                    Log(operationName, message, w);
+                    using (StreamWriter w = File.AppendText(logPath + "\\" + "Logs.txt"))
+                    {
+                        Log(operationName, message, w);
+                    }
                 }
+                catch { }
             }
-            catch { }
         }
 
-        public void completeDownload(Video video)
+        public static void CompleteDownload(Video video)
         {
             Properties.Settings.Default.sumDownloadedVideos++;
-            string message = "Pomyślnie pobrano: " + video.videoTitle + " (" + video.videoDuration + ")\r\n   " + video.downloadPath;
-            generateLog("Pobrano plik", message);
+            string message = "Pomyślnie pobrano: " + video.videoTitle + "\r\n                         (" + video.videoDuration + ")\r\n                         "+video.videoURL+ "\r\n                         " + video.downloadPath;
+            GenerateLog("Pobrano plik", message);
         }
 
-        public void loadedVideo(Video video)
+        public static void LoadedVideo(Video video)
         {
-            string message = "Pomyślnie załadowano: " + video.videoTitle + " (" + video.videoDuration + ")";
-            generateLog("Załadowano film", message);
+            string message = "Pomyślnie załadowano: " + video.videoTitle + " \r\n                         (" + video.videoDuration + ")\r\n                         "+video.videoURL;
+            GenerateLog("Załadowano film", message);
         }
 
-        public void loadedPlaylist(PlayList playList)
+        public static void LoadedPlaylist(PlayList playList)
         {
-            string message = "Pomyślnie załadowano playlistę: " + playList.playListTitle + " (" + playList._listOfVideosInPlayList.Count + " filmów)";
-            generateLog("Załadowano playlistę", message);
+            string message = "Pomyślnie załadowano playlistę: " + playList.playListTitle + " (" + playList._listOfVideosInPlayList.Count + " filmów)\r\n                         " + playList.playListURL;
+            GenerateLog("Załadowano playlistę", message);
         }
 
-        public void notWorkingVideo(Video video)
+        public static void NotWorkingVideo(Video video)
         {
             string message = "Nie udało się pobrać informacji o filmie z ID: " + video.videoID;
-            generateLog("Niedziałający film", message);
+            GenerateLog("Niedziałający film", message);
         }
 
-        public void beginDownload(Video video)
+        public static void BeginDownload(Video video)
         {
-            string message = "Rozpoczęto pobieranie: " + video.videoTitle + " (" + video.videoDuration + ")\r\n   " + video.downloadPath;
-            generateLog("Pobieranie pliku", message);
+            string message = "Rozpoczęto pobieranie: " + video.videoTitle + "\r\n(" + video.videoDuration + ")\r\n                         "+video.videoURL+ "\r\n                         " + video.downloadPath;
+            GenerateLog("Pobieranie pliku", message);
+        }
+
+        public static void DeletePlaylist(PlayList playList)
+        {
+            string message = "Playlista: " + playList.playListTitle + "\r\n                         (" + playList._listOfVideosInPlayList.Count + " filmów) została usunięta\r\n                         " + playList.playListURL;
+            GenerateLog("Usunięto playlistę", message);
         }
     }
 }

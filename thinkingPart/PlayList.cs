@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Web.Script.Serialization;
+using powerful_youtube_dl.thinkingPart;
 
 namespace powerful_youtube_dl
 {
@@ -11,6 +12,7 @@ namespace powerful_youtube_dl
         public static ObservableCollection<CheckBox> _listOfPlayListsCheckBox { get; set; }
         public static List<PlayList> _listOfPlayLists = new List<PlayList>();
         public static PlayList singleVideos = null;
+        public System.Windows.Forms.NotifyIcon notifyIcon = new System.Windows.Forms.NotifyIcon();
 
         public List<Video> _listOfVideosInPlayList = new List<Video>();
         //public ObservableCollection<CheckBox> _listOfVideosInPlayListCheckBox = new ObservableCollection<CheckBox>();
@@ -40,13 +42,15 @@ namespace powerful_youtube_dl
                 check = new CheckBox();
                 check.Click += new RoutedEventHandler(checkChanged);
                 check.Content = playListTitle;
-                getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-                _listOfPlayListsCheckBox.Add(check);
+                check.ContextMenu = ((MainWindow)System.Windows.Application.Current.MainWindow).createPlaylistMenu(this);
                 _listOfPlayLists.Add(this);
+                getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
+                Video.getParamsOfVideos();
+                Video.videoIDsToGetParams = new List<Video>();
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
-                Properties.Settings.Default.playlists.Add(playListID);
-                Properties.Settings.Default.Save();
-                MainWindow.stats.loadedPlaylist(this);
+                _listOfPlayListsCheckBox.Add(check);
+                addPlayListToSettings(playListURL);
+                Statistics.LoadedPlaylist(this);
             }
             else
                 MainWindow.Error("Ta playlista jest już dodana!");
@@ -58,6 +62,7 @@ namespace powerful_youtube_dl
             {
                 playListID = id;
                 playListTitle = title;
+                playListURL = "https://www.youtube.com/playlist?list=" + playListID;
                 check = new CheckBox();
                 check.Click += new RoutedEventHandler(checkChanged);
                 check.Content = playListTitle;
@@ -65,9 +70,8 @@ namespace powerful_youtube_dl
                 _listOfPlayListsCheckBox.Add(check);
                 _listOfPlayLists.Add(this);
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
-                Properties.Settings.Default.playlists.Add(playListID);
-                Properties.Settings.Default.Save();
-                MainWindow.stats.loadedPlaylist(this);
+                addPlayListToSettings(playListURL);
+                Statistics.LoadedPlaylist(this);
             }
             else
                 MainWindow.Error("Playlista o nazwie "+title+" jest już dodana!");
@@ -92,6 +96,24 @@ namespace powerful_youtube_dl
                 ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToList(video.position);
                 ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = singleVideos.check;
+            }
+        }
+
+        public static void addPlayListToSettings(string link)
+        {
+            if (!Properties.Settings.Default.playlists.Contains(link) && Properties.Settings.Default.savePlaylists)
+            {
+                Properties.Settings.Default.playlists.Add(link);
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        public static void removePlaylistFromSettings(string link)
+        {
+            if (Properties.Settings.Default.playlists.Contains(link))
+            {
+                Properties.Settings.Default.playlists.Remove(link);
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -145,7 +167,6 @@ namespace powerful_youtube_dl
                 getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=" + nextPage + "&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
             }
             catch { }
-
         }
 
         private void checkChanged(object sender, RoutedEventArgs e)

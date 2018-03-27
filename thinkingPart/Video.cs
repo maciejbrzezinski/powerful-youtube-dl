@@ -1,4 +1,5 @@
-﻿using System;
+﻿using powerful_youtube_dl.thinkingPart;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -15,7 +16,7 @@ namespace powerful_youtube_dl
 
         public static List<Video> _listOfVideos = new List<Video>();
 
-        public string videoID, videoTitle, videoDuration;
+        public string videoID, videoTitle, videoDuration, videoURL;
         public PlayList playList = null;
         public bool toDownload = false;
         public ListViewItemMy position = null;
@@ -36,14 +37,21 @@ namespace powerful_youtube_dl
         {
             string id;
             if (linkOrID.Length != 11)
+            {
                 id = linkOrID.Substring(linkOrID.IndexOf("v=") + 2, 11);
+                videoURL = linkOrID;
+            }
             else
+            {
                 id = linkOrID;
+                videoURL = @"https://www.youtube.com/watch?v=" + id;
+            }
             if (!isVideoLoaded(id))
             {
+
                 videoID = id;
                 addToGetParams(this);
-                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = true };
+                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false};
                 _listOfVideos.Add(this);
             }
         }
@@ -125,7 +133,7 @@ namespace powerful_youtube_dl
                     }
                     _listOfVideos[current].position.title = _listOfVideos[current].videoTitle;
                     _listOfVideos[current].position.duration = _listOfVideos[current].videoDuration;
-                    MainWindow.stats.loadedVideo(_listOfVideos[current]);
+                    Statistics.LoadedVideo(_listOfVideos[current]);
                 }
             }
             removeNotWorkingVideos();
@@ -138,13 +146,13 @@ namespace powerful_youtube_dl
                 List<Video> newListOfVideos = new List<Video>();
                 foreach (Video v in p._listOfVideosInPlayList)
                 {
-                    if (v.videoTitle != null)
+                    if (v.videoTitle != null && v.videoTitle != "")
                         newListOfVideos.Add(v);
                     else
                     {
-                        MainWindow.stats.notWorkingVideo(v);
-                        v.position.check = false;
+                        Statistics.NotWorkingVideo(v);
                         ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
+                        //v.position.check = false;
                     }
                 }
                 p._listOfVideosInPlayList = newListOfVideos;
@@ -195,7 +203,7 @@ namespace powerful_youtube_dl
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = Properties.Settings.Default.ytdlexe;
-            if (Properties.Settings.Default.plAsFolder)
+            if (Properties.Settings.Default.playlistAsFolder)
             {
                 downloadPath = Properties.Settings.Default.dlpath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3";
                 startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.dlpath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
@@ -222,7 +230,7 @@ namespace powerful_youtube_dl
                 {
                     if (currentlyDownloading < Properties.Settings.Default.maxDownloading)
                     {
-                        MainWindow.stats.beginDownload(this);
+                        Statistics.BeginDownload(this);
                         currentlyDownloading++;
                         bool ret = process.Start();
                         process.BeginOutputReadLine();
@@ -240,7 +248,7 @@ namespace powerful_youtube_dl
                                   ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
                               }
                           }));
-                        MainWindow.stats.completeDownload(this);
+                        Statistics.CompleteDownload(this);
                         currentlyDownloading--;
                         break;
                     }

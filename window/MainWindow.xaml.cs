@@ -19,13 +19,12 @@ namespace powerful_youtube_dl
              public static string downloadPath = Properties.Settings.Default.dlpath;
              public static int maxDownloads = Properties.Settings.Default.maxDownloading;*/
         System.Windows.Forms.NotifyIcon ni = null;
-        public static Statistics stats = null;
 
         public MainWindow()
         {
             InitializeComponent();
             startTray();
-            stats = new Statistics();
+            Statistics stats = new Statistics();
 
             if (Properties.Settings.Default.firstRun)
             {
@@ -35,7 +34,22 @@ namespace powerful_youtube_dl
                 Properties.Settings.Default.Save();
             }
 
-            if (Properties.Settings.Default.startMinimalized && Properties.Settings.Default.startWithSystem)
+            if (Properties.Settings.Default.playlists != null && Properties.Settings.Default.autoObservePlaylists)
+            {
+                foreach(Object o in Properties.Settings.Default.playlists)
+                {
+                    try
+                    {
+                        string link = o.ToString();
+                        new PlayList(link);
+                    }
+                    catch { }
+                }
+            }
+            else
+                Properties.Settings.Default.playlists = new System.Collections.Specialized.StringCollection();
+
+            if (Properties.Settings.Default.startMinimized && Properties.Settings.Default.startWithSystem)
                 Hide();
         }
 
@@ -50,7 +64,7 @@ namespace powerful_youtube_dl
 
         private void tryToTray(object sender, EventArgs e)
         {
-            if (WindowState == WindowState.Minimized && Properties.Settings.Default.toTray)
+            if (WindowState == WindowState.Minimized && Properties.Settings.Default.doTray)
                 this.Hide();
         }
 
@@ -74,9 +88,58 @@ namespace powerful_youtube_dl
 
         private ContextMenu createMenu()
         {
-            ContextMenu menu = new System.Windows.Forms.ContextMenu();
+            ContextMenu menu = new ContextMenu();
             menu.MenuItems.Add("Wyjdź", (s, e) => System.Windows.Application.Current.Shutdown());
             return menu;
+        }
+
+        public System.Windows.Controls.ContextMenu createPlaylistMenu(PlayList toDelete)
+        {
+            System.Windows.Controls.ContextMenu menu = new System.Windows.Controls.ContextMenu();
+            System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem();
+            item.Header = "Usuń";
+            item.Click += (s, e) => deletePlaylist(toDelete);
+            menu.Items.Add(item);
+            return menu;
+        }
+
+        private void deletePlaylist(PlayList toDelete)
+        {
+            int index = PlayList._listOfPlayListsCheckBox.IndexOf(toDelete.check);
+            foreach (Video v in toDelete._listOfVideosInPlayList)
+                Video._listOfVideos.Remove(v);
+            PlayList._listOfPlayListsCheckBox.Remove(toDelete.check);
+            PlayList.removePlaylistFromSettings(toDelete.playListURL);
+            PlayList._listOfPlayLists.Remove(toDelete);
+            toDelete._listOfVideosInPlayList.Clear();
+
+            if (PlayList._listOfPlayListsCheckBox.Count > 0)
+            {
+                if (PlayList._listOfPlayListsCheckBox.Count > index)
+                    playlist.SelectedIndex = index;
+                else
+                {
+                    while (true)
+                    {
+                        index--;
+                        if (index == -1)
+                        {
+                            playlist.SelectedItem = null;
+                            break;
+                        }
+                        if (PlayList._listOfPlayListsCheckBox.Count > index)
+                        {
+                            playlist.SelectedIndex = index;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                deleteAllVideosFromList();
+                addVideos.Items.Refresh();
+            }
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -183,13 +246,12 @@ namespace powerful_youtube_dl
         {
             kolejka.Items.Add(video);
             kolejka.Items.Refresh();
-
         }
+
         public void addVideoToList(ListViewItemMy videom)
         {
             addVideos.Items.Add(videom);
             addVideos.Items.Refresh();
-
         }
 
         public void deleteVideoFromQueue(int index)
@@ -292,10 +354,11 @@ namespace powerful_youtube_dl
                     if (Properties.Settings.Default.autoLoadLink)
                     {
                         loadURL();
-                        if (Properties.Settings.Default.autoDownload)
+                        if (Properties.Settings.Default.autoStartDownload)
                         {
                             Download.Load();
-                            Download.DownloadQueue();
+                            if(Download.toDownload.Count>0)
+                                Download.DownloadQueue();
                         }
                     }
                 }

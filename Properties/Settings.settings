@@ -11,7 +11,7 @@
     <Setting Name="maxDownloading" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
-    <Setting Name="plAsFolder" Type="System.Boolean" Scope="User">
+    <Setting Name="playlistAsFolder" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="autoLoadLink" Type="System.Boolean" Scope="User">
@@ -20,13 +20,13 @@
     <Setting Name="startWithSystem" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="startMinimalized" Type="System.Boolean" Scope="User">
+    <Setting Name="startMinimized" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="toTray" Type="System.Boolean" Scope="User">
+    <Setting Name="doTray" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="checkUpdates" Type="System.Boolean" Scope="User">
+    <Setting Name="autoObservePlaylists" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="firstRun" Type="System.Boolean" Scope="User">
@@ -47,7 +47,7 @@
     <Setting Name="hierAllUsersVideos" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">4</Value>
     </Setting>
-    <Setting Name="autoDownload" Type="System.Boolean" Scope="User">
+    <Setting Name="autoStartDownload" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="sumDownloadedVideos" Type="System.Int32" Scope="User">
@@ -55,10 +55,28 @@
     </Setting>
     <Setting Name="playlists" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;string&gt;ooooooooo&lt;/string&gt;
-  &lt;string&gt;ii&lt;/string&gt;
-&lt;/ArrayOfString&gt;</Value>
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Value>
+    </Setting>
+    <Setting Name="maxDownloadingObserved" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="savePlaylists" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="autoDownloadObserve" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="askBeforeDownload" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="messageAfterDownload" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="createLogs" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="logsDestination" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

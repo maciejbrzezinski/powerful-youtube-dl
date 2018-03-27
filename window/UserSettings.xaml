@@ -9,15 +9,15 @@
         Title="Settings" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" VerticalAlignment="Top">
     <Grid x:Name="grid1" VerticalAlignment="Top">
         <Grid x:Name="ytdlexe" Margin="10,10,10,0" Height="43" VerticalAlignment="Top">
-            <TextBox x:Name="textYTDL" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Ścierzka do youtube-dl.exe" VerticalAlignment="Top" Width="369"/>
-            <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,5,0" VerticalAlignment="Top" Width="91" Height="26" Click="selectYoutubeDLPath"/>
+            <TextBox x:Name="textYTDL" Height="23" Margin="10,10,120,0" TextWrapping="Wrap" Text="Ścierzka do youtube-dl.exe" VerticalAlignment="Top" IsEnabled="False"/>
+            <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="90" Height="26" Click="selectYoutubeDLPath"/>
         </Grid>
         <Grid x:Name="dlpath" Margin="10,63,10,0" Height="43" VerticalAlignment="Top">
-            <TextBox x:Name="textDestination" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="Ścierzka do miejsca gdzie zapisywać utwory" VerticalAlignment="Top" Width="369"/>
-            <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,5,0" VerticalAlignment="Top" Width="91" Height="26" Click="selectDestinationFolder"/>
+            <TextBox x:Name="textDestination" Height="23" Margin="10,10,120,0" TextWrapping="Wrap" Text="Ścierzka do miejsca gdzie zapisywać utwory" VerticalAlignment="Top" IsEnabled="False"/>
+            <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="90" Height="26" Click="selectDestinationFolder"/>
         </Grid>
         <Grid x:Name="maxdl" Margin="10,116,10,0" Height="43" VerticalAlignment="Top">
-            <TextBox x:Name="textMaxDownloads" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Maksymalna ilość jednoczesnych pobierań" VerticalAlignment="Top" TextChanged="setMaxDownloads"/>
+            <TextBox x:Name="maxDownloading" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Maksymalna ilość jednoczesnych pobierań" VerticalAlignment="Top" LostFocus="maxDownloadLostFocus" GotFocus="saveValueGotFocus" TextChanged="setMaxDownloads"/>
         </Grid>
         <Grid x:Name="boolean" Margin="10,164,10,10" VerticalAlignment="Top" ContextMenuClosing="checkChanged">
             <CheckBox x:Name="playlistAsFolder" Content="Twórz oddzielny folder dla każdej playlisty" Margin="10,10,10,0" VerticalAlignment="Top" BorderThickness="0,0,1,2" Click="checkChanged"/>
@@ -43,10 +43,23 @@
                     </Grid>
                 </Grid>
             </Grid>
-            <CheckBox x:Name="startwithsystem" Content="Uruchamiaj program przy starcie Windows" Margin="10,133,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
-            <CheckBox x:Name="startminimized" Content="Uruchamiaj zminimalizowany" Margin="10,156,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
-            <CheckBox x:Name="dotray" Content="Minimalizuj program, do traya" Margin="10,179,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <CheckBox x:Name="startWithSystem" Content="Uruchamiaj program przy starcie Windows" Margin="10,133,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
+            <CheckBox x:Name="startMinimized" Content="Uruchamiaj zminimalizowany" Margin="10,156,10,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Click="checkChanged" HorizontalAlignment="Left"/>
+            <CheckBox x:Name="doTray" Content="Minimalizuj program, do traya" Margin="10,179,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
             <CheckBox x:Name="closeToTray" Content="Zamykaj program do traya" Margin="10,202,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <CheckBox x:Name="autoObservePlaylists" Content="Śledź playlisty" Margin="10,235,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <Grid x:Name="observePlaylistGrid" VerticalAlignment="Top">
+                <CheckBox x:Name="savePlaylists" Content="Zapisuj playlisty" Margin="30,258,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+                <CheckBox x:Name="autoDownloadObserve" Content="Pobieraj brakujące pliki" Margin="30,281,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+                <CheckBox x:Name="askBeforeDownload" Content="Pytaj przed pobraniem" Margin="30,304,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+                <CheckBox x:Name="messageAfterDownload" Content="Pokaż informację o pobraniu pliku na trayu" Margin="30,327,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="maxDownloadingObserved" Height="23" Margin="30,350,10,0" TextWrapping="Wrap" Text="Maksymalna ilość jednoczesnych pobierań" VerticalAlignment="Top" TextChanged="setMaxDownloads" LostFocus="maxDownloadLostFocus" GotFocus="saveValueGotFocus"/>
+            </Grid>
+            <CheckBox x:Name="createLogs" Content="Prowadź dziennik operacji" Margin="10,391,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <Grid x:Name="logsGrid" Margin="0,406,0,0" VerticalAlignment="Top">
+                <TextBox x:Name="logsDestination" Height="23" Margin="30,10,120,10" TextWrapping="Wrap" Text="Lokalizacja, gdzie będą zapisywane logi" VerticalAlignment="Top" IsEnabled="False"/>
+                <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="90" Height="26" Click="selectLogDestination"/>
+            </Grid>
         </Grid>
     </Grid>
 </Controls:MetroWindow>

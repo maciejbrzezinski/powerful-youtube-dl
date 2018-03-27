@@ -10,13 +10,13 @@ namespace powerful_youtube_dl
 {
     public class Download
     {
-        private static List<Video> toDownload = new List<Video>();
+        public static List<Video> toDownload = new List<Video>();
 
         public static void Load()
         {
             foreach (Video video in Video._listOfVideos)
             {
-                if ((bool)video.position.check && !toDownload.Contains(video))
+                if ((bool)video.position.check && !toDownload.Contains(video) && video.videoTitle != null)
                 {
                     ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToQueue(video.position);
                     toDownload.Add(video);

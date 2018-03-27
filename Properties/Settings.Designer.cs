@@ -62,12 +62,12 @@ namespace powerful_youtube_dl.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool plAsFolder {
+        public bool playlistAsFolder {
             get {
-                return ((bool)(this["plAsFolder"]));
+                return ((bool)(this["playlistAsFolder"]));
             }
             set {
-                this["plAsFolder"] = value;
+                this["playlistAsFolder"] = value;
             }
         }
         
@@ -98,36 +98,36 @@ namespace powerful_youtube_dl.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool startMinimalized {
+        public bool startMinimized {
             get {
-                return ((bool)(this["startMinimalized"]));
+                return ((bool)(this["startMinimized"]));
             }
             set {
-                this["startMinimalized"] = value;
+                this["startMinimized"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool toTray {
+        public bool doTray {
             get {
-                return ((bool)(this["toTray"]));
+                return ((bool)(this["doTray"]));
             }
             set {
-                this["toTray"] = value;
+                this["doTray"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool checkUpdates {
+        public bool autoObservePlaylists {
             get {
-                return ((bool)(this["checkUpdates"]));
+                return ((bool)(this["autoObservePlaylists"]));
             }
             set {
-                this["checkUpdates"] = value;
+                this["autoObservePlaylists"] = value;
             }
         }
         
@@ -206,12 +206,12 @@ namespace powerful_youtube_dl.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool autoDownload {
+        public bool autoStartDownload {
             get {
-                return ((bool)(this["autoDownload"]));
+                return ((bool)(this["autoStartDownload"]));
             }
             set {
-                this["autoDownload"] = value;
+                this["autoStartDownload"] = value;
             }
         }
         
@@ -230,14 +230,97 @@ namespace powerful_youtube_dl.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
-            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
-            "tring>ooooooooo</string>\r\n  <string>ii</string>\r\n</ArrayOfString>")]
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />")]
         public global::System.Collections.Specialized.StringCollection playlists {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["playlists"]));
             }
             set {
                 this["playlists"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int maxDownloadingObserved {
+            get {
+                return ((int)(this["maxDownloadingObserved"]));
+            }
+            set {
+                this["maxDownloadingObserved"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool savePlaylists {
+            get {
+                return ((bool)(this["savePlaylists"]));
+            }
+            set {
+                this["savePlaylists"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool autoDownloadObserve {
+            get {
+                return ((bool)(this["autoDownloadObserve"]));
+            }
+            set {
+                this["autoDownloadObserve"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool askBeforeDownload {
+            get {
+                return ((bool)(this["askBeforeDownload"]));
+            }
+            set {
+                this["askBeforeDownload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool messageAfterDownload {
+            get {
+                return ((bool)(this["messageAfterDownload"]));
+            }
+            set {
+                this["messageAfterDownload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool createLogs {
+            get {
+                return ((bool)(this["createLogs"]));
+            }
+            set {
+                this["createLogs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string logsDestination {
+            get {
+                return ((string)(this["logsDestination"]));
+            }
+            set {
+                this["logsDestination"] = value;
             }
         }
     }
