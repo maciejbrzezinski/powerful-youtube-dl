@@ -116,7 +116,7 @@
     <Compile Include="window\Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="thinkingPart\Download.cs" />
+    <Compile Include="thinkingPart\DownloadHandler.cs" />
     <Compile Include="web\HTTP.cs" />
     <Compile Include="window\ListViewItemMy.cs" />
     <Compile Include="thinkingPart\PlayList.cs" />

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;
@@ -12,26 +13,21 @@ namespace powerful_youtube_dl
 {
     public class Video
     {
-        // public static ObservableCollection<CheckBox> _listOfVideosCheckBox { get; set; }
-
         public static List<Video> _listOfVideos = new List<Video>();
 
         public string videoID, videoTitle, videoDuration, videoURL;
         public PlayList playList = null;
-        public bool toDownload = false;
         public ListViewItemMy position = null;
         public CheckBox checkbox;
         public static bool acceptDownload = false;
         public string downloadPath;
+        public static bool isManualDownload = true;
 
         public static int currentlyDownloading = 0;
 
         public static List<Video> videoIDsToGetParams = new List<Video>();
 
-        public Video()
-        {
-            // _listOfVideosCheckBox = new ObservableCollection<CheckBox>();
-        }
+        //public Video() {}
 
         public Video(string linkOrID)
         {
@@ -51,9 +47,22 @@ namespace powerful_youtube_dl
 
                 videoID = id;
                 addToGetParams(this);
-                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false};
+                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false };
                 _listOfVideos.Add(this);
             }
+        }
+
+        public static bool checkIfVideoIsOnDisk(Video video)
+        {
+            string path = "";
+            if (Properties.Settings.Default.playlistAsFolder)
+                path = Properties.Settings.Default.dlpath + "\\" + video.playList.ToString() + "\\" + video.ToString() + ".mp3";
+            else
+                path = Properties.Settings.Default.dlpath + "\\" + video.ToString() + ".mp3";
+            if (File.Exists(path))
+                return true;
+            else
+                return false;
         }
 
         private static void addToGetParams(Video v)
@@ -63,7 +72,6 @@ namespace powerful_youtube_dl
 
         public static void getParamsOfVideos()
         {
-            //string IDs = "";
             List<string> IDs = new List<string>();
             IDs.Add("");
             int ktoryJuz = 0;
@@ -133,10 +141,19 @@ namespace powerful_youtube_dl
                     }
                     _listOfVideos[current].position.title = _listOfVideos[current].videoTitle;
                     _listOfVideos[current].position.duration = _listOfVideos[current].videoDuration;
+                    if (!checkIfVideoIsOnDisk(_listOfVideos[current]))
+                        _listOfVideos[current].position.check = true;
+                    else
+                        _listOfVideos[current].position.status = "Pobrano";
                     Statistics.LoadedVideo(_listOfVideos[current]);
                 }
             }
             removeNotWorkingVideos();
+            if (Properties.Settings.Default.autoObservePlaylists && Properties.Settings.Default.autoDownloadObserve && !isManualDownload)
+            {
+                DownloadHandler.Load();
+                DownloadHandler.DownloadQueue();
+            }
         }
 
         private static void removeNotWorkingVideos()
@@ -152,7 +169,6 @@ namespace powerful_youtube_dl
                     {
                         Statistics.NotWorkingVideo(v);
                         ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
-                        //v.position.check = false;
                     }
                 }
                 p._listOfVideosInPlayList = newListOfVideos;
@@ -221,17 +237,23 @@ namespace powerful_youtube_dl
             startInfo.RedirectStandardInput = true;
             process.OutputDataReceived += cmd_DataReceived;
             process.EnableRaisingEvents = true;
-
             process.StartInfo = startInfo;
-            //process.Start();
+
             Thread ths = new Thread(() =>
             {
                 while (true)
                 {
                     if (currentlyDownloading < Properties.Settings.Default.maxDownloading)
                     {
-                        Statistics.BeginDownload(this);
                         currentlyDownloading++;
+                        Statistics.BeginDownload(this);
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                          DispatcherPriority.Background,
+                          new Action(() =>
+                          {
+                              position.status = "Pobieranie ";
+                              ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
+                          }));
                         bool ret = process.Start();
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
@@ -241,12 +263,10 @@ namespace powerful_youtube_dl
                           DispatcherPriority.Background,
                           new Action(() =>
                           {
-                              int ind = ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.IndexOf(position);
-                              if (ind > -1)
-                              {
-                                  ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.RemoveAt(ind);
-                                  ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
-                              }
+                              position.status = "Pobrano";
+                              position.check = false;
+                              MainWindow.showNotifyIconMessage("Pobrano plik", position.title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
+                              ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
                           }));
                         Statistics.CompleteDownload(this);
                         currentlyDownloading--;
@@ -261,27 +281,15 @@ namespace powerful_youtube_dl
             ths.Start();
         }
 
-
         private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            Process process = (Process)sender;
-            if (!acceptDownload)
-                try
-                {
-                    process.Kill();
-                }
-                catch { }
-            else
-            {
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(
-            DispatcherPriority.Background,
-            new Action(() =>
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             {
                 position.status = getPercent(e.Data);
-                ((MainWindow)System.Windows.Application.Current.MainWindow).kolejka.Items.Refresh();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
             }));
-                Console.WriteLine(e.Data);
-            }
+            Console.WriteLine(e.Data);
+
         }
 
         private static string getPercent(string value)
@@ -308,11 +316,6 @@ namespace powerful_youtube_dl
             toReturn = toReturn.Replace(@"\", @" ");
             toReturn = toReturn.Replace(@"/", @" ");
             return toReturn;
-        }
-
-        private void checkChanged(object sender, RoutedEventArgs e)
-        {
-            toDownload = (bool)((CheckBox)sender).IsChecked;
         }
 
         private bool isVideoLoaded(string id)

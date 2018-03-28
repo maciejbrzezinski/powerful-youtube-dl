@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace powerful_youtube_dl
 {
-    public class Download
+    public class DownloadHandler
     {
         public static List<Video> toDownload = new List<Video>();
 
@@ -16,11 +16,9 @@ namespace powerful_youtube_dl
         {
             foreach (Video video in Video._listOfVideos)
             {
+                if(video.playList == PlayList.singleVideos && Video.isManualDownload)
                 if ((bool)video.position.check && !toDownload.Contains(video) && video.videoTitle != null)
-                {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToQueue(video.position);
                     toDownload.Add(video);
-                }
             }
         }
 
@@ -28,10 +26,8 @@ namespace powerful_youtube_dl
         {
             try
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromQueue(index);
                 toDownload.RemoveAt(index);
-            }
-            catch { }
+            } catch { }
         }
 
         public static void DownloadQueue()
@@ -65,11 +61,8 @@ namespace powerful_youtube_dl
                 allowDownload = false;
             }
             if (toDownload.Count == 0)
-            {
-                response += count + ". Nie dodano żadnego elementu do pobrania!";
-                count++;
                 allowDownload = false;
-            }
+            
             if (response != "")
                 MainWindow.Error(response);
             return allowDownload;

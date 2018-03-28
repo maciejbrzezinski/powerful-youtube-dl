@@ -101,7 +101,7 @@ namespace powerful_youtube_dl
 
         public static void addPlayListToSettings(string link)
         {
-            if (!Properties.Settings.Default.playlists.Contains(link) && Properties.Settings.Default.savePlaylists)
+            if (!Properties.Settings.Default.playlists.Contains(link) &&Properties.Settings.Default.autoObservePlaylists && Properties.Settings.Default.savePlaylists)
             {
                 Properties.Settings.Default.playlists.Add(link);
                 Properties.Settings.Default.Save();

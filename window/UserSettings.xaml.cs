@@ -37,7 +37,6 @@ namespace powerful_youtube_dl.window
             string downloadPath = Properties.Settings.Default.dlpath;
             string logDestinate = Properties.Settings.Default.logsDestination;
             int maxDownloads = Properties.Settings.Default.maxDownloading;
-            int maxDownloadsObserv = Properties.Settings.Default.maxDownloadingObserved;
 
             if (ytDlPath != "")
                 textYTDL.Text = ytDlPath;
@@ -47,9 +46,6 @@ namespace powerful_youtube_dl.window
 
             if (maxDownloads > -1)
                 maxDownloading.Text = maxDownloads.ToString();
-
-            if (maxDownloadsObserv > -1)
-                maxDownloadingObserved.Text = maxDownloadsObserv.ToString();
 
             if(logDestinate != "")
                 logsDestination.Text = Properties.Settings.Default.logsDestination;
@@ -78,7 +74,6 @@ namespace powerful_youtube_dl.window
 
             savePlaylists.IsChecked = Properties.Settings.Default.savePlaylists;
             autoDownloadObserve.IsChecked = Properties.Settings.Default.autoDownloadObserve;
-            askBeforeDownload.IsChecked = Properties.Settings.Default.askBeforeDownload;
             messageAfterDownload.IsChecked = Properties.Settings.Default.messageAfterDownload;
 
             createLogs.IsChecked = (bool)Properties.Settings.Default.createLogs;

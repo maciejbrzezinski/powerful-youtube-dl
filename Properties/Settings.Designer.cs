@@ -242,18 +242,6 @@ namespace powerful_youtube_dl.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int maxDownloadingObserved {
-            get {
-                return ((int)(this["maxDownloadingObserved"]));
-            }
-            set {
-                this["maxDownloadingObserved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool savePlaylists {
             get {

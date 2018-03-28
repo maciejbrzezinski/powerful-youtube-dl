@@ -51,12 +51,10 @@
             <Grid x:Name="observePlaylistGrid" VerticalAlignment="Top">
                 <CheckBox x:Name="savePlaylists" Content="Zapisuj playlisty" Margin="30,258,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
                 <CheckBox x:Name="autoDownloadObserve" Content="Pobieraj brakujące pliki" Margin="30,281,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
-                <CheckBox x:Name="askBeforeDownload" Content="Pytaj przed pobraniem" Margin="30,304,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
-                <CheckBox x:Name="messageAfterDownload" Content="Pokaż informację o pobraniu pliku na trayu" Margin="30,327,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="maxDownloadingObserved" Height="23" Margin="30,350,10,0" TextWrapping="Wrap" Text="Maksymalna ilość jednoczesnych pobierań" VerticalAlignment="Top" TextChanged="setMaxDownloads" LostFocus="maxDownloadLostFocus" GotFocus="saveValueGotFocus"/>
+                <CheckBox x:Name="messageAfterDownload" Content="Pokaż informację o pobraniu pliku na trayu" Margin="30,304,0,10" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
             </Grid>
-            <CheckBox x:Name="createLogs" Content="Prowadź dziennik operacji" Margin="10,391,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
-            <Grid x:Name="logsGrid" Margin="0,406,0,0" VerticalAlignment="Top">
+            <CheckBox x:Name="createLogs" Content="Prowadź dziennik operacji" Margin="10,337,0,0" VerticalAlignment="Top" MaxWidth="460" BorderThickness="0,0,1,2" Padding="6,0,0,0" Click="checkChanged" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+            <Grid x:Name="logsGrid" Margin="0,352,0,0" VerticalAlignment="Top">
                 <TextBox x:Name="logsDestination" Height="23" Margin="30,10,120,10" TextWrapping="Wrap" Text="Lokalizacja, gdzie będą zapisywane logi" VerticalAlignment="Top" IsEnabled="False"/>
                 <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="90" Height="26" Click="selectLogDestination"/>
             </Grid>
