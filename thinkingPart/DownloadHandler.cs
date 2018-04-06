@@ -14,9 +14,10 @@ namespace powerful_youtube_dl
 
         public static void Load()
         {
+            toDownload = new List<Video>();
             foreach (Video video in Video._listOfVideos)
             {
-                if(video.playList == PlayList.singleVideos && Video.isManualDownload)
+                // if(video.playList == PlayList.singleVideos && Video.isManualDownload)
                 if ((bool)video.position.check && !toDownload.Contains(video) && video.videoTitle != null)
                     toDownload.Add(video);
             }
@@ -27,7 +28,8 @@ namespace powerful_youtube_dl
             try
             {
                 toDownload.RemoveAt(index);
-            } catch { }
+            }
+            catch { }
         }
 
         public static void DownloadQueue()
@@ -62,7 +64,7 @@ namespace powerful_youtube_dl
             }
             if (toDownload.Count == 0)
                 allowDownload = false;
-            
+
             if (response != "")
                 MainWindow.Error(response);
             return allowDownload;

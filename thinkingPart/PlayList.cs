@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Web.Script.Serialization;
 using powerful_youtube_dl.thinkingPart;
+using System;
+using System.Windows.Threading;
 
 namespace powerful_youtube_dl
 {
@@ -15,6 +17,7 @@ namespace powerful_youtube_dl
         public System.Windows.Forms.NotifyIcon notifyIcon = new System.Windows.Forms.NotifyIcon();
 
         public List<Video> _listOfVideosInPlayList = new List<Video>();
+        //ObservableCollection<Video> _listOfVideosInPlayList = new ObservableCollection<Video>();
         //public ObservableCollection<CheckBox> _listOfVideosInPlayListCheckBox = new ObservableCollection<CheckBox>();
         public string playListID, playListURL, playListTitle;
         public bool toDownload = false;
@@ -51,9 +54,31 @@ namespace powerful_youtube_dl
                 _listOfPlayListsCheckBox.Add(check);
                 addPlayListToSettings(playListURL);
                 Statistics.LoadedPlaylist(this);
+
+                System.Windows.Threading.DispatcherTimer checkingTimer = new System.Windows.Threading.DispatcherTimer();
+                checkingTimer.Tick += checkPlayList_Tick;
+                checkingTimer.Interval = new TimeSpan(0, 0, 10);
+                checkingTimer.Start();
             }
             else
                 MainWindow.Error("Ta playlista jest już dodana!");
+        }
+
+        private void checkPlayList_Tick(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.autoObservePlaylists)
+            {
+                getPlaylistVideos_Timer(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
+                Video.getParamsOfVideos();
+                Video.videoIDsToGetParams = new List<Video>();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
+                if (Properties.Settings.Default.autoDownloadObserve && Video.currentlyDownloading == 0)
+                {
+                    Video.isManualDownload = false;
+                    DownloadHandler.Load();
+                    DownloadHandler.DownloadQueue();
+                }
+            }
         }
 
         public PlayList(string id, string title)
@@ -74,7 +99,7 @@ namespace powerful_youtube_dl
                 Statistics.LoadedPlaylist(this);
             }
             else
-                MainWindow.Error("Playlista o nazwie "+title+" jest już dodana!");
+                MainWindow.Error("Playlista o nazwie " + title + " jest już dodana!");
         }
 
         public PlayList(Video video)
@@ -101,7 +126,7 @@ namespace powerful_youtube_dl
 
         public static void addPlayListToSettings(string link)
         {
-            if (!Properties.Settings.Default.playlists.Contains(link) &&Properties.Settings.Default.autoObservePlaylists && Properties.Settings.Default.savePlaylists)
+            if (!Properties.Settings.Default.playlists.Contains(link) && Properties.Settings.Default.autoObservePlaylists && Properties.Settings.Default.savePlaylists)
             {
                 Properties.Settings.Default.playlists.Add(link);
                 Properties.Settings.Default.Save();
@@ -129,6 +154,18 @@ namespace powerful_youtube_dl
             return false;
         }
 
+        private bool checkIfVideoExists(string id)
+        {
+            foreach (Video exists in _listOfVideosInPlayList)
+            {
+                if (exists.videoID == id)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private string getTitle(string id)
         {
             string html = HTTP.GET("https://www.youtube.com/playlist?list=" + id);
@@ -138,6 +175,41 @@ namespace powerful_youtube_dl
         }
 
         private static int licznik = 0;
+
+        private void getPlaylistVideos_Timer(string json)
+        {
+            JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+            var result = jsSerializer.DeserializeObject(json);
+            Dictionary<string, object> obj2 = new Dictionary<string, object>();
+            obj2 = (Dictionary<string, object>)(result);
+
+            System.Object[] val = (System.Object[])obj2["items"];
+
+            foreach (object item in val)
+            {
+                licznik++;
+                Dictionary<string, object> vid = (Dictionary<string, object>)item;
+                Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
+                string title = temp["title"].ToString(); // resourceId -> videoId
+                Dictionary<string, object> vid2 = (Dictionary<string, object>)temp["resourceId"];
+                string id = vid2["videoId"].ToString();
+                if (!checkIfVideoExists(id))
+                {
+                    Video toAdd = new Video(id);
+                    toAdd.playList = this;
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).addVideoToList(toAdd.position);
+                    Video._listOfVideos.Add(toAdd);
+                    _listOfVideosInPlayList.Add(toAdd);
+                }
+            }
+
+            try
+            {
+                string nextPage = obj2["nextPageToken"].ToString();
+                getPlayListVideos(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=" + nextPage + "&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
+            }
+            catch { }
+        }
 
         private void getPlayListVideos(string json)
         {

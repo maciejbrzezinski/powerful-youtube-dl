@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -210,7 +211,7 @@ namespace powerful_youtube_dl
                 {
                     string test = "";
 
-                    int start = url.IndexOf("v=") ;
+                    int start = url.IndexOf("v=");
                     int finish = url.Substring(start + 2).IndexOf("&");
                     if (start > -1 && finish < 0)
                         test = url.Substring(start + 2);
@@ -224,9 +225,9 @@ namespace powerful_youtube_dl
 
 
                     start = url.IndexOf("list=");
-                    finish = url.Substring(start+5).IndexOf("&");
+                    finish = url.Substring(start + 5).IndexOf("&");
                     if (start > -1 && finish < 0)
-                        test = url.Substring(start);
+                        test = url.Substring(start + 5);
                     else if (start > -1 && finish > 0)
                         test = url.Substring(start + 5, finish);
                     else
@@ -393,7 +394,7 @@ namespace powerful_youtube_dl
         {
             System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox)sender;
             string url = box.Text;
-           if (checkIfYoutubeURL(url))
+            if (checkIfYoutubeURL(url))
             {
                 tmpURL = url;
                 if (Properties.Settings.Default.autoLoadLink)
@@ -476,6 +477,17 @@ namespace powerful_youtube_dl
             }
         }
 
-       
+        private void openFolderOrBrowser(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            System.Windows.Controls.ListView listView = (System.Windows.Controls.ListView)sender;
+            ListViewItemMy itemMy = (ListViewItemMy)listView.SelectedItem;
+            if (itemMy != null)
+            {
+                if (itemMy.status == "Pobrano")
+                    Process.Start(itemMy.parent.downloadPath.Substring(0, itemMy.parent.downloadPath.IndexOf(itemMy.parent.ToString())));
+                else
+                    Process.Start(itemMy.parent.videoURL);
+            }
+        }
     }
 }

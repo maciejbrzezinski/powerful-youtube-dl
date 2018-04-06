@@ -13,5 +13,6 @@ namespace powerful_youtube_dl
         public string title { get; set; }
         public string duration { get; set; }
         public string status { get; set; }
+        public Video parent { get; set; }
     }
 }
