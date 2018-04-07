@@ -71,13 +71,13 @@ namespace powerful_youtube_dl
                 getPlaylistVideos_Timer(HTTP.GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
                 Video.getParamsOfVideos();
                 Video.videoIDsToGetParams = new List<Video>();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
-                if (Properties.Settings.Default.autoDownloadObserve && Video.currentlyDownloading == 0)
-                {
-                    Video.isManualDownload = false;
-                    DownloadHandler.Load();
-                    DownloadHandler.DownloadQueue();
-                }
+                //((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
+                //if (Properties.Settings.Default.autoDownloadObserve && Video.currentlyDownloading == 0)
+                //{
+                //    Video.isManualDownload = false;
+                //    DownloadHandler.Load();
+                //    DownloadHandler.DownloadQueue();
+                //}
             }
         }
 

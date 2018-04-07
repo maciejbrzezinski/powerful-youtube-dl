@@ -328,6 +328,8 @@ namespace powerful_youtube_dl
             toReturn = toReturn.Replace(@"\", @" ");
             toReturn = toReturn.Replace(@"/", @" ");
             toReturn = toReturn.Replace(@"|", @" ");
+            toReturn = toReturn.Replace(@":", @" ");
+            toReturn = toReturn.Replace("\"", @" ");
             return toReturn;
         }
 

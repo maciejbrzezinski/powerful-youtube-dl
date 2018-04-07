@@ -52,22 +52,14 @@ namespace powerful_youtube_dl.window
 
             playlistAsFolder.IsChecked = Properties.Settings.Default.playlistAsFolder;
             autoLoadLink.IsChecked = Properties.Settings.Default.autoLoadLink;
-            hierarchia.IsEnabled = (bool)autoLoadLink.IsChecked;
 
             startWithSystem.IsChecked = Properties.Settings.Default.startWithSystem;
-            startMinimized.IsEnabled = (bool)startWithSystem.IsChecked;
 
             doTray.IsChecked = Properties.Settings.Default.doTray;
             startMinimized.IsChecked = Properties.Settings.Default.startMinimized;
             closeToTray.IsChecked = Properties.Settings.Default.closeToTray;
 
             autoStartDownload.IsChecked = Properties.Settings.Default.autoStartDownload;
-            hierarchyFields.IsEnabled = (bool)autoStartDownload.IsChecked;
-
-            hierSingleVideo.Text = Properties.Settings.Default.hierSingleVideo.ToString();
-            hierSinglePlaylist.Text = Properties.Settings.Default.hierSinglePlaylist.ToString();
-            hierAllPlaylists.Text = Properties.Settings.Default.hierAllPlaylists.ToString();
-            hierAllUsersVideos.Text = Properties.Settings.Default.hierAllUsersVideos.ToString();
 
             autoObservePlaylists.IsChecked = Properties.Settings.Default.autoObservePlaylists;
             observePlaylistGrid.IsEnabled = (bool)autoObservePlaylists.IsChecked;
@@ -158,9 +150,6 @@ namespace powerful_youtube_dl.window
                             catch { }
                         }
                         break;
-                    case "autoStartDownload":
-                        hierarchyFields.IsEnabled = (bool)check.IsChecked;
-                        break;
                     case "autoObservePlaylists":
                         observePlaylistGrid.IsEnabled = (bool)check.IsChecked;
                         break;
@@ -209,32 +198,7 @@ namespace powerful_youtube_dl.window
             }
         }
 
-        private void checkIfProperlyValue(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox)sender;
-            int a = getIntegerValue(box.Text);
-            if (a == 1 || a == 2 || a == 3 || a == 4)
-            {
-                Properties.Settings.Default[box.Name] = a;
-                switch (box.Name)
-                {
-                    case "hierSingleVideo":
-                        checkRestFields(a, hierSinglePlaylist, hierAllPlaylists, hierAllUsersVideos);
-                        break;
-                    case "hierSinglePlaylist":
-                        checkRestFields(a, hierSingleVideo, hierAllPlaylists, hierAllUsersVideos);
-                        break;
-                    case "hierAllPlaylists":
-                        checkRestFields(a, hierSinglePlaylist, hierSingleVideo, hierAllUsersVideos);
-                        break;
-                    case "hierAllUsersVideos":
-                        checkRestFields(a, hierSinglePlaylist, hierAllPlaylists, hierSingleVideo);
-                        break;
-                }
-            }
-            else
-                box.Text = vTemp;
-        }
+
         private string vTemp = "";
 
         private void saveValueGotFocus(object sender, RoutedEventArgs e)
