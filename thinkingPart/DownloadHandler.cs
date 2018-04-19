@@ -56,7 +56,7 @@ namespace powerful_youtube_dl
                 count++;
                 allowDownload = false;
             }
-            if (Properties.Settings.Default.dlpath == "")
+            if (Properties.Settings.Default.textDestination == "")
             {
                 response += count + ". Nie wybrano lokalizacji zapisywania plików!\n\n";
                 count++;

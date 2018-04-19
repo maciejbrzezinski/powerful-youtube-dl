@@ -57,7 +57,7 @@ namespace powerful_youtube_dl
 
                 System.Windows.Threading.DispatcherTimer checkingTimer = new System.Windows.Threading.DispatcherTimer();
                 checkingTimer.Tick += checkPlayList_Tick;
-                checkingTimer.Interval = new TimeSpan(0, 0, 10);
+                checkingTimer.Interval = new TimeSpan(0, 5, 0);
                 checkingTimer.Start();
             }
             else
@@ -97,6 +97,11 @@ namespace powerful_youtube_dl
                 ((MainWindow)System.Windows.Application.Current.MainWindow).playlist.SelectedItem = check;
                 addPlayListToSettings(playListURL);
                 Statistics.LoadedPlaylist(this);
+
+                System.Windows.Threading.DispatcherTimer checkingTimer = new System.Windows.Threading.DispatcherTimer();
+                checkingTimer.Tick += checkPlayList_Tick;
+                checkingTimer.Interval = new TimeSpan(0, 5, 0);
+                checkingTimer.Start();
             }
             else
                 MainWindow.Error("Playlista o nazwie " + title + " jest już dodana!");

@@ -26,18 +26,6 @@ namespace powerful_youtube_dl.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string dlpath {
-            get {
-                return ((string)(this["dlpath"]));
-            }
-            set {
-                this["dlpath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ytdlexe {
             get {
                 return ((string)(this["ytdlexe"]));
@@ -309,6 +297,18 @@ namespace powerful_youtube_dl.Properties {
             }
             set {
                 this["logsDestination"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string textDestination {
+            get {
+                return ((string)(this["textDestination"]));
+            }
+            set {
+                this["textDestination"] = value;
             }
         }
     }

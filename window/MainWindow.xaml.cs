@@ -83,7 +83,10 @@ namespace powerful_youtube_dl
             if (ni == null)
             {
                 ni = new System.Windows.Forms.NotifyIcon();
-                ni.Icon = new System.Drawing.Icon(@"C:\Users\miejs\Documents\GitHub\powerful-youtube-dl\something\logo_ytdl_d4Q_icon.ico");
+                Stream iconStream = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/powerful-youtube-dl;component/something/logo.ico")).Stream;
+               // Stream iconStream = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/powerful_youtube_dl;component/something/logo.ico")).Stream;
+                //ni.Icon = new System.Drawing.Icon(@"C:\Users\miejs\Documents\GitHub\powerful-youtube-dl\something\logo_ytdl_d4Q_icon.ico");
+                ni.Icon = new System.Drawing.Icon(iconStream);
                 ni.Visible = true;
                 ni.ContextMenu = createMenu();
                 ni.DoubleClick += trayDoubleClick;

@@ -56,9 +56,9 @@ namespace powerful_youtube_dl
         {
             string path = "";
             if (Properties.Settings.Default.playlistAsFolder)
-                path = Properties.Settings.Default.dlpath + "\\" + video.playList.ToString() + "\\" + video.ToString() + ".mp3";
+                path = Properties.Settings.Default.textDestination + "\\" + video.playList.ToString() + "\\" + video.ToString() + ".mp3";
             else
-                path = Properties.Settings.Default.dlpath + "\\" + video.ToString() + ".mp3";
+                path = Properties.Settings.Default.textDestination + "\\" + video.ToString() + ".mp3";
             if (File.Exists(path))
                 return true;
             else
@@ -147,9 +147,9 @@ namespace powerful_youtube_dl
                     {
                         _listOfVideos[current].position.status = "Pobrano";
                         if (Properties.Settings.Default.playlistAsFolder)
-                            _listOfVideos[current].downloadPath = Properties.Settings.Default.dlpath + "\\" + _listOfVideos[current].playList.ToString() + "\\" + _listOfVideos[current].ToString() + ".mp3";
+                            _listOfVideos[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + _listOfVideos[current].playList.ToString() + "\\" + _listOfVideos[current].ToString() + ".mp3";
                         else
-                            _listOfVideos[current].downloadPath = Properties.Settings.Default.dlpath + "\\" + _listOfVideos[current].ToString() + ".mp3";
+                            _listOfVideos[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + _listOfVideos[current].ToString() + ".mp3";
                     }
                     Statistics.LoadedVideo(_listOfVideos[current]);
                 }
@@ -229,13 +229,13 @@ namespace powerful_youtube_dl
             startInfo.FileName = Properties.Settings.Default.ytdlexe;
             if (Properties.Settings.Default.playlistAsFolder)
             {
-                downloadPath = Properties.Settings.Default.dlpath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3";
-                startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.dlpath + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
+                downloadPath = Properties.Settings.Default.textDestination + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3";
+                startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.textDestination + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
             }
             else
             {
-                downloadPath = Properties.Settings.Default.dlpath + "\\" + this.ToString() + ".mp3";
-                startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.dlpath + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
+                downloadPath = Properties.Settings.Default.textDestination + "\\" + this.ToString() + ".mp3";
+                startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.textDestination + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
             }
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
@@ -295,13 +295,19 @@ namespace powerful_youtube_dl
 
         private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            try
             {
-                position.status = getPercent(e.Data);
-                ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
-            }));
-            Console.WriteLine(e.Data);
-
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    position.status = getPercent(e.Data);
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
+                }));
+                Console.WriteLine(e.Data);
+            }
+            catch
+            {
+                ((System.Diagnostics.Process)sender).Kill();
+            }
         }
 
         private static string getPercent(string value)

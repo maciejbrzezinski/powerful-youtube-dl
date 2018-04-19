@@ -34,7 +34,7 @@ namespace powerful_youtube_dl.window
         private void getSettings()
         {
             string ytDlPath = Properties.Settings.Default.ytdlexe;
-            string downloadPath = Properties.Settings.Default.dlpath;
+            string downloadPath = Properties.Settings.Default.textDestination;
             string logDestinate = Properties.Settings.Default.logsDestination;
             int maxDownloads = Properties.Settings.Default.maxDownloading;
 
@@ -47,7 +47,7 @@ namespace powerful_youtube_dl.window
             if (maxDownloads > -1)
                 maxDownloading.Text = maxDownloads.ToString();
 
-            if(logDestinate != "")
+            if (logDestinate != "")
                 logsDestination.Text = Properties.Settings.Default.logsDestination;
 
             playlistAsFolder.IsChecked = Properties.Settings.Default.playlistAsFolder;
@@ -94,10 +94,10 @@ namespace powerful_youtube_dl.window
             using (var dialog = new FolderBrowserDialog())
             {
                 DialogResult result = dialog.ShowDialog();
-                if (dialog.SelectedPath != "")
+                if (dialog != null && dialog.SelectedPath != "")
                 {
                     textDestination.Text = dialog.SelectedPath;
-                    saveSetting(textDestination.Name, dialog.SelectedPath);
+                    saveSetting(textDestination.Name, textDestination.Text);
                 }
             }
         }

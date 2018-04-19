@@ -8,7 +8,7 @@ using System.Windows;
 // zestaw atrybutów. Zmień wartości tych atrybutów, aby zmodyfikować informacje
 // powiązane z zestawem.
 [assembly: AssemblyTitle("powerful-youtube-dl")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Narkotyki są trujące i kosztują trzy tysiące")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("powerful-youtube-dl")]
