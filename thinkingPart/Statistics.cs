@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace powerful_youtube_dl.thinkingPart
 {
@@ -21,14 +16,12 @@ namespace powerful_youtube_dl.thinkingPart
         {
             try
             {
-
                 txtWriter.Write("\r\n" + "{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
                 txtWriter.WriteLine(" : " + operationName);
                 txtWriter.WriteLine("  ");
                 txtWriter.WriteLine("   {0}", logMessage);
                 txtWriter.WriteLine("-------------------------------");
-            }
-            catch { }
+            } catch { }
         }
 
         public static void GenerateLog(string operationName, string message)
@@ -41,21 +34,20 @@ namespace powerful_youtube_dl.thinkingPart
                     {
                         Log(operationName, message, w);
                     }
-                }
-                catch { }
+                } catch { }
             }
         }
 
         public static void CompleteDownload(Video video)
         {
             Properties.Settings.Default.sumDownloadedVideos++;
-            string message = "Pomyślnie pobrano: " + video.videoTitle + "\r\n                         (" + video.videoDuration + ")\r\n                         "+video.videoURL+ "\r\n                         " + video.downloadPath;
+            string message = "Pomyślnie pobrano: " + video.videoTitle + "\r\n                         (" + video.videoDuration + ")\r\n                         " + video.videoURL + "\r\n                         " + video.downloadPath;
             GenerateLog("Pobrano plik", message);
         }
 
         public static void LoadedVideo(Video video)
         {
-            string message = "Pomyślnie załadowano: " + video.videoTitle + " \r\n                         (" + video.videoDuration + ")\r\n                         "+video.videoURL;
+            string message = "Pomyślnie załadowano: " + video.videoTitle + " \r\n                         (" + video.videoDuration + ")\r\n                         " + video.videoURL;
             GenerateLog("Załadowano film", message);
         }
 
@@ -73,7 +65,7 @@ namespace powerful_youtube_dl.thinkingPart
 
         public static void BeginDownload(Video video)
         {
-            string message = "Rozpoczęto pobieranie: " + video.videoTitle + "\r\n(" + video.videoDuration + ")\r\n                         "+video.videoURL+ "\r\n                         " + video.downloadPath;
+            string message = "Rozpoczęto pobieranie: " + video.videoTitle + "\r\n(" + video.videoDuration + ")\r\n                         " + video.videoURL + "\r\n                         " + video.downloadPath;
             GenerateLog("Pobieranie pliku", message);
         }
 

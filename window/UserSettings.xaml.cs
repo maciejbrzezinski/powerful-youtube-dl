@@ -1,26 +1,12 @@
 ﻿using Microsoft.Win32;
 using powerful_youtube_dl.thinkingPart;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace powerful_youtube_dl.window
 {
-    /// <summary>
-    /// Interaction logic for Settings.xaml
-    /// </summary>
     public partial class UserSettings
     {
         public UserSettings()
@@ -29,7 +15,7 @@ namespace powerful_youtube_dl.window
             getSettings();
         }
 
-        RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        private RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
         private void getSettings()
         {
@@ -62,14 +48,14 @@ namespace powerful_youtube_dl.window
             autoStartDownload.IsChecked = Properties.Settings.Default.autoStartDownload;
 
             autoObservePlaylists.IsChecked = Properties.Settings.Default.autoObservePlaylists;
-            observePlaylistGrid.IsEnabled = (bool)autoObservePlaylists.IsChecked;
+            observePlaylistGrid.IsEnabled = (bool) autoObservePlaylists.IsChecked;
 
             savePlaylists.IsChecked = Properties.Settings.Default.savePlaylists;
             autoDownloadObserve.IsChecked = Properties.Settings.Default.autoDownloadObserve;
             messageAfterDownload.IsChecked = Properties.Settings.Default.messageAfterDownload;
 
-            createLogs.IsChecked = (bool)Properties.Settings.Default.createLogs;
-            logsGrid.IsEnabled = (bool)createLogs.IsChecked;
+            createLogs.IsChecked = (bool) Properties.Settings.Default.createLogs;
+            logsGrid.IsEnabled = (bool) createLogs.IsChecked;
         }
 
         private void selectYoutubeDLPath(object sender, RoutedEventArgs e)
@@ -118,7 +104,7 @@ namespace powerful_youtube_dl.window
 
         private void setMaxDownloads(object sender, TextChangedEventArgs e)
         {
-            System.Windows.Controls.TextBox field = (System.Windows.Controls.TextBox)sender;
+            System.Windows.Controls.TextBox field = (System.Windows.Controls.TextBox) sender;
             int num = 0;
             if (Int32.TryParse(field.Text, out num))
             {
@@ -131,34 +117,35 @@ namespace powerful_youtube_dl.window
         {
             try
             {
-                System.Windows.Controls.CheckBox check = (System.Windows.Controls.CheckBox)sender;
-                saveSetting(check.Name, (bool)check.IsChecked);
+                System.Windows.Controls.CheckBox check = (System.Windows.Controls.CheckBox) sender;
+                saveSetting(check.Name, (bool) check.IsChecked);
                 switch (check.Name)
                 {
                     case "autoLoadLink":
-                        hierarchia.IsEnabled = (bool)check.IsChecked;
+                        hierarchia.IsEnabled = (bool) check.IsChecked;
                         break;
+
                     case "startWithSystem":
-                        if ((bool)check.IsChecked)
+                        if ((bool) check.IsChecked)
                             rkApp.SetValue("PowerfulYTDownloader", System.Windows.Forms.Application.ExecutablePath);
                         else
                         {
                             try
                             {
                                 rkApp.DeleteValue("PowerfulYTDownloader");
-                            }
-                            catch { }
+                            } catch { }
                         }
                         break;
+
                     case "autoObservePlaylists":
-                        observePlaylistGrid.IsEnabled = (bool)check.IsChecked;
+                        observePlaylistGrid.IsEnabled = (bool) check.IsChecked;
                         break;
+
                     case "createLogs":
-                        logsGrid.IsEnabled = (bool)check.IsChecked;
+                        logsGrid.IsEnabled = (bool) check.IsChecked;
                         break;
                 }
-            }
-            catch { }
+            } catch { }
         }
 
         private void saveSetting(string setting, object status)
@@ -185,36 +172,32 @@ namespace powerful_youtube_dl.window
             {
                 t1.Text = vTemp;
                 saveSetting(t1.Name, value);
-            }
-            else if (getIntegerValue(t2.Text) == value)
+            } else if (getIntegerValue(t2.Text) == value)
             {
                 t2.Text = vTemp;
                 saveSetting(t2.Name, value);
-            }
-            else if (getIntegerValue(t3.Text) == value)
+            } else if (getIntegerValue(t3.Text) == value)
             {
                 t3.Text = vTemp;
                 saveSetting(t3.Name, value);
             }
         }
 
-
         private string vTemp = "";
 
         private void saveValueGotFocus(object sender, RoutedEventArgs e)
         {
-            vTemp = ((System.Windows.Controls.TextBox)sender).Text;
+            vTemp = ((System.Windows.Controls.TextBox) sender).Text;
         }
 
         private void maxDownloadLostFocus(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox)sender;
+            System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox) sender;
             int a = getIntegerValue(box.Text);
             if (a > -1)
             {
                 saveSetting(box.Name, a);
-            }
-            else
+            } else
                 box.Text = vTemp;
         }
     }

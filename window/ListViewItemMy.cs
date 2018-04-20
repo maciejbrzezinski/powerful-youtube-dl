@@ -1,18 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.ComponentModel;
 
 namespace powerful_youtube_dl
 {
-    public class ListViewItemMy
+    public class ListViewItemMy : INotifyPropertyChanged
     {
-        public bool check { get; set; }
-        public string title { get; set; }
-        public string duration { get; set; }
-        public string status { get; set; }
-        public Video parent { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private bool check;
+        private string title, duration, status;
+        private Video parent;
+
+        public string Title
+        {
+            get => title;
+            set
+            {
+                title = value;
+                NotifyPropertyChanged("Title");
+            }
+        }
+
+        public string Duration
+        {
+            get => duration;
+            set
+            {
+                duration = value;
+                NotifyPropertyChanged("Duration");
+            }
+        }
+
+        public string Status
+        {
+            get => status;
+            set
+            {
+                status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+        public bool Check
+        {
+            get => check;
+            set
+            {
+                check = value;
+                NotifyPropertyChanged("Check");
+            }
+        }
+
+        public Video Parent
+        {
+            get => parent;
+            set
+            {
+                parent = value;
+                NotifyPropertyChanged("Parent");
+            }
+        }
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
 }

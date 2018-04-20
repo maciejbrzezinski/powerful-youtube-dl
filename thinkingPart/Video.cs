@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Timers;
 using System.Web.Script.Serialization;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
@@ -24,10 +23,9 @@ namespace powerful_youtube_dl
         public static bool isManualDownload = true;
 
         public static int currentlyDownloading = 0;
+        public static int queueToDownload = 0;
 
         public static List<Video> videoIDsToGetParams = new List<Video>();
-
-        //public Video() {}
 
         public Video(string linkOrID)
         {
@@ -36,18 +34,16 @@ namespace powerful_youtube_dl
             {
                 id = linkOrID.Substring(linkOrID.IndexOf("v=") + 2, 11);
                 videoURL = linkOrID;
-            }
-            else
+            } else
             {
                 id = linkOrID;
                 videoURL = @"https://www.youtube.com/watch?v=" + id;
             }
             if (!isVideoLoaded(id))
             {
-
                 videoID = id;
                 addToGetParams(this);
-                position = new ListViewItemMy { title = id, duration = videoDuration, status = "---", check = false, parent = this };
+                position = new ListViewItemMy { Title = id, Duration = videoDuration, Status = "---", Check = false, Parent = this };
                 _listOfVideos.Add(this);
             }
         }
@@ -97,15 +93,15 @@ namespace powerful_youtube_dl
                 JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
                 var result = jsSerializer.DeserializeObject(json);
                 Dictionary<string, object> obj2 = new Dictionary<string, object>();
-                obj2 = (Dictionary<string, object>)(result);
+                obj2 = (Dictionary<string, object>) (result);
 
-                System.Object[] val = (System.Object[])obj2["items"];
+                System.Object[] val = (System.Object[]) obj2["items"];
 
                 for (int i = 0; i < val.Length; i++)
                 {
                     int current = -1;
                     int current2 = -1;
-                    Dictionary<string, object> vid = (Dictionary<string, object>)val[i];
+                    Dictionary<string, object> vid = (Dictionary<string, object>) val[i];
                     string id = vid["id"].ToString();
                     for (int d = 0; d < _listOfVideos.Count; d++)
                     {
@@ -123,29 +119,28 @@ namespace powerful_youtube_dl
                             break;
                         }
                     }
-                    Dictionary<string, object> temp = (Dictionary<string, object>)vid["snippet"];
-                    Dictionary<string, object> temp2 = (Dictionary<string, object>)vid["contentDetails"];
+                    Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
+                    Dictionary<string, object> temp2 = (Dictionary<string, object>) vid["contentDetails"];
                     videoIDsToGetParams[current2].videoTitle = temp["title"].ToString();
                     _listOfVideos[current].videoTitle = temp["title"].ToString();
                     _listOfVideos[current].videoDuration = decryptDuration(temp2["duration"].ToString());
                     if (_listOfVideos[current].position == null)
                     {
-                        _listOfVideos[current].position = new ListViewItemMy
-                        {
-                            title = _listOfVideos[current].position.title
+                        _listOfVideos[current].position = new ListViewItemMy {
+                            Title = _listOfVideos[current].position.Title
                             ,
-                            duration = _listOfVideos[current].position.duration
+                            Duration = _listOfVideos[current].position.Duration
                             ,
-                            status = "---"
+                            Status = "---"
                         };
                     }
-                    _listOfVideos[current].position.title = _listOfVideos[current].videoTitle;
-                    _listOfVideos[current].position.duration = _listOfVideos[current].videoDuration;
+                    _listOfVideos[current].position.Title = _listOfVideos[current].videoTitle;
+                    _listOfVideos[current].position.Duration = _listOfVideos[current].videoDuration;
                     if (!checkIfVideoIsOnDisk(_listOfVideos[current]))
-                        _listOfVideos[current].position.check = true;
+                        _listOfVideos[current].position.Check = true;
                     else
                     {
-                        _listOfVideos[current].position.status = "Pobrano";
+                        _listOfVideos[current].position.Status = "Pobrano";
                         if (Properties.Settings.Default.playlistAsFolder)
                             _listOfVideos[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + _listOfVideos[current].playList.ToString() + "\\" + _listOfVideos[current].ToString() + ".mp3";
                         else
@@ -158,7 +153,7 @@ namespace powerful_youtube_dl
             if (Properties.Settings.Default.autoObservePlaylists && Properties.Settings.Default.autoDownloadObserve && !isManualDownload)
             {
                 DownloadHandler.Load();
-                DownloadHandler.DownloadQueue();
+                DownloadHandler.DownloadQueueAsync();
             }
         }
 
@@ -173,8 +168,9 @@ namespace powerful_youtube_dl
                         newListOfVideos.Add(v);
                     else
                     {
-                        Statistics.NotWorkingVideo(v);
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
+                        if (v.videoID != null && v.videoID != "")
+                            Statistics.NotWorkingVideo(v);
+                        ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
                     }
                 }
                 p._listOfVideosInPlayList = newListOfVideos;
@@ -195,8 +191,7 @@ namespace powerful_youtube_dl
                 start = tmp.IndexOf("H") < 0 ? 0 : tmp.IndexOf("H") + 1;
                 minutes = tmp.Substring(start, start > 0 ? tmp.IndexOf("M") - start : tmp.IndexOf("M")) + ":";
                 hours = tmp.Substring(0, tmp.IndexOf("H")) + ":";
-            }
-            catch { }
+            } catch { }
             if (seconds.Length == 1)
                 seconds = "0" + seconds;
             if (minutes.Length == 2)
@@ -206,24 +201,9 @@ namespace powerful_youtube_dl
             return hours + minutes + seconds;
         }
 
-        private string queryCMD(string query)
-        {
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = query;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
-            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            process.StartInfo = startInfo;
-            process.Start();
-            process.WaitForExit();
-            return process.StandardOutput.ReadToEnd();
-        }
-
         public void Download()
         {
+            queueToDownload++;
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = Properties.Settings.Default.ytdlexe;
@@ -231,8 +211,7 @@ namespace powerful_youtube_dl
             {
                 downloadPath = Properties.Settings.Default.textDestination + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3";
                 startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.textDestination + "\\" + playList.ToString() + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
-            }
-            else
+            } else
             {
                 downloadPath = Properties.Settings.Default.textDestination + "\\" + this.ToString() + ".mp3";
                 startInfo.Arguments = " -x -o \"" + Properties.Settings.Default.textDestination + "\\" + this.ToString() + ".mp3\" https://www.youtube.com/watch?v=" + videoID;
@@ -246,67 +225,93 @@ namespace powerful_youtube_dl
             process.OutputDataReceived += cmd_DataReceived;
             process.EnableRaisingEvents = true;
             process.StartInfo = startInfo;
-
-            Thread ths = new Thread(() =>
-            {
-                while (true)
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler((object sender, ElapsedEventArgs e) => {
+                if (isManualDownload || (!isManualDownload && Properties.Settings.Default.autoDownloadObserve))
                 {
-                    if (isManualDownload || (!isManualDownload && Properties.Settings.Default.autoDownloadObserve))
+                    if (currentlyDownloading < Properties.Settings.Default.maxDownloading)
                     {
-                        if (currentlyDownloading < Properties.Settings.Default.maxDownloading)
-                        {
-                            currentlyDownloading++;
-                            Statistics.BeginDownload(this);
-                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                              DispatcherPriority.Background,
-                              new Action(() =>
-                              {
-                                  position.status = "Pobieranie ";
-                                  ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
-                              }));
-                            bool ret = process.Start();
-                            process.BeginOutputReadLine();
-                            process.BeginErrorReadLine();
-                            process.WaitForExit();
+                        queueToDownload--;
+                        currentlyDownloading++;
+                        Statistics.BeginDownload(this);
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                          DispatcherPriority.Normal,
+                          new Action(() => {
+                              position.Status = "Pobieranie ";
+                          }));
+                        bool ret = process.Start();
 
-                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                              DispatcherPriority.Background,
-                              new Action(() =>
-                              {
-                                  position.status = "Pobrano";
-                                  position.check = false;
-                                  if (Properties.Settings.Default.messageAfterDownload)
-                                      MainWindow.showNotifyIconMessage("Pobrano plik", position.title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
-                                  ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
-                              }));
-                            Statistics.CompleteDownload(this);
-                            currentlyDownloading--;
-                            break;
-                        }
-                        else
+                        string loger;
+                        while ((loger = process.StandardOutput.ReadLine()) != null)
                         {
-                            Thread.Sleep(1000);
+                            cmd_DataReceived(loger);
                         }
+
+                        process.WaitForExit();
+
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                          DispatcherPriority.Normal,
+                          new Action(() => {
+                              position.Status = "Pobrano";
+                              position.Check = false;
+                              if (Properties.Settings.Default.messageAfterDownload)
+                                  MainWindow.showNotifyIconMessage("Pobrano plik", position.Title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
+                          }));
+
+                        Statistics.CompleteDownload(this);
+                        currentlyDownloading--;
+
+                        aTimer.AutoReset = false;
+                        aTimer.Enabled = false;
+                        aTimer.Close();
                     }
                 }
             });
-            ths.Start();
+            aTimer.Interval = 1000;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
         }
+
+        private string lastMessage = "";
+        private string lastPercent = "";
 
         private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            try
+            if (lastMessage != null && lastMessage != e.Data)
             {
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                lastMessage = e.Data;
+                try
                 {
-                    position.status = getPercent(e.Data);
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).addVideos.Items.Refresh();
-                }));
-                Console.WriteLine(e.Data);
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => {
+                        string prc = getPercent(e.Data);
+                        if (lastPercent != null && lastPercent != prc)
+                        {
+                            lastPercent = prc;
+                            position.Status = prc;
+                            Console.WriteLine(e.Data);
+                        }
+                    }));
+                } catch { }
             }
-            catch
+        }
+
+        private void cmd_DataReceived(string value)
+        {
+            if (lastMessage != null && lastMessage != value)
             {
-                ((System.Diagnostics.Process)sender).Kill();
+                lastMessage = value;
+                try
+                {
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => {
+                        string prc = getPercent(value);
+                        if (prc != "---" && lastPercent != null && lastPercent != prc)
+                        {
+                            Console.WriteLine(value);
+                            lastPercent = prc;
+                            position.Status = prc;
+                        }
+                    }));
+                } catch { }
             }
         }
 
@@ -348,6 +353,5 @@ namespace powerful_youtube_dl
             }
             return false;
         }
-
     }
 }

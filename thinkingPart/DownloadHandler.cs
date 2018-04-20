@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace powerful_youtube_dl
@@ -11,14 +6,14 @@ namespace powerful_youtube_dl
     public class DownloadHandler
     {
         public static List<Video> toDownload = new List<Video>();
+        public static bool isDownloading = false;
 
         public static void Load()
         {
             toDownload = new List<Video>();
             foreach (Video video in Video._listOfVideos)
             {
-                // if(video.playList == PlayList.singleVideos && Video.isManualDownload)
-                if ((bool)video.position.check && !toDownload.Contains(video) && video.videoTitle != null)
+                if (video.position != null && (bool) video.position.Check && !toDownload.Contains(video) && video.videoTitle != null)
                     toDownload.Add(video);
             }
         }
@@ -28,19 +23,27 @@ namespace powerful_youtube_dl
             try
             {
                 toDownload.RemoveAt(index);
-            }
-            catch { }
+            } catch { }
         }
 
-        public static void DownloadQueue()
+        public static async Task DownloadQueueAsync()
         {
-            if (CheckFields())
+            if (CheckFields() && !isDownloading)
             {
+                isDownloading = true;
                 foreach (Video v in toDownload)
                 {
-                    v.Download();
-                    Thread.Sleep(100);
+                    again:
+                    if (Video.queueToDownload < 15)
+                    {
+                        v.Download();
+                    } else
+                    {
+                        await Task.Delay(3000);
+                        goto again;
+                    }
                 }
+                isDownloading = false;
                 toDownload = new List<Video>();
             }
         }

@@ -6,7 +6,7 @@ namespace powerful_youtube_dl
     {
         private static int toOut = 2;
 
-        public Dialog(string question, string title, string radio11, string radio22) // 0-pierwsze radio, 1-drugie radio, 2-anulowano, 3-niepoprawnie wypełniono 
+        public Dialog(string question, string title, string radio11, string radio22) // 0-pierwsze radio, 1-drugie radio, 2-anulowano, 3-niepoprawnie wypełniono
         {
             InitializeComponent();
             this.Loaded += new RoutedEventHandler(PromptDialog_Loaded);
@@ -18,7 +18,7 @@ namespace powerful_youtube_dl
             radio2.Content = radio22;
         }
 
-        void PromptDialog_Loaded(object sender, RoutedEventArgs e)
+        private void PromptDialog_Loaded(object sender, RoutedEventArgs e)
         {
             radio1.Focus();
         }
@@ -36,9 +36,9 @@ namespace powerful_youtube_dl
         {
             get
             {
-                if ((bool)radio1.IsChecked)
+                if ((bool) radio1.IsChecked)
                     return 0;
-                else if ((bool)radio2.IsChecked)
+                else if ((bool) radio2.IsChecked)
                     return 1;
                 else
                     return 3;
@@ -47,9 +47,9 @@ namespace powerful_youtube_dl
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)radio1.IsChecked)
+            if ((bool) radio1.IsChecked)
                 toOut = 0;
-            else if ((bool)radio2.IsChecked)
+            else if ((bool) radio2.IsChecked)
                 toOut = 1;
             else
                 toOut = 3;
