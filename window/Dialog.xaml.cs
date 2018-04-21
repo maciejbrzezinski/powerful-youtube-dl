@@ -18,20 +18,6 @@ namespace powerful_youtube_dl
             radio2.Content = radio22;
         }
 
-        private void PromptDialog_Loaded(object sender, RoutedEventArgs e)
-        {
-            radio1.Focus();
-        }
-
-        public static int Prompt(string question, string title, string radio11, string radio22)
-        {
-            Dialog inst = new Dialog(question, title, radio11, radio22);
-            inst.ShowDialog();
-            if (inst.DialogResult == true)
-                toOut = inst.Response;
-            return toOut;
-        }
-
         public int Response
         {
             get
@@ -43,6 +29,21 @@ namespace powerful_youtube_dl
                 else
                     return 3;
             }
+        }
+
+        public static int Prompt(string question, string title, string radio11, string radio22)
+        {
+            Dialog inst = new Dialog(question, title, radio11, radio22);
+            inst.ShowDialog();
+            if (inst.DialogResult == true)
+                toOut = inst.Response;
+            return toOut;
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            toOut = 2;
+            Close();
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
@@ -57,10 +58,9 @@ namespace powerful_youtube_dl
             Close();
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        private void PromptDialog_Loaded(object sender, RoutedEventArgs e)
         {
-            toOut = 2;
-            Close();
+            radio1.Focus();
         }
     }
 }

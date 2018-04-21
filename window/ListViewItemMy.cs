@@ -4,19 +4,21 @@ namespace powerful_youtube_dl
 {
     public class ListViewItemMy : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private bool check;
-        private string title, duration, status;
+
         private Video parent;
 
-        public string Title
+        private string title, duration, status;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool Check
         {
-            get => title;
+            get => check;
             set
             {
-                title = value;
-                NotifyPropertyChanged("Title");
+                check = value;
+                NotifyPropertyChanged("Check");
             }
         }
 
@@ -30,6 +32,16 @@ namespace powerful_youtube_dl
             }
         }
 
+        public Video Parent
+        {
+            get => parent;
+            set
+            {
+                parent = value;
+                NotifyPropertyChanged("Parent");
+            }
+        }
+
         public string Status
         {
             get => status;
@@ -40,23 +52,13 @@ namespace powerful_youtube_dl
             }
         }
 
-        public bool Check
+        public string Title
         {
-            get => check;
+            get => title;
             set
             {
-                check = value;
-                NotifyPropertyChanged("Check");
-            }
-        }
-
-        public Video Parent
-        {
-            get => parent;
-            set
-            {
-                parent = value;
-                NotifyPropertyChanged("Parent");
+                title = value;
+                NotifyPropertyChanged("Title");
             }
         }
 

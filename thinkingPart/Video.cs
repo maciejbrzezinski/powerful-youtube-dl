@@ -13,16 +13,17 @@ namespace powerful_youtube_dl
     {
         public static List<Video> _listOfVideos = new List<Video>();
 
-        public string videoID, videoTitle, videoDuration, videoURL;
+        public static int currentlyDownloading = 0;
+        public static bool isManualDownload = true;
+        public static int queueToDownload = 0;
+        public static List<Video> videoIDsToGetParams = new List<Video>();
+        public string downloadPath;
         public PlayList playList = null;
         public ListViewItemMy position = null;
-        public string downloadPath;
+        public string videoID, videoTitle, videoDuration, videoURL;
+        private string lastMessage = "";
 
-        public static bool isManualDownload = true;
-        public static int currentlyDownloading = 0;
-        public static int queueToDownload = 0;
-
-        public static List<Video> videoIDsToGetParams = new List<Video>();
+        private string lastPercent = "";
 
         public Video(string linkOrID)
         {
@@ -56,11 +57,6 @@ namespace powerful_youtube_dl
                 return true;
             else
                 return false;
-        }
-
-        private static void addToGetParams(Video v)
-        {
-            videoIDsToGetParams.Add(v);
         }
 
         public static void getParamsOfVideos()
@@ -154,55 +150,11 @@ namespace powerful_youtube_dl
             }
         }
 
-        private static void removeNotWorkingVideos()
-        {
-            foreach (PlayList p in PlayList._listOfPlayLists)
-            {
-                List<Video> newListOfVideos = new List<Video>();
-                foreach (Video v in p._listOfVideosInPlayList)
-                {
-                    if (v.videoTitle != null && v.videoTitle != "")
-                        newListOfVideos.Add(v);
-                    else
-                    {
-                        if (v.videoID != null && v.videoID != "")
-                            Statistics.NotWorkingVideo(v);
-                        ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
-                    }
-                }
-                p._listOfVideosInPlayList = newListOfVideos;
-            }
-        }
-
-        private static string decryptDuration(string jsonValue) // np. PT4M50S = 04:40
-        {
-            string tmp = jsonValue;
-            tmp = tmp.Substring(2);
-            string hours = "";
-            string minutes = "00:";
-            string seconds = "";
-            try
-            {
-                int start = tmp.IndexOf("M") < 0 ? 0 : tmp.IndexOf("M") + 1;
-                seconds = tmp.Substring(start, start > 0 ? tmp.IndexOf("S") - start : tmp.IndexOf("S"));
-                start = tmp.IndexOf("H") < 0 ? 0 : tmp.IndexOf("H") + 1;
-                minutes = tmp.Substring(start, start > 0 ? tmp.IndexOf("M") - start : tmp.IndexOf("M")) + ":";
-                hours = tmp.Substring(0, tmp.IndexOf("H")) + ":";
-            } catch { }
-            if (seconds.Length == 1)
-                seconds = "0" + seconds;
-            if (minutes.Length == 2)
-                minutes = "0" + minutes;
-            if (hours.Length == 2)
-                hours = "0" + hours;
-            return hours + minutes + seconds;
-        }
-
         public void Download()
         {
             queueToDownload++;
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = Properties.Settings.Default.ytdlexe;
             if (Properties.Settings.Default.playlistAsFolder)
             {
@@ -222,7 +174,7 @@ namespace powerful_youtube_dl
             process.OutputDataReceived += cmd_DataReceived;
             process.EnableRaisingEvents = true;
             process.StartInfo = startInfo;
-            System.Timers.Timer aTimer = new System.Timers.Timer();
+            Timer aTimer = new Timer();
             aTimer.Elapsed += new ElapsedEventHandler((object sender, ElapsedEventArgs e) => {
                 if (isManualDownload || (!isManualDownload && Properties.Settings.Default.autoDownloadObserve))
                 {
@@ -269,8 +221,83 @@ namespace powerful_youtube_dl
             aTimer.Enabled = true;
         }
 
-        private string lastMessage = "";
-        private string lastPercent = "";
+        override
+        public string ToString()
+        {
+            string toReturn = videoTitle;
+            toReturn = toReturn.Replace(@"\", @" ");
+            toReturn = toReturn.Replace(@"/", @" ");
+            toReturn = toReturn.Replace(@"|", @" ");
+            toReturn = toReturn.Replace(@":", @" ");
+            toReturn = toReturn.Replace("\"", @" ");
+            return toReturn;
+        }
+
+        private static void addToGetParams(Video v)
+        {
+            videoIDsToGetParams.Add(v);
+        }
+
+        private static string decryptDuration(string jsonValue) // np. PT4M50S = 04:40
+        {
+            string tmp = jsonValue;
+            tmp = tmp.Substring(2);
+            string hours = "";
+            string minutes = "00:";
+            string seconds = "";
+            try
+            {
+                int start = tmp.IndexOf("M") < 0 ? 0 : tmp.IndexOf("M") + 1;
+                seconds = tmp.Substring(start, start > 0 ? tmp.IndexOf("S") - start : tmp.IndexOf("S"));
+                start = tmp.IndexOf("H") < 0 ? 0 : tmp.IndexOf("H") + 1;
+                minutes = tmp.Substring(start, start > 0 ? tmp.IndexOf("M") - start : tmp.IndexOf("M")) + ":";
+                hours = tmp.Substring(0, tmp.IndexOf("H")) + ":";
+            } catch { }
+            if (seconds.Length == 1)
+                seconds = "0" + seconds;
+            if (minutes.Length == 2)
+                minutes = "0" + minutes;
+            if (hours.Length == 2)
+                hours = "0" + hours;
+            return hours + minutes + seconds;
+        }
+
+        private static string getPercent(string value)
+        {
+            if (value != null)
+            {
+                string start = "[download]   ";
+                string end = " of";
+                int st = value.IndexOf(start) + start.Length;
+                int en = value.IndexOf(end);
+                if (st > -1 && en > st)
+                {
+                    value = value.Substring(st, 5);
+                    return value;
+                }
+            }
+            return "---";
+        }
+
+        private static void removeNotWorkingVideos()
+        {
+            foreach (PlayList p in PlayList._listOfPlayLists)
+            {
+                List<Video> newListOfVideos = new List<Video>();
+                foreach (Video v in p._listOfVideosInPlayList)
+                {
+                    if (v.videoTitle != null && v.videoTitle != "")
+                        newListOfVideos.Add(v);
+                    else
+                    {
+                        if (v.videoID != null && v.videoID != "")
+                            Statistics.NotWorkingVideo(v);
+                        ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position);
+                    }
+                }
+                p._listOfVideosInPlayList = newListOfVideos;
+            }
+        }
 
         private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -310,35 +337,6 @@ namespace powerful_youtube_dl
                     }));
                 } catch { }
             }
-        }
-
-        private static string getPercent(string value)
-        {
-            if (value != null)
-            {
-                string start = "[download]   ";
-                string end = " of";
-                int st = value.IndexOf(start) + start.Length;
-                int en = value.IndexOf(end);
-                if (st > -1 && en > st)
-                {
-                    value = value.Substring(st, 5);
-                    return value;
-                }
-            }
-            return "---";
-        }
-
-        override
-        public string ToString()
-        {
-            string toReturn = videoTitle;
-            toReturn = toReturn.Replace(@"\", @" ");
-            toReturn = toReturn.Replace(@"/", @" ");
-            toReturn = toReturn.Replace(@"|", @" ");
-            toReturn = toReturn.Replace(@":", @" ");
-            toReturn = toReturn.Replace("\"", @" ");
-            return toReturn;
         }
 
         private bool isVideoLoaded(string id)

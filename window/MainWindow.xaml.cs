@@ -13,7 +13,7 @@ namespace powerful_youtube_dl
 {
     public partial class MainWindow
     {
-        public static System.Windows.Forms.NotifyIcon ni = null;
+        public static NotifyIcon ni = null;
         public static List<string> dontLoad = new List<string>();
         public ObservableCollection<ListViewItemMy> videosInActivePlayList { get; set; }
 
@@ -23,6 +23,7 @@ namespace powerful_youtube_dl
 
             InitializeComponent();
             DataContext = this;
+            //DataContext += new PlayList();
             startTray();
             Statistics stats = new Statistics();
 
@@ -77,7 +78,7 @@ namespace powerful_youtube_dl
         {
             if (ni == null)
             {
-                ni = new System.Windows.Forms.NotifyIcon();
+                ni = new NotifyIcon();
                 Stream iconStream = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/powerful-youtube-dl;component/something/logo.ico")).Stream;
                 ni.Icon = new System.Drawing.Icon(iconStream);
                 ni.Visible = true;
