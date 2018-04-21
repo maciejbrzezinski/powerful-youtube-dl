@@ -20,6 +20,7 @@ namespace powerful_youtube_dl
         public MainWindow()
         {
             videosInActivePlayList = new ObservableCollection<ListViewItemMy>();
+
             InitializeComponent();
             DataContext = this;
             startTray();
@@ -257,7 +258,7 @@ namespace powerful_youtube_dl
             {
                 deleteAllVideosFromList();
                 foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList)
-                    addVideoToList(vid.position);
+                    videosInActivePlayList.Add(vid.position);
             }
         }
 
@@ -268,9 +269,13 @@ namespace powerful_youtube_dl
             DownloadHandler.DownloadQueueAsync();
         }
 
-        public void addVideoToList(ListViewItemMy videom)
+        public void addVideoToList(ListViewItemMy videom, string playlistID)
         {
-            videosInActivePlayList.Add(videom);
+            int index = playlist.SelectedIndex;
+            if (index != -1 && PlayList._listOfPlayLists[index].playListID == playlistID)
+            {
+                videosInActivePlayList.Add(videom);
+            }
         }
 
         public void deleteVideoFromAdd(ListViewItemMy pos)

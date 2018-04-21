@@ -13,12 +13,10 @@ namespace powerful_youtube_dl
         public static ObservableCollection<CheckBox> _listOfPlayListsCheckBox { get; set; }
         public static List<PlayList> _listOfPlayLists = new List<PlayList>();
         public static PlayList singleVideos = null;
+
         public System.Windows.Forms.NotifyIcon notifyIcon = new System.Windows.Forms.NotifyIcon();
-
         public List<Video> _listOfVideosInPlayList = new List<Video>();
-
         public string playListID, playListURL, playListTitle;
-
         public bool toDownload = false;
 
         public CheckBox check;
@@ -112,7 +110,7 @@ namespace powerful_youtube_dl
                 }
                 video.playList = singleVideos;
                 singleVideos._listOfVideosInPlayList.Add(video);
-                ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(video.position);
+                ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(video.position, playListID);
                 ((MainWindow) System.Windows.Application.Current.MainWindow).playlist.SelectedItem = singleVideos.check;
             }
         }
@@ -190,8 +188,7 @@ namespace powerful_youtube_dl
                 {
                     Video toAdd = new Video(id);
                     toAdd.playList = this;
-                    ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(toAdd.position);
-
+                    ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(toAdd.position, playListID);
                     Video._listOfVideos.Add(toAdd);
                     _listOfVideosInPlayList.Add(toAdd);
                 }

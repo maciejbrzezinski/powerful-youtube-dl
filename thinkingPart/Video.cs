@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Timers;
 using System.Web.Script.Serialization;
-using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace powerful_youtube_dl
@@ -17,11 +16,9 @@ namespace powerful_youtube_dl
         public string videoID, videoTitle, videoDuration, videoURL;
         public PlayList playList = null;
         public ListViewItemMy position = null;
-        public CheckBox checkbox;
-        public static bool acceptDownload = false;
         public string downloadPath;
-        public static bool isManualDownload = true;
 
+        public static bool isManualDownload = true;
         public static int currentlyDownloading = 0;
         public static int queueToDownload = 0;
 
