@@ -5,20 +5,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 
-namespace powerful_youtube_dl.window
-{
-    public partial class UserSettings
-    {
-        public UserSettings()
-        {
+namespace powerful_youtube_dl.window {
+
+    public partial class UserSettings {
+
+        public UserSettings() {
             InitializeComponent();
             getSettings();
         }
 
         private RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-        private void getSettings()
-        {
+        private void getSettings() {
             string ytDlPath = Properties.Settings.Default.ytdlexe;
             string downloadPath = Properties.Settings.Default.textDestination;
             string logDestinate = Properties.Settings.Default.logsDestination;
@@ -58,8 +56,7 @@ namespace powerful_youtube_dl.window
             logsGrid.IsEnabled = (bool) createLogs.IsChecked;
         }
 
-        private void selectYoutubeDLPath(object sender, RoutedEventArgs e)
-        {
+        private void selectYoutubeDLPath(object sender, RoutedEventArgs e) {
             Microsoft.Win32.OpenFileDialog dialog = new Microsoft.Win32.OpenFileDialog();
 
             dialog.DefaultExt = ".exe";
@@ -67,60 +64,47 @@ namespace powerful_youtube_dl.window
 
             Nullable<bool> result = dialog.ShowDialog();
 
-            if (result == true)
-            {
+            if (result == true) {
                 Properties.Settings.Default.ytdlexe = dialog.FileName;
                 Properties.Settings.Default.Save();
                 textYTDL.Text = dialog.FileName;
             }
         }
 
-        private void selectDestinationFolder(object sender, RoutedEventArgs e)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
+        private void selectDestinationFolder(object sender, RoutedEventArgs e) {
+            using (var dialog = new FolderBrowserDialog()) {
                 DialogResult result = dialog.ShowDialog();
-                if (dialog != null && dialog.SelectedPath != "")
-                {
+                if (dialog != null && dialog.SelectedPath != "") {
                     textDestination.Text = dialog.SelectedPath;
                     saveSetting(textDestination.Name, textDestination.Text);
                 }
             }
         }
 
-        private void selectLogDestination(object sender, RoutedEventArgs e)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
+        private void selectLogDestination(object sender, RoutedEventArgs e) {
+            using (var dialog = new FolderBrowserDialog()) {
                 DialogResult result = dialog.ShowDialog();
-                if (dialog.SelectedPath != "")
-                {
+                if (dialog.SelectedPath != "") {
                     logsDestination.Text = dialog.SelectedPath;
                     saveSetting(logsDestination.Name, dialog.SelectedPath);
-                    Statistics.logPath = dialog.SelectedPath;
                 }
             }
         }
 
-        private void setMaxDownloads(object sender, TextChangedEventArgs e)
-        {
+        private void setMaxDownloads(object sender, TextChangedEventArgs e) {
             System.Windows.Controls.TextBox field = (System.Windows.Controls.TextBox) sender;
             int num = 0;
-            if (Int32.TryParse(field.Text, out num))
-            {
+            if (Int32.TryParse(field.Text, out num)) {
                 vTemp = field.Text;
                 saveSetting(field.Name, num);
             }
         }
 
-        private void checkChanged(object sender, RoutedEventArgs e)
-        {
-            try
-            {
+        private void checkChanged(object sender, RoutedEventArgs e) {
+            try {
                 System.Windows.Controls.CheckBox check = (System.Windows.Controls.CheckBox) sender;
                 saveSetting(check.Name, (bool) check.IsChecked);
-                switch (check.Name)
-                {
+                switch (check.Name) {
                     case "autoLoadLink":
                         hierarchia.IsEnabled = (bool) check.IsChecked;
                         break;
@@ -128,12 +112,12 @@ namespace powerful_youtube_dl.window
                     case "startWithSystem":
                         if ((bool) check.IsChecked)
                             rkApp.SetValue("PowerfulYTDownloader", System.Windows.Forms.Application.ExecutablePath);
-                        else
-                        {
-                            try
-                            {
+                        else {
+                            try {
                                 rkApp.DeleteValue("PowerfulYTDownloader");
-                            } catch { }
+                            } catch (Exception xce) {
+                                Console.WriteLine("TUTAJ");
+                            }
                         }
                         break;
 
@@ -145,17 +129,17 @@ namespace powerful_youtube_dl.window
                         logsGrid.IsEnabled = (bool) check.IsChecked;
                         break;
                 }
-            } catch { }
+            } catch (Exception xce) {
+                Console.WriteLine("TUTAJ");
+            }
         }
 
-        private void saveSetting(string setting, object status)
-        {
+        private void saveSetting(string setting, object status) {
             Properties.Settings.Default[setting] = status;
             Properties.Settings.Default.Save();
         }
 
-        private int getIntegerValue(string value)
-        {
+        private int getIntegerValue(string value) {
             int a = -1;
             Int32.TryParse(value, out a);
             if (value == "0")
@@ -166,18 +150,14 @@ namespace powerful_youtube_dl.window
                 return a;
         }
 
-        private void checkRestFields(int value, System.Windows.Controls.TextBox t1, System.Windows.Controls.TextBox t2, System.Windows.Controls.TextBox t3)
-        {
-            if (getIntegerValue(t1.Text) == value)
-            {
+        private void checkRestFields(int value, System.Windows.Controls.TextBox t1, System.Windows.Controls.TextBox t2, System.Windows.Controls.TextBox t3) {
+            if (getIntegerValue(t1.Text) == value) {
                 t1.Text = vTemp;
                 saveSetting(t1.Name, value);
-            } else if (getIntegerValue(t2.Text) == value)
-            {
+            } else if (getIntegerValue(t2.Text) == value) {
                 t2.Text = vTemp;
                 saveSetting(t2.Name, value);
-            } else if (getIntegerValue(t3.Text) == value)
-            {
+            } else if (getIntegerValue(t3.Text) == value) {
                 t3.Text = vTemp;
                 saveSetting(t3.Name, value);
             }
@@ -185,17 +165,14 @@ namespace powerful_youtube_dl.window
 
         private string vTemp = "";
 
-        private void saveValueGotFocus(object sender, RoutedEventArgs e)
-        {
+        private void saveValueGotFocus(object sender, RoutedEventArgs e) {
             vTemp = ((System.Windows.Controls.TextBox) sender).Text;
         }
 
-        private void maxDownloadLostFocus(object sender, RoutedEventArgs e)
-        {
+        private void maxDownloadLostFocus(object sender, RoutedEventArgs e) {
             System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox) sender;
             int a = getIntegerValue(box.Text);
-            if (a > -1)
-            {
+            if (a > -1) {
                 saveSetting(box.Name, a);
             } else
                 box.Text = vTemp;

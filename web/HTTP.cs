@@ -3,27 +3,28 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace powerful_youtube_dl
-{
-    internal class HTTP
-    {
+namespace powerful_youtube_dl {
+
+    public class HTTP {
+
+        public HTTP() {
+        }
+
         [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public static string GET(string uri)
-        {
+        public string GET(string uri) {
+            uri = uri.Trim();
             HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip;
 
             using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
             using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
+            using (StreamReader reader = new StreamReader(stream)) {
                 return reader.ReadToEnd();
             }
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public string Post(string uri, string data, string contentType)
-        {
+        public string Post(string uri, string data, string contentType) {
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
             HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
@@ -32,15 +33,13 @@ namespace powerful_youtube_dl
             request.ContentType = "text/html; charset=utf-8";
             request.Method = "POST";
 
-            using (Stream requestBody = request.GetRequestStream())
-            {
+            using (Stream requestBody = request.GetRequestStream()) {
                 requestBody.Write(dataBytes, 0, dataBytes.Length);
             }
 
             using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
             using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
+            using (StreamReader reader = new StreamReader(stream)) {
                 return reader.ReadToEnd();
             }
         }

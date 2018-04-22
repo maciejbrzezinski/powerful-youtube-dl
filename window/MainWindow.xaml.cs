@@ -4,47 +4,44 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
-namespace powerful_youtube_dl
-{
-    public partial class MainWindow
-    {
+namespace powerful_youtube_dl {
+
+    public partial class MainWindow {
         public static NotifyIcon ni = null;
         public static List<string> dontLoad = new List<string>();
         public ObservableCollection<ListViewItemMy> videosInActivePlayList { get; set; }
 
-        public MainWindow()
-        {
+        public MainWindow() {
             videosInActivePlayList = new ObservableCollection<ListViewItemMy>();
 
             InitializeComponent();
             DataContext = this;
-            //DataContext += new PlayList();
             startTray();
-            Statistics stats = new Statistics();
+            Statistics statistics = new Statistics();
 
-            if (Properties.Settings.Default.firstRun)
-            {
+            if (Properties.Settings.Default.firstRun) {
                 window.UserSettings ss = new window.UserSettings();
                 ss.ShowDialog();
                 Properties.Settings.Default.firstRun = false;
                 Properties.Settings.Default.Save();
             }
 
-            if (Properties.Settings.Default.playlists != null && Properties.Settings.Default.autoObservePlaylists)
-            {
-                foreach (Object o in Properties.Settings.Default.playlists)
-                {
-                    try
-                    {
+            if (Properties.Settings.Default.playlists != null && Properties.Settings.Default.autoObservePlaylists) {
+                foreach (Object o in Properties.Settings.Default.playlists) {
+                    try {
                         Video.isManualDownload = false;
                         string link = o.ToString();
                         new PlayList(link);
-                    } catch { }
+                    } catch (Exception e) {
+                        Console.WriteLine("TUTAJ");
+                    }
                 }
             } else
                 Properties.Settings.Default.playlists = new System.Collections.Specialized.StringCollection();
@@ -53,31 +50,25 @@ namespace powerful_youtube_dl
                 Hide();
         }
 
-        private void closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (Properties.Settings.Default.closeToTray)
-            {
+        private void closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (Properties.Settings.Default.closeToTray) {
                 Hide();
                 e.Cancel = true;
             }
         }
 
-        private void tryToTray(object sender, EventArgs e)
-        {
+        private void tryToTray(object sender, EventArgs e) {
             if (WindowState == WindowState.Minimized && Properties.Settings.Default.doTray)
                 this.Hide();
         }
 
-        private void trayDoubleClick(object sender, EventArgs args)
-        {
+        private void trayDoubleClick(object sender, EventArgs args) {
             this.Show();
             this.WindowState = WindowState.Normal;
         }
 
-        private void startTray()
-        {
-            if (ni == null)
-            {
+        private void startTray() {
+            if (ni == null) {
                 ni = new NotifyIcon();
                 Stream iconStream = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/powerful-youtube-dl;component/something/logo.ico")).Stream;
                 ni.Icon = new System.Drawing.Icon(iconStream);
@@ -87,23 +78,20 @@ namespace powerful_youtube_dl
             }
         }
 
-        public static void showNotifyIconMessage(string title, string message, ToolTipIcon icon, int miliseconds)
-        {
+        public static void showNotifyIconMessage(string title, string message, ToolTipIcon icon, int miliseconds) {
             ni.BalloonTipText = message;
             ni.BalloonTipIcon = icon;
             ni.BalloonTipTitle = title;
             ni.ShowBalloonTip(miliseconds);
         }
 
-        private ContextMenu createMenu()
-        {
+        private ContextMenu createMenu() {
             ContextMenu menu = new ContextMenu();
             menu.MenuItems.Add("Wyjdź", (s, e) => System.Windows.Application.Current.Shutdown());
             return menu;
         }
 
-        public System.Windows.Controls.ContextMenu createPlaylistMenu(PlayList toDelete)
-        {
+        public System.Windows.Controls.ContextMenu createPlaylistMenu(PlayList toDelete) {
             System.Windows.Controls.ContextMenu menu = new System.Windows.Controls.ContextMenu();
             System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem();
             item.Header = "Usuń";
@@ -112,8 +100,7 @@ namespace powerful_youtube_dl
             return menu;
         }
 
-        private void deletePlaylist(PlayList toDelete)
-        {
+        private void deletePlaylist(PlayList toDelete) {
             int index = PlayList._listOfPlayListsCheckBox.IndexOf(toDelete.check);
             foreach (Video v in toDelete._listOfVideosInPlayList)
                 Video._listOfVideos.Remove(v);
@@ -122,84 +109,70 @@ namespace powerful_youtube_dl
             PlayList._listOfPlayLists.Remove(toDelete);
             toDelete._listOfVideosInPlayList.Clear();
 
-            if (PlayList._listOfPlayListsCheckBox.Count > 0)
-            {
+            if (PlayList._listOfPlayListsCheckBox.Count > 0) {
                 if (PlayList._listOfPlayListsCheckBox.Count > index)
                     playlist.SelectedIndex = index;
-                else
-                {
-                    while (true)
-                    {
+                else {
+                    while (true) {
                         index--;
-                        if (index == -1)
-                        {
+                        if (index == -1) {
                             playlist.SelectedItem = null;
                             break;
                         }
-                        if (PlayList._listOfPlayListsCheckBox.Count > index)
-                        {
+                        if (PlayList._listOfPlayListsCheckBox.Count > index) {
                             playlist.SelectedIndex = index;
                             break;
                         }
                     }
                 }
-            } else
-            {
+            } else {
                 deleteAllVideosFromList();
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
+        private void Button_Click_2(object sender, RoutedEventArgs e) {
             loadURL();
         }
 
-        private void loadURL()
-        {
+        private void loadURL() {
+            PlayList listID = new PlayList();
             string url = link.Text;
             if (url.Contains(" "))
                 Error("Podany link jest nieprawidłowy!");
-            else if (url.Contains("channel") || url.Contains("user"))
-            {
+            else if (url.Contains("channel") || url.Contains("user")) {
                 int wynik = Dialog.Prompt("Co dokładnie ma zostać pobrane:", "Powerful YouTube DL", "Wszystkie playlisty użytkownika", "Wszystkie materiały dodane przez użytkownika");
                 if (wynik == 0 || wynik == 1)
                     new User(url, wynik);    ///////////////////////// ZROBIĆ POBIERANIE WSZYSTKICH DODANYCH PLIKÓW
                 else if (wynik == 3)
                     System.Windows.MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
-            } else if (url.Contains("watch"))
-            {
+            } else if (url.Contains("watch")) {
                 int wynik = -1;
-                if (url.Contains("list"))
-                {
+                if (url.Contains("list")) {
                     wynik = Dialog.Prompt("Co dokładnie ma zostać pobrane:", "Powerful YouTube DL", "Tylko piosenka, bez playlisty", "Cała playlista na której umieszczona jest piosenka");
                     if (wynik == 0)
-                        new PlayList(new Video(url));
+                        new PlayList(new Video(url, listID));
                     else if (wynik == 1)
                         new PlayList(url);
                     else if (wynik == 3)
                         System.Windows.MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
                 } else
-                    new PlayList(new Video(url));
-            } else if (url.Contains("playlist") || url.Contains("list"))
-            {
+                    new PlayList(new Video(url, listID));
+            } else if (url.Contains("playlist") || url.Contains("list")) {
                 new PlayList(url);
             } else
                 Error("Podany link jest nieprawidłowy!");
-            Video.getParamsOfVideos();
-            Video.videoIDsToGetParams = new List<Video>();
+
+            if (listID.videoIDsToGetParams.Count > 0)
+                listID.getParamsOfVideos();
         }
 
-        public static void Error(string err)
-        {
+        public static void Error(string err) {
             System.Windows.Forms.MessageBox.Show(err, "Błąd!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private bool checkIfYoutubeURL(string url)
-        {
-            if (url.Contains("playlist") || url.Contains("list") || url.Contains("watch") || url.Contains("channel") || url.Contains("user"))
-            {
-                if (url.Contains("youtu"))
-                {
+        private bool checkIfYoutubeURL(string url) {
+            if (url.Contains("playlist") || url.Contains("list") || url.Contains("watch") || url.Contains("channel") || url.Contains("user")) {
+                if (url.Contains("youtu")) {
                     string test = "";
 
                     int start = url.IndexOf("v=");
@@ -252,58 +225,60 @@ namespace powerful_youtube_dl
             return false;
         }
 
-        private void playlist_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
+        private void playlist_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
             int index = playlist.SelectedIndex;
-            if (index != -1)
-            {
+            if (index != -1) {
                 deleteAllVideosFromList();
-                foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList)
-                    videosInActivePlayList.Add(vid.position);
+
+                Thread ths = new Thread(() => {
+                    foreach (Video vid in PlayList._listOfPlayLists[index]._listOfVideosInPlayList) {
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                         DispatcherPriority.Send,
+                         new Action(async () => {
+                             videosInActivePlayList.Add(vid.position);
+                             await Task.Delay(10);
+                         }));
+                    }
+                });
+                ths.Start();
             }
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
+        private void Button_Click_3(object sender, RoutedEventArgs e) {
             Video.isManualDownload = true;
             DownloadHandler.Load();
             DownloadHandler.DownloadQueueAsync();
         }
 
-        public void addVideoToList(ListViewItemMy videom, string playlistID)
-        {
+        public void addVideoToList(ListViewItemMy videom, string playlistID) {
             int index = playlist.SelectedIndex;
-            if (index != -1 && PlayList._listOfPlayLists[index].playListID == playlistID)
-            {
+            if (index != -1 && PlayList._listOfPlayLists[index].playListID == playlistID) {
                 videosInActivePlayList.Add(videom);
             }
         }
 
-        public void deleteVideoFromAdd(ListViewItemMy pos)
-        {
-            videosInActivePlayList.Remove(pos);
+        public void deleteVideoFromAdd(ListViewItemMy pos, string playlistID) {
+            int index = playlist.SelectedIndex;
+            if (index != -1 && PlayList._listOfPlayLists[index].playListID == playlistID) {
+                videosInActivePlayList.Remove(pos);
+            }
         }
 
-        public void deleteAllVideosFromList()
-        {
+        public void deleteAllVideosFromList() {
             videosInActivePlayList.Clear();
         }
 
         private static bool isWriting = false;
 
-        private void search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
+        private void search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
             isWriting = true;
             Task.Factory.StartNew(() => {
                 System.Threading.Thread.Sleep(10);
                 isWriting = false;
-                if (!isWriting)
-                {
-                    if (addVideos != null)
-                    {
+                if (!isWriting) {
+                    if (addVideos != null) {
                         CollectionView view = (CollectionView) CollectionViewSource.GetDefaultView(videosInActivePlayList);
-                        if (view != null)
-                        {
+                        if (view != null) {
                             view.Filter = UserFilter;
                             CollectionViewSource.GetDefaultView(videosInActivePlayList).Refresh();
                         }
@@ -312,12 +287,10 @@ namespace powerful_youtube_dl
             });
         }
 
-        private bool UserFilter(object item)
-        {
+        private bool UserFilter(object item) {
             if (String.IsNullOrEmpty(search.Text))
                 return true;
-            else
-            {
+            else {
                 if (item != null)
                     return ((item as ListViewItemMy).Title.IndexOf(search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
                 else
@@ -325,48 +298,38 @@ namespace powerful_youtube_dl
             }
         }
 
-        private void searchAfterSubmit(object sender, System.Windows.Input.KeyEventArgs e)
-        {
+        private void searchAfterSubmit(object sender, System.Windows.Input.KeyEventArgs e) {
             if (e.Key != System.Windows.Input.Key.Enter)
                 return;
 
-            if (addVideos != null)
-            {
+            if (addVideos != null) {
                 CollectionView view = (CollectionView) CollectionViewSource.GetDefaultView(videosInActivePlayList);
-                if (view != null)
-                {
+                if (view != null) {
                     view.Filter = UserFilter;
                     CollectionViewSource.GetDefaultView(videosInActivePlayList).Refresh();
                 }
             }
         }
 
-        private void search_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
-        {
+        private void search_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e) {
             System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox) sender;
-            if (box.Text == "Przeszukaj listę")
-            {
+            if (box.Text == "Przeszukaj listę") {
                 box.SelectAll();
             }
         }
 
         private string tmpURL = "";
 
-        private void link_LostFocus(object sender, RoutedEventArgs e)
-        {
+        private void link_LostFocus(object sender, RoutedEventArgs e) {
             System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox) sender;
             string url = box.Text;
-            if (checkIfYoutubeURL(url))
-            {
+            if (checkIfYoutubeURL(url)) {
                 tmpURL = url;
-                if (Properties.Settings.Default.autoLoadLink)
-                {
-                    if (!dontLoad.Contains(tmpURL))
-                    {
+                if (Properties.Settings.Default.autoLoadLink) {
+                    if (!dontLoad.Contains(tmpURL)) {
                         dontLoad.Add(tmpURL);
                         loadURL();
-                        if (Properties.Settings.Default.autoStartDownload)
-                        {
+                        if (Properties.Settings.Default.autoStartDownload) {
                             DownloadHandler.Load();
                             if (DownloadHandler.toDownload.Count > 0)
                                 DownloadHandler.DownloadQueueAsync();
@@ -377,21 +340,16 @@ namespace powerful_youtube_dl
                 box.Text = tmpURL;
         }
 
-        private void link_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
+        private void link_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
             System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox) sender;
             string url = box.Text;
-            if (checkIfYoutubeURL(url))
-            {
+            if (checkIfYoutubeURL(url)) {
                 tmpURL = url;
-                if (Properties.Settings.Default.autoLoadLink)
-                {
-                    if (!dontLoad.Contains(tmpURL))
-                    {
+                if (Properties.Settings.Default.autoLoadLink) {
+                    if (!dontLoad.Contains(tmpURL)) {
                         dontLoad.Add(tmpURL);
                         loadURL();
-                        if (Properties.Settings.Default.autoStartDownload)
-                        {
+                        if (Properties.Settings.Default.autoStartDownload) {
                             DownloadHandler.Load();
                             if (DownloadHandler.toDownload.Count > 0)
                                 DownloadHandler.DownloadQueueAsync();
@@ -401,25 +359,19 @@ namespace powerful_youtube_dl
             }
         }
 
-        private void link_GotFocus(object sender, RoutedEventArgs e)
-        {
+        private void link_GotFocus(object sender, RoutedEventArgs e) {
             Video.isManualDownload = true;
             System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox) sender;
             tmpURL = box.Text;
-            if (!checkIfYoutubeURL(tmpURL))
-            {
-                if (checkIfYoutubeURL(System.Windows.Clipboard.GetText()))
-                {
+            if (!checkIfYoutubeURL(tmpURL)) {
+                if (checkIfYoutubeURL(System.Windows.Clipboard.GetText())) {
                     tmpURL = System.Windows.Clipboard.GetText();
                     box.Text = tmpURL;
-                    if (Properties.Settings.Default.autoLoadLink)
-                    {
-                        if (!dontLoad.Contains(tmpURL))
-                        {
+                    if (Properties.Settings.Default.autoLoadLink) {
+                        if (!dontLoad.Contains(tmpURL)) {
                             dontLoad.Add(tmpURL);
                             loadURL();
-                            if (Properties.Settings.Default.autoStartDownload)
-                            {
+                            if (Properties.Settings.Default.autoStartDownload) {
                                 DownloadHandler.Load();
                                 if (DownloadHandler.toDownload.Count > 0)
                                     DownloadHandler.DownloadQueueAsync();
@@ -431,29 +383,23 @@ namespace powerful_youtube_dl
             }
         }
 
-        private void openSetting(object sender, RoutedEventArgs e)
-        {
+        private void openSetting(object sender, RoutedEventArgs e) {
             tabs.SelectedIndex = 0;
             window.UserSettings ss = new window.UserSettings();
             ss.ShowDialog();
         }
 
-        private void link_lSubmit(object sender, System.Windows.Input.KeyEventArgs e)
-        {
+        private void link_lSubmit(object sender, System.Windows.Input.KeyEventArgs e) {
             if (e.Key != System.Windows.Input.Key.Enter)
                 return;
             System.Windows.Controls.TextBox box = (System.Windows.Controls.TextBox) sender;
-            if (checkIfYoutubeURL(box.Text))
-            {
+            if (checkIfYoutubeURL(box.Text)) {
                 tmpURL = box.Text;
-                if (Properties.Settings.Default.autoLoadLink)
-                {
-                    if (!dontLoad.Contains(tmpURL))
-                    {
+                if (Properties.Settings.Default.autoLoadLink) {
+                    if (!dontLoad.Contains(tmpURL)) {
                         dontLoad.Add(tmpURL);
                         loadURL();
-                        if (Properties.Settings.Default.autoStartDownload)
-                        {
+                        if (Properties.Settings.Default.autoStartDownload) {
                             DownloadHandler.Load();
                             if (DownloadHandler.toDownload.Count > 0)
                                 DownloadHandler.DownloadQueueAsync();
@@ -463,16 +409,14 @@ namespace powerful_youtube_dl
             }
         }
 
-        private void openFolderOrBrowser(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
+        private void openFolderOrBrowser(object sender, System.Windows.Input.MouseButtonEventArgs e) {
             System.Windows.Controls.ListView listView = (System.Windows.Controls.ListView) sender;
             ListViewItemMy itemMy = (ListViewItemMy) listView.SelectedItem;
-            if (itemMy != null)
-            {
+            if (itemMy != null) {
                 if (itemMy.Status == "Pobrano")
                     Process.Start(itemMy.Parent.downloadPath.Substring(0, itemMy.Parent.downloadPath.IndexOf(itemMy.Parent.ToString())));
                 else
-                    Process.Start(itemMy.Parent.videoURL);
+                    Process.Start(itemMy.Parent.position.Link);
             }
         }
     }
