@@ -12,9 +12,10 @@ using System.Windows.Threading;
 namespace powerful_youtube_dl {
 
     public class PlayList {
-        public static ObservableCollection<CheckBox> _listOfPlayListsCheckBox { get; set; }
+        public static ObservableCollection<ListViewItemMy> _listOfPlayListsView { get; set; }
         public static List<PlayList> _listOfPlayLists = new List<PlayList>();
         public static PlayList singleVideos = null;
+        public static bool isVisible = false;
 
         public List<Video> videoIDsToGetParams = new List<Video>();
 
@@ -22,21 +23,26 @@ namespace powerful_youtube_dl {
         public List<Video> _listOfVideosInPlayList = new List<Video>();
         public string playListID, playListURL, playListTitle;
         public bool toDownload = false;
+        public ListViewItemMy position = null;
 
-        public CheckBox check;
+        // public CheckBox check;
 
         public PlayList() {
-            _listOfPlayListsCheckBox = new ObservableCollection<CheckBox>();
+            if (_listOfPlayListsView == null)
+                _listOfPlayListsView = new ObservableCollection<ListViewItemMy>();
             if (singleVideos == null) {
                 playListTitle = "Pojedyncze";
-                check = new CheckBox();
-                check.Click += new RoutedEventHandler(checkChanged);
-                check.Content = playListTitle;
+                position = new ListViewItemMy();
+                position.Title = playListTitle;
+                position.Check = false;
                 singleVideos = this;
             }
         }
 
         public PlayList(string link) {
+            if (_listOfPlayListsView == null)
+                _listOfPlayListsView = new ObservableCollection<ListViewItemMy>();
+
             string id = "";
             try {
                 id = link.Substring(link.IndexOf("list=") + 5, 34); //24
@@ -44,13 +50,12 @@ namespace powerful_youtube_dl {
                 id = link.Substring(link.IndexOf("list=") + 5, 24);
             }
             if (!checkIfPlayListExists(id)) {
+                position = new ListViewItemMy();
                 playListID = id;
                 playListURL = link;
                 playListTitle = getTitle(id);
-                check = new CheckBox();
-                check.Click += new RoutedEventHandler(checkChanged);
-                check.Content = playListTitle;
-                check.ContextMenu = ((MainWindow) System.Windows.Application.Current.MainWindow).createPlaylistMenu(this);
+                position.Title = playListTitle;
+                position.Check = false;
                 _listOfPlayLists.Add(this);
 
                 Thread ths = new Thread(() => {
@@ -64,7 +69,7 @@ namespace powerful_youtube_dl {
                 });
                 ths.Start();
 
-                _listOfPlayListsCheckBox.Add(check);
+                _listOfPlayListsView.Add(position);
                 addPlayListToSettings(playListURL);
 
                 System.Windows.Threading.DispatcherTimer checkingTimer = new System.Windows.Threading.DispatcherTimer();
@@ -83,13 +88,15 @@ namespace powerful_youtube_dl {
         }
 
         public PlayList(string id, string title) {
+            if (_listOfPlayListsView == null)
+                _listOfPlayListsView = new ObservableCollection<ListViewItemMy>();
             if (!checkIfPlayListExists(id)) {
+                position = new ListViewItemMy();
                 playListID = id;
                 playListTitle = title;
                 playListURL = "https://www.youtube.com/playlist?list=" + playListID;
-                check = new CheckBox();
-                check.Click += new RoutedEventHandler(checkChanged);
-                check.Content = playListTitle;
+                position.Title = playListTitle;
+                position.Check = false;
 
                 Thread ths = new Thread(() => {
                     getPlayListVideos(new HTTP().GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playListID + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
@@ -102,7 +109,7 @@ namespace powerful_youtube_dl {
                 });
                 ths.Start();
 
-                _listOfPlayListsCheckBox.Add(check);
+                _listOfPlayListsView.Add(position);
                 _listOfPlayLists.Add(this);
                 addPlayListToSettings(playListURL);
 
@@ -115,19 +122,23 @@ namespace powerful_youtube_dl {
         }
 
         public PlayList(Video video) {
+            if (_listOfPlayListsView == null)
+                _listOfPlayListsView = new ObservableCollection<ListViewItemMy>();
+
             if (video.position != null) {
                 if (singleVideos == null) {
+                    position = new ListViewItemMy();
                     playListTitle = "Pojedyncze";
-                    check = new CheckBox();
-                    check.Click += new RoutedEventHandler(checkChanged);
-                    check.Content = playListTitle;
+                    position.Title = playListTitle;
+                    position.Check = false;
                     singleVideos = this;
-                    _listOfPlayListsCheckBox.Add(check);
-                    _listOfPlayLists.Add(this);
                 }
-
-                //((MainWindow) System.Windows.Application.Current.MainWindow).playlist.SelectedItem = singleVideos.check;
-                ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(video.position, playListID);
+                if (!isVisible) {
+                    isVisible = true;
+                    _listOfPlayListsView.Add(singleVideos.position);
+                    _listOfPlayLists.Add(singleVideos);
+                }
+                ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(video.position, singleVideos.playListID);
             }
         }
 
@@ -218,11 +229,13 @@ namespace powerful_youtube_dl {
                 Dictionary<string, object> vid = (Dictionary<string, object>) item;
                 Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
                 string title = temp["title"].ToString(); // resourceId -> videoId
-                Dictionary<string, object> vid2 = (Dictionary<string, object>) temp["resourceId"];
-                string id = vid2["videoId"].ToString();
-                Video toAdd = new Video(id, this);
-                if (toAdd.position != null) {
-                    toAdd.position.Title = title;
+                if (title != "Deleted video") {
+                    Dictionary<string, object> vid2 = (Dictionary<string, object>) temp["resourceId"];
+                    string id = vid2["videoId"].ToString();
+                    Video toAdd = new Video(id, this);
+                    if (toAdd.position != null) {
+                        toAdd.position.Title = title;
+                    }
                 }
             }
             if (obj2.ContainsKey("nextPageToken")) {
@@ -274,8 +287,8 @@ namespace powerful_youtube_dl {
 
                     Dictionary<string, object> vid = (Dictionary<string, object>) val[i];
                     string id = vid["id"].ToString();
-                    for (int d = 0; d < Video._listOfVideos.Count; d++) {
-                        if (Video._listOfVideos[d].position.Id == id) {
+                    for (int d = 0; d < _listOfVideosInPlayList.Count; d++) {
+                        if (_listOfVideosInPlayList[d].position.Id == id) {
                             current = d;
                             break;
                         }
@@ -283,19 +296,31 @@ namespace powerful_youtube_dl {
 
                     Dictionary<string, object> temp2 = (Dictionary<string, object>) vid["contentDetails"];
                     string duration = decryptDuration(temp2["duration"].ToString());
-                    Video._listOfVideos[current].position.Duration = duration;
+                    _listOfVideosInPlayList[current].position.Duration = duration;
 
-                    if (!checkIfVideoIsOnDisk(Video._listOfVideos[current]))
-                        Video._listOfVideos[current].position.Check = true;
-                    else {
-                        Video._listOfVideos[current].position.Status = "Pobrano";
-                        if (Properties.Settings.Default.playlistAsFolder)
-                            Video._listOfVideos[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + Video._listOfVideos[current].playList.ToString() + "\\" + Video._listOfVideos[current].ToString() + ".mp3";
-                        else
-                            Video._listOfVideos[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + Video._listOfVideos[current].ToString() + ".mp3";
+                    if (_listOfVideosInPlayList[current].position.Title == null) {
+                        Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
+                        _listOfVideosInPlayList[current].position.Title = temp["title"].ToString();
                     }
 
-                    Statistics.LoadedVideo(Video._listOfVideos[current]);
+                    if (!checkIfVideoIsOnDisk(_listOfVideosInPlayList[current]))
+                        _listOfVideosInPlayList[current].position.Check = true;
+                    else {
+                        _listOfVideosInPlayList[current].position.Status = "Pobrano";
+                        if (Properties.Settings.Default.playlistAsFolder)
+                            _listOfVideosInPlayList[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + _listOfVideosInPlayList[current].playList.ToString() + "\\" + _listOfVideosInPlayList[current].ToString() + ".mp3";
+                        else
+                            _listOfVideosInPlayList[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + _listOfVideosInPlayList[current].ToString() + ".mp3";
+                    }
+                    if (!_listOfVideosInPlayList[current].isVideoLoadedInActivePlaylist) {
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                          DispatcherPriority.Normal,
+                          new Action(() => {
+                              ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(_listOfVideosInPlayList[current].position, playListID);
+                          }));
+                    }
+
+                    Statistics.LoadedVideo(_listOfVideosInPlayList[current]);
                 }
             }
             videoIDsToGetParams = new List<Video>();

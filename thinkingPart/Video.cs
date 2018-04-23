@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 using System.Timers;
-using System.Web.Script.Serialization;
 using System.Windows.Threading;
 
 namespace powerful_youtube_dl {
@@ -19,6 +16,8 @@ namespace powerful_youtube_dl {
         public string downloadPath;
         public PlayList playList = null;
         public ListViewItemMy position = null;
+        private bool isDownloaded = false;
+        public bool isVideoLoadedInActivePlaylist = false;
 
         //public string videoID, videoTitle, videoDuration, videoURL;
         private string lastMessage = "";
@@ -35,7 +34,7 @@ namespace powerful_youtube_dl {
                 id = linkOrID;
                 position.Link = @"https://www.youtube.com/watch?v=" + id;
             }
-            if (!isVideoLoaded(id)) {
+            if (id != null && !isVideoLoaded(id)) {
                 position.Id = id;
                 playList = list;
                 position.Status = "---";
@@ -69,8 +68,9 @@ namespace powerful_youtube_dl {
             process.StartInfo = startInfo;
             Timer aTimer = new Timer();
             aTimer.Elapsed += new ElapsedEventHandler((object sender, ElapsedEventArgs e) => {
-                if (isManualDownload || (!isManualDownload && Properties.Settings.Default.autoDownloadObserve)) {
-                    if (currentlyDownloading < Properties.Settings.Default.maxDownloading) {
+                if (!isDownloaded && (isManualDownload || (!isManualDownload && Properties.Settings.Default.autoDownloadObserve))) {
+                    if (currentlyDownloading < Properties.Settings.Default.maxDownloading && !isDownloaded) {
+                        isDownloaded = true;
                         queueToDownload--;
                         currentlyDownloading++;
                         Statistics.BeginDownload(this);
@@ -99,30 +99,30 @@ namespace powerful_youtube_dl {
 
                         Statistics.CompleteDownload(this);
                         currentlyDownloading--;
-                        try {
-                            aTimer.AutoReset = false;
-                            aTimer.Enabled = false;
-                            aTimer.Close();
-                        } catch (Exception exc) {
-                            Console.WriteLine("TUTAJ");
-                        }
+                        aTimer.Close();
                     }
                 }
+                if (!isDownloaded)
+                    aTimer.Enabled = true;
             });
             aTimer.Interval = 1000;
-            aTimer.AutoReset = true;
             aTimer.Enabled = true;
         }
 
         override
         public string ToString() {
-            string toReturn = position.Title;
-            toReturn = toReturn.Replace(@"\", @" ");
-            toReturn = toReturn.Replace(@"/", @" ");
-            toReturn = toReturn.Replace(@"|", @" ");
-            toReturn = toReturn.Replace(@":", @" ");
-            toReturn = toReturn.Replace("\"", @" ");
-            return toReturn;
+            if (position.Title != null) {
+                string toReturn = position.Title;
+                toReturn = toReturn.Replace(@"\", @" ");
+                toReturn = toReturn.Replace(@"/", @" ");
+                toReturn = toReturn.Replace(@"|", @" ");
+                toReturn = toReturn.Replace(@":", @" ");
+                toReturn = toReturn.Replace("\"", @" ");
+                return toReturn;
+            } else if (position.Id != null)
+                return position.Id;
+            else
+                return "";
         }
 
         private static string getPercent(string value) {
