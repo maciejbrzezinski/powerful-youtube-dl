@@ -430,9 +430,10 @@ namespace powerful_youtube_dl {
             System.Windows.Controls.ListView listView = (System.Windows.Controls.ListView) sender;
             ListViewItemMy itemMy = (ListViewItemMy) listView.SelectedItem;
             if (itemMy != null) {
-                if (itemMy.Status == "Pobrano")
-                    Process.Start(itemMy.Parent.downloadPath.Substring(0, itemMy.Parent.downloadPath.IndexOf(itemMy.Parent.ToString())));
-                else
+                if (itemMy.Status == "Pobrano") {
+                    string argument = "/select, \"" + itemMy.Parent.downloadPath + "\"";
+                    Process.Start("explorer.exe", argument);
+                } else
                     Process.Start(itemMy.Parent.position.Link);
             }
         }
