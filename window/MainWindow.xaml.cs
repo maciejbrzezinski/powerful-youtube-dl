@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
@@ -34,6 +35,21 @@ namespace powerful_youtube_dl {
                 Properties.Settings.Default.firstRun = false;
                 Properties.Settings.Default.Save();
             }
+
+            timer.Elapsed += new ElapsedEventHandler((object sender1, ElapsedEventArgs e1) => {
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                            DispatcherPriority.Send,
+                            new Action(async () => {
+                                if (addVideos != null) {
+                                    CollectionView view = (CollectionView) CollectionViewSource.GetDefaultView(videosInActivePlayList);
+                                    if (view != null) {
+                                        view.Filter = UserFilter;
+                                        CollectionViewSource.GetDefaultView(videosInActivePlayList).Refresh();
+                                    }
+                                }
+                            }));
+            });
+            timer.AutoReset = false;
 
             if (Properties.Settings.Default.playlists != null && Properties.Settings.Default.autoObservePlaylists) {
                 foreach (Object o in Properties.Settings.Default.playlists) {
@@ -278,22 +294,14 @@ namespace powerful_youtube_dl {
         }
 
         private static bool isWriting = false;
+        private static System.Timers.Timer timer = new System.Timers.Timer();
 
         private void search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-            isWriting = true;
-            Task.Factory.StartNew(() => {
-                System.Threading.Thread.Sleep(10);
-                isWriting = false;
-                if (!isWriting) {
-                    if (addVideos != null) {
-                        CollectionView view = (CollectionView) CollectionViewSource.GetDefaultView(videosInActivePlayList);
-                        if (view != null) {
-                            view.Filter = UserFilter;
-                            CollectionViewSource.GetDefaultView(videosInActivePlayList).Refresh();
-                        }
-                    }
-                }
-            });
+            if (videosInActivePlayList.Count > 0) {
+                timer.Interval = 300;
+                if (!timer.Enabled)
+                    timer.Enabled = true;
+            }
         }
 
         private bool UserFilter(object item) {
