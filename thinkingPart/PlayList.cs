@@ -229,7 +229,7 @@ namespace powerful_youtube_dl {
                 Dictionary<string, object> vid = (Dictionary<string, object>) item;
                 Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
                 string title = temp["title"].ToString(); // resourceId -> videoId
-                if (title != "Deleted video") {
+                if (title != "Deleted video" && title != "Private video") {
                     Dictionary<string, object> vid2 = (Dictionary<string, object>) temp["resourceId"];
                     string id = vid2["videoId"].ToString();
                     Video toAdd = new Video(id, this);
@@ -319,12 +319,10 @@ namespace powerful_youtube_dl {
                               ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(_listOfVideosInPlayList[current].position, playListID);
                           }));
                     }
-
                     Statistics.LoadedVideo(_listOfVideosInPlayList[current]);
                 }
             }
             videoIDsToGetParams = new List<Video>();
-            removeNotWorkingVideos();
         }
 
         public static bool checkIfVideoIsOnDisk(Video video) {
@@ -337,22 +335,6 @@ namespace powerful_youtube_dl {
                 return true;
             else
                 return false;
-        }
-
-        public void removeNotWorkingVideos() {
-            List<Video> newListOfVideos = new List<Video>();
-            foreach (Video v in _listOfVideosInPlayList) {
-                if (v.position.Title != null && v.position.Title != "")
-                    newListOfVideos.Add(v);
-                else {
-                    if (v.position.Id != null && v.position.Id != "")
-                        Statistics.NotWorkingVideo(v);
-                    System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => {
-                        ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position, playListID);
-                    }));
-                }
-            }
-            _listOfVideosInPlayList = newListOfVideos;
         }
 
         public void addToGetParams(Video v) {
