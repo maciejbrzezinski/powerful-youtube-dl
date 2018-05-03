@@ -167,15 +167,6 @@ namespace powerful_youtube_dl {
             return false;
         }
 
-        private bool checkIfVideoExists(string id) {
-            foreach (Video exists in _listOfVideosInPlayList) {
-                if (exists.position.Id == id) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         private string getTitle(string id) {
             string html = new HTTP().GET("https://www.youtube.com/playlist?list=" + id);
             int start = html.IndexOf("<title>") + 7;
@@ -198,16 +189,19 @@ namespace powerful_youtube_dl {
                 Dictionary<string, object> vid = (Dictionary<string, object>) item;
                 Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
                 string title = temp["title"].ToString(); // resourceId -> videoId
-                Dictionary<string, object> vid2 = (Dictionary<string, object>) temp["resourceId"];
-                string id = vid2["videoId"].ToString();
-                if (!checkIfVideoExists(id)) {
-                    Video toAdd = new Video(id, this);
-                    if (toAdd.position != null) {
-                        toAdd.position.Title = title;
-                        ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(toAdd.position, playListID);
-                        if (Properties.Settings.Default.autoObservePlaylists && Properties.Settings.Default.autoDownloadObserve && !Video.isManualDownload) {
-                            DownloadHandler.Load(toAdd);
-                            DownloadHandler.DownloadQueueAsync();
+                if (title != "Deleted video" && title != "Private video") {
+                    Dictionary<string, object> vid2 = (Dictionary<string, object>) temp["resourceId"];
+                    string id = vid2["videoId"].ToString();
+                    if (!Video.isVideoLoaded(id)) {
+                        Video toAdd = new Video(id, this);
+                        if (toAdd.position != null) {
+                            toAdd.position.Title = title;
+                            toAdd.position.Check = true;
+                            //((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(toAdd.position, playListID);
+                            if (Properties.Settings.Default.autoObservePlaylists && Properties.Settings.Default.autoDownloadObserve && !Video.isManualDownload) {
+                                DownloadHandler.Load(toAdd);
+                                DownloadHandler.DownloadQueueAsync();
+                            }
                         }
                     }
                 }
@@ -316,24 +310,17 @@ namespace powerful_youtube_dl {
                             current.downloadPath = Properties.Settings.Default.textDestination + "\\" + current.ToString() + ".mp3";
                     }
                     if (!current.isVideoLoadedInActivePlaylist) {
-                        if (System.Windows.Application.Current != null) {
-                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                         DispatcherPriority.Normal,
-                         new Action(() => {
-                             ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(current.position, playListID);
+                        MainWindow.invokeShit(DispatcherPriority.Normal, new Action(async () => {
+                            ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(current.position, playListID);
                          }));
-                        } else
-                            Environment.Exit(0);
                     }
                     videoIDsToGetParams.Remove(current);
                     Statistics.LoadedVideo(current);
                 }
             }
             foreach (Video v in videoIDsToGetParams) {
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                         DispatcherPriority.Normal,
-                         new Action(() => {
-                             ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position, position.Id);
+                MainWindow.invokeShit(DispatcherPriority.Send, new Action(async () => {
+                    ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position, position.Id);
                          }));
                 _listOfVideosInPlayList.Remove(v);
             }

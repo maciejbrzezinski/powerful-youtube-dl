@@ -37,10 +37,8 @@ namespace powerful_youtube_dl {
             }
 
             timer.Elapsed += new ElapsedEventHandler((object sender1, ElapsedEventArgs e1) => {
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                            DispatcherPriority.Send,
-                            new Action(async () => {
-                                if (addVideos != null) {
+                MainWindow.invokeShit(DispatcherPriority.Normal, new Action(async () => {
+                    if (addVideos != null) {
                                     CollectionView view = (CollectionView) CollectionViewSource.GetDefaultView(videosInActivePlayList);
                                     if (view != null) {
                                         view.Filter = UserFilter;
@@ -254,14 +252,12 @@ namespace powerful_youtube_dl {
                     for (int i = 0; i < x; i++) {
                         if (index == selectedPlaylistIndex) {
                             int j = i;
-                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                             DispatcherPriority.Send,
-                             new Action(async () => {
-                                 if (j < PlayList._listOfPlayLists[index]._listOfVideosInPlayList.Count) {
-                                     PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].isVideoLoadedInActivePlaylist = true;
-                                     addVideoToList(PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].position, PlayList._listOfPlayLists[index].playListID);
-                                 }
-                             }));
+                            invokeShit(DispatcherPriority.Send, new Action(async () => {
+                                if (j < PlayList._listOfPlayLists[index]._listOfVideosInPlayList.Count) {
+                                    PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].isVideoLoadedInActivePlaylist = true;
+                                    addVideoToList(PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].position, PlayList._listOfPlayLists[index].playListID);
+                                }
+                            }));
                             await Task.Delay(2);
                         } else
                             break;
@@ -269,6 +265,13 @@ namespace powerful_youtube_dl {
                 });
                 ths.Start();
             }
+        }
+
+        public static void invokeShit(DispatcherPriority priority, Action action) {
+            if (System.Windows.Application.Current != null) {
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(priority, action);
+            } else
+                Environment.Exit(0);
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e) {

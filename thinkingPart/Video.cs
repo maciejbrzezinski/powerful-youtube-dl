@@ -25,12 +25,13 @@ namespace powerful_youtube_dl {
         private string lastPercent = "";
 
         public Video(string linkOrID, PlayList list) {
-            position = new ListViewItemMy();
             string id;
             if (linkOrID.Length != 11) {
+                position = new ListViewItemMy();
                 id = linkOrID.Substring(linkOrID.IndexOf("v=") + 2, 11);
                 position.Link = linkOrID;
             } else {
+                position = new ListViewItemMy();
                 id = linkOrID;
                 position.Link = @"https://www.youtube.com/watch?v=" + id;
             }
@@ -84,21 +85,13 @@ namespace powerful_youtube_dl {
                         process.WaitForExit();
 
                         if (lastMessage.Contains("Downloading video info webpage")) {
-                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                                  DispatcherPriority.Normal,
-                                new Action(() => {
-                                    ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(position, playList.position.Id);
+                            MainWindow.invokeShit(DispatcherPriority.Send, new Action(async () => {
+                                ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(position, playList.position.Id);
                                     playList._listOfVideosInPlayList.Remove(this);
-                                    //position.Status = "DUPA";
-                                    //position.Check = false;
-                                    //if (Properties.Settings.Default.messageAfterDownload)
-                                    //    MainWindow.showNotifyIconMessage("Pobrano plik", position.Title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
                                 }));
                         } else {
-                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                              DispatcherPriority.Normal,
-                              new Action(() => {
-                                  position.Status = "Pobrano";
+                            MainWindow.invokeShit(DispatcherPriority.Send, new Action(async () => {
+                                position.Status = "Pobrano";
                                   position.Check = false;
                                   if (Properties.Settings.Default.messageAfterDownload)
                                       MainWindow.showNotifyIconMessage("Pobrano plik", position.Title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
@@ -153,7 +146,7 @@ namespace powerful_youtube_dl {
             if (lastMessage != null && lastMessage != value) {
                 lastMessage = value;
                 try {
-                    System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => {
+                    MainWindow.invokeShit(DispatcherPriority.Normal, new Action(async () => {
                         string prc = getPercent(value);
                         if (prc != "---" && lastPercent != null && lastPercent != prc) {
                             Console.WriteLine(value);
@@ -167,7 +160,7 @@ namespace powerful_youtube_dl {
             }
         }
 
-        private bool isVideoLoaded(string id) {
+        public static bool isVideoLoaded(string id) {
             for (int i = 0; i < _listOfVideos.Count; i++) {
                 if (_listOfVideos[i].position.Id == id)
                     return true;
