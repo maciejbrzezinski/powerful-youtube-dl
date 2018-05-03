@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using powerful_youtube_dl.thinkingPart;
 using System;
 using System.Windows;
 using System.Windows.Controls;

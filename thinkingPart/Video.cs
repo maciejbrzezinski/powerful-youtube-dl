@@ -20,7 +20,7 @@ namespace powerful_youtube_dl {
         public bool isVideoLoadedInActivePlaylist = false;
 
         //public string videoID, videoTitle, videoDuration, videoURL;
-        private string lastMessage = "";
+        public string lastMessage = "";
 
         private string lastPercent = "";
 
@@ -74,11 +74,6 @@ namespace powerful_youtube_dl {
                         queueToDownload--;
                         currentlyDownloading++;
                         Statistics.BeginDownload(this);
-                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                          DispatcherPriority.Normal,
-                          new Action(() => {
-                              position.Status = "Pobieranie ";
-                          }));
                         bool ret = process.Start();
 
                         string loger;
@@ -88,16 +83,28 @@ namespace powerful_youtube_dl {
 
                         process.WaitForExit();
 
-                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                          DispatcherPriority.Normal,
-                          new Action(() => {
-                              position.Status = "Pobrano";
-                              position.Check = false;
-                              if (Properties.Settings.Default.messageAfterDownload)
-                                  MainWindow.showNotifyIconMessage("Pobrano plik", position.Title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
-                          }));
-
-                        Statistics.CompleteDownload(this);
+                        if (lastMessage.Contains("Downloading video info webpage")) {
+                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                                  DispatcherPriority.Normal,
+                                new Action(() => {
+                                    ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(position, playList.position.Id);
+                                    playList._listOfVideosInPlayList.Remove(this);
+                                    //position.Status = "DUPA";
+                                    //position.Check = false;
+                                    //if (Properties.Settings.Default.messageAfterDownload)
+                                    //    MainWindow.showNotifyIconMessage("Pobrano plik", position.Title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
+                                }));
+                        } else {
+                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                              DispatcherPriority.Normal,
+                              new Action(() => {
+                                  position.Status = "Pobrano";
+                                  position.Check = false;
+                                  if (Properties.Settings.Default.messageAfterDownload)
+                                      MainWindow.showNotifyIconMessage("Pobrano plik", position.Title + " został pobrany", System.Windows.Forms.ToolTipIcon.Info, 100);
+                              }));
+                            Statistics.CompleteDownload(this);
+                        }
                         currentlyDownloading--;
                         aTimer.Close();
                     }
@@ -118,6 +125,9 @@ namespace powerful_youtube_dl {
                 toReturn = toReturn.Replace(@"|", @" ");
                 toReturn = toReturn.Replace(@":", @" ");
                 toReturn = toReturn.Replace("\"", @" ");
+                toReturn = toReturn.Replace("%", @" ");
+                toReturn = toReturn.Replace("?", @" ");
+                toReturn = toReturn.Replace("*", @" ");
                 return toReturn;
             } else if (position.Id != null)
                 return position.Id;

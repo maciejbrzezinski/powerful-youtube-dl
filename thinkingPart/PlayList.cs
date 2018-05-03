@@ -55,6 +55,7 @@ namespace powerful_youtube_dl {
                 playListURL = link;
                 playListTitle = getTitle(id);
                 position.Title = playListTitle;
+                position.Id = id;
                 position.Check = false;
                 _listOfPlayLists.Add(this);
 
@@ -96,6 +97,7 @@ namespace powerful_youtube_dl {
                 playListTitle = title;
                 playListURL = "https://www.youtube.com/playlist?list=" + playListID;
                 position.Title = playListTitle;
+                position.Id = id;
                 position.Check = false;
 
                 Thread ths = new Thread(() => {
@@ -262,6 +264,7 @@ namespace powerful_youtube_dl {
 
             for (int i = 0; i < videoIDsToGetParams.Count; i++) {
                 int index = IDs.Count - 1;
+
                 if (ktoryJuz == 0)
                     IDs[index] = videoIDsToGetParams[i].position.Id;
                 else
@@ -283,44 +286,56 @@ namespace powerful_youtube_dl {
                 System.Object[] val = (System.Object[]) obj2["items"];
 
                 for (int i = 0; i < val.Length; i++) {
-                    int current = -1;
-
+                    int currentIndex = -1;
                     Dictionary<string, object> vid = (Dictionary<string, object>) val[i];
                     string id = vid["id"].ToString();
                     for (int d = 0; d < _listOfVideosInPlayList.Count; d++) {
                         if (_listOfVideosInPlayList[d].position.Id == id) {
-                            current = d;
+                            currentIndex = d;
                             break;
                         }
                     }
+                    Video current = _listOfVideosInPlayList[currentIndex];
 
                     Dictionary<string, object> temp2 = (Dictionary<string, object>) vid["contentDetails"];
                     string duration = decryptDuration(temp2["duration"].ToString());
-                    _listOfVideosInPlayList[current].position.Duration = duration;
+                    current.position.Duration = duration;
 
-                    if (_listOfVideosInPlayList[current].position.Title == null) {
+                    if (current.position.Title == null) {
                         Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
-                        _listOfVideosInPlayList[current].position.Title = temp["title"].ToString();
+                        current.position.Title = temp["title"].ToString();
                     }
 
-                    if (!checkIfVideoIsOnDisk(_listOfVideosInPlayList[current]))
-                        _listOfVideosInPlayList[current].position.Check = true;
+                    if (!checkIfVideoIsOnDisk(current))
+                        current.position.Check = true;
                     else {
-                        _listOfVideosInPlayList[current].position.Status = "Pobrano";
+                        current.position.Status = "Pobrano";
                         if (Properties.Settings.Default.playlistAsFolder)
-                            _listOfVideosInPlayList[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + _listOfVideosInPlayList[current].playList.ToString() + "\\" + _listOfVideosInPlayList[current].ToString() + ".mp3";
+                            current.downloadPath = Properties.Settings.Default.textDestination + "\\" + current.playList.ToString() + "\\" + current.ToString() + ".mp3";
                         else
-                            _listOfVideosInPlayList[current].downloadPath = Properties.Settings.Default.textDestination + "\\" + _listOfVideosInPlayList[current].ToString() + ".mp3";
+                            current.downloadPath = Properties.Settings.Default.textDestination + "\\" + current.ToString() + ".mp3";
                     }
-                    if (!_listOfVideosInPlayList[current].isVideoLoadedInActivePlaylist) {
-                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
-                          DispatcherPriority.Normal,
-                          new Action(() => {
-                              ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(_listOfVideosInPlayList[current].position, playListID);
-                          }));
+                    if (!current.isVideoLoadedInActivePlaylist) {
+                        if (System.Windows.Application.Current != null) {
+                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                         DispatcherPriority.Normal,
+                         new Action(() => {
+                             ((MainWindow) System.Windows.Application.Current.MainWindow).addVideoToList(current.position, playListID);
+                         }));
+                        } else
+                            Environment.Exit(0);
                     }
-                    Statistics.LoadedVideo(_listOfVideosInPlayList[current]);
+                    videoIDsToGetParams.Remove(current);
+                    Statistics.LoadedVideo(current);
                 }
+            }
+            foreach (Video v in videoIDsToGetParams) {
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                         DispatcherPriority.Normal,
+                         new Action(() => {
+                             ((MainWindow) System.Windows.Application.Current.MainWindow).deleteVideoFromAdd(v.position, position.Id);
+                         }));
+                _listOfVideosInPlayList.Remove(v);
             }
             videoIDsToGetParams = new List<Video>();
         }
@@ -347,7 +362,7 @@ namespace powerful_youtube_dl {
             tmp = tmp.Substring(2);
             string hours = "";
             string minutes = "00:";
-            string seconds = "";
+            string seconds = "00";
             try {
                 int start = tmp.IndexOf("M") < 0 ? 0 : tmp.IndexOf("M") + 1;
                 int end = start > 0 ? tmp.IndexOf("S") - start : tmp.IndexOf("S");

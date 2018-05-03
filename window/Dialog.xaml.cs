@@ -1,9 +1,8 @@
 ﻿using System.Windows;
 
-namespace powerful_youtube_dl
-{
-    public partial class Dialog : Window
-    {
+namespace powerful_youtube_dl {
+
+    public partial class Dialog : Window {
         private static int toOut = 2;
 
         public Dialog(string question, string title, string radio11, string radio22) // 0-pierwsze radio, 1-drugie radio, 2-anulowano, 3-niepoprawnie wypełniono
@@ -18,10 +17,8 @@ namespace powerful_youtube_dl
             radio2.Content = radio22;
         }
 
-        public int Response
-        {
-            get
-            {
+        public int Response {
+            get {
                 if ((bool) radio1.IsChecked)
                     return 0;
                 else if ((bool) radio2.IsChecked)
@@ -31,8 +28,7 @@ namespace powerful_youtube_dl
             }
         }
 
-        public static int Prompt(string question, string title, string radio11, string radio22)
-        {
+        public static int Prompt(string question, string title, string radio11, string radio22) {
             Dialog inst = new Dialog(question, title, radio11, radio22);
             inst.ShowDialog();
             if (inst.DialogResult == true)
@@ -40,14 +36,12 @@ namespace powerful_youtube_dl
             return toOut;
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
             toOut = 2;
             Close();
         }
 
-        private void btnOk_Click(object sender, RoutedEventArgs e)
-        {
+        private void btnOk_Click(object sender, RoutedEventArgs e) {
             if ((bool) radio1.IsChecked)
                 toOut = 0;
             else if ((bool) radio2.IsChecked)
@@ -58,8 +52,7 @@ namespace powerful_youtube_dl
             Close();
         }
 
-        private void PromptDialog_Loaded(object sender, RoutedEventArgs e)
-        {
+        private void PromptDialog_Loaded(object sender, RoutedEventArgs e) {
             radio1.Focus();
         }
     }

@@ -257,8 +257,10 @@ namespace powerful_youtube_dl {
                             System.Windows.Application.Current.Dispatcher.BeginInvoke(
                              DispatcherPriority.Send,
                              new Action(async () => {
-                                 PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].isVideoLoadedInActivePlaylist = true;
-                                 addVideoToList(PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].position, PlayList._listOfPlayLists[index].playListID);
+                                 if (j < PlayList._listOfPlayLists[index]._listOfVideosInPlayList.Count) {
+                                     PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].isVideoLoadedInActivePlaylist = true;
+                                     addVideoToList(PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].position, PlayList._listOfPlayLists[index].playListID);
+                                 }
                              }));
                             await Task.Delay(2);
                         } else
