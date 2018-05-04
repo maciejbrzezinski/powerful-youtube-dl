@@ -12,12 +12,12 @@
     WindowStyle="SingleBorderWindow"
     ResizeMode="CanMinimize">
     <StackPanel Margin="5">
-        <TextBlock Name="txtQuestion" Margin="5" />
-        <RadioButton Name="radio1" Content="" />
-        <RadioButton Name="radio2" Content="" />
+        <TextBlock Name="TxtQuestion" Margin="5" />
+        <RadioButton Name="Radio1" Content="" />
+        <RadioButton Name="Radio2" Content="" />
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
-            <Button Content="_Ok" IsDefault="True" Margin="5" Name="btnOk" Click="btnOk_Click" />
-            <Button Content="_Cancel" IsCancel="True" Margin="5" Name="btnCancel" Click="btnCancel_Click" />
+            <Button Content="_Ok" IsDefault="True" Margin="5" Name="BtnOk" Click="btnOk_Click" />
+            <Button Content="_Cancel" IsCancel="True" Margin="5" Name="BtnCancel" Click="btnCancel_Click" />
         </StackPanel>
     </StackPanel>
 </Window>

@@ -4,8 +4,9 @@ using System.Net;
 
 namespace powerful_youtube_dl.web {
 
-    public class HTTP {
-        public string GET(string uri) {
+    public class Http {
+
+        public string Get(string uri) {
             uri = uri.Trim();
             HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip;

@@ -15,52 +15,52 @@ namespace powerful_youtube_dl.window {
 
         public UserSettings() {
             InitializeComponent();
-            getSettings();
+            GetSettings();
         }
 
-        private readonly RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        private readonly RegistryKey _rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-        private void getSettings() {
+        private void GetSettings() {
             string ytDlPath = Settings.Default.ytdlexe;
             string downloadPath = Settings.Default.textDestination;
             string logDestinate = Settings.Default.logsDestination;
             int maxDownloads = Settings.Default.maxDownloading;
 
             if (ytDlPath != "")
-                textYTDL.Text = ytDlPath;
+                TextYtdl.Text = ytDlPath;
 
             if (downloadPath != "")
-                textDestination.Text = downloadPath;
+                TextDestination.Text = downloadPath;
 
             if (maxDownloads > -1)
-                maxDownloading.Text = maxDownloads.ToString();
+                MaxDownloading.Text = maxDownloads.ToString();
 
             if (logDestinate != "")
-                logsDestination.Text = Settings.Default.logsDestination;
+                LogsDestination.Text = Settings.Default.logsDestination;
 
-            playlistAsFolder.IsChecked = Settings.Default.playlistAsFolder;
-            autoLoadLink.IsChecked = Settings.Default.autoLoadLink;
+            PlaylistAsFolder.IsChecked = Settings.Default.playlistAsFolder;
+            AutoLoadLink.IsChecked = Settings.Default.autoLoadLink;
 
-            startWithSystem.IsChecked = Settings.Default.startWithSystem;
+            StartWithSystem.IsChecked = Settings.Default.startWithSystem;
 
-            doTray.IsChecked = Settings.Default.doTray;
-            startMinimized.IsChecked = Settings.Default.startMinimized;
-            closeToTray.IsChecked = Settings.Default.closeToTray;
+            DoTray.IsChecked = Settings.Default.doTray;
+            StartMinimized.IsChecked = Settings.Default.startMinimized;
+            CloseToTray.IsChecked = Settings.Default.closeToTray;
 
-            autoStartDownload.IsChecked = Settings.Default.autoStartDownload;
+            AutoStartDownload.IsChecked = Settings.Default.autoStartDownload;
 
-            autoObservePlaylists.IsChecked = Settings.Default.autoObservePlaylists;
-            observePlaylistGrid.IsEnabled = (bool) autoObservePlaylists.IsChecked;
+            AutoObservePlaylists.IsChecked = Settings.Default.autoObservePlaylists;
+            ObservePlaylistGrid.IsEnabled = (bool) AutoObservePlaylists.IsChecked;
 
-            savePlaylists.IsChecked = Settings.Default.savePlaylists;
-            autoDownloadObserve.IsChecked = Settings.Default.autoDownloadObserve;
-            messageAfterDownload.IsChecked = Settings.Default.messageAfterDownload;
+            SavePlaylists.IsChecked = Settings.Default.savePlaylists;
+            AutoDownloadObserve.IsChecked = Settings.Default.autoDownloadObserve;
+            MessageAfterDownload.IsChecked = Settings.Default.messageAfterDownload;
 
-            createLogs.IsChecked = Settings.Default.createLogs;
-            logsGrid.IsEnabled = (bool) createLogs.IsChecked;
+            CreateLogs.IsChecked = Settings.Default.createLogs;
+            LogsGrid.IsEnabled = (bool) CreateLogs.IsChecked;
         }
 
-        private void selectYoutubeDLPath(object sender, RoutedEventArgs e) {
+        private void SelectYoutubeDlPath(object sender, RoutedEventArgs e) {
             OpenFileDialog dialog = new OpenFileDialog {
                 DefaultExt = ".exe",
                 Filter = "Exe Files (*.exe)|*.exe"
@@ -69,79 +69,78 @@ namespace powerful_youtube_dl.window {
             bool? result = dialog.ShowDialog();
 
             if (result == true) {
-                Settings.Default.ytdlexe = dialog.FileName;
-                Settings.Default.Save();
-                textYTDL.Text = dialog.FileName;
+                SaveSetting("ytdlexe", dialog.FileName);
+                TextYtdl.Text = dialog.FileName;
             }
         }
 
-        private void selectDestinationFolder(object sender, RoutedEventArgs e) {
+        private void SelectDestinationFolder(object sender, RoutedEventArgs e) {
             using (var dialog = new FolderBrowserDialog()) {
                 dialog.ShowDialog();
                 if (dialog.SelectedPath != "") {
-                    textDestination.Text = dialog.SelectedPath;
-                    saveSetting(textDestination.Name, textDestination.Text);
+                    TextDestination.Text = dialog.SelectedPath;
+                    SaveSetting(TextDestination.Name, TextDestination.Text);
                 }
             }
         }
 
-        private void selectLogDestination(object sender, RoutedEventArgs e) {
+        private void SelectLogDestination(object sender, RoutedEventArgs e) {
             using (var dialog = new FolderBrowserDialog()) {
                 dialog.ShowDialog();
                 if (dialog.SelectedPath != "") {
-                    logsDestination.Text = dialog.SelectedPath;
-                    saveSetting(logsDestination.Name, dialog.SelectedPath);
+                    LogsDestination.Text = dialog.SelectedPath;
+                    SaveSetting(LogsDestination.Name, dialog.SelectedPath);
                 }
             }
         }
 
-        private void setMaxDownloads(object sender, TextChangedEventArgs e) {
+        private void SetMaxDownloads(object sender, TextChangedEventArgs e) {
             TextBox field = (TextBox) sender;
             if (Int32.TryParse(field.Text, out var num)) {
-                vTemp = field.Text;
-                saveSetting(field.Name, num);
+                _vTemp = field.Text;
+                SaveSetting(field.Name, num);
             }
         }
 
-        private void checkChanged(object sender, RoutedEventArgs e) {
+        private void CheckChanged(object sender, RoutedEventArgs e) {
             try {
                 CheckBox check = (CheckBox) sender;
-                saveSetting(check.Name, check.IsChecked != null && (bool) check.IsChecked);
+                SaveSetting(check.Name, check.IsChecked != null && (bool) check.IsChecked);
                 switch (check.Name) {
                     case "autoLoadLink":
                         if (check.IsChecked != null)
-                            hierarchia.IsEnabled = (bool) check.IsChecked;
+                            Hierarchia.IsEnabled = (bool) check.IsChecked;
                         break;
 
                     case "startWithSystem":
                         if (check.IsChecked != null && (bool) check.IsChecked)
-                            rkApp.SetValue("PowerfulYTDownloader", Application.ExecutablePath);
+                            _rkApp.SetValue("PowerfulYTDownloader", Application.ExecutablePath);
                         else {
                             try {
-                                rkApp.DeleteValue("PowerfulYTDownloader");
+                                _rkApp.DeleteValue("PowerfulYTDownloader");
                             } catch { }
                         }
                         break;
 
                     case "autoObservePlaylists":
                         if (check.IsChecked != null)
-                            observePlaylistGrid.IsEnabled = (bool) check.IsChecked;
+                            ObservePlaylistGrid.IsEnabled = (bool) check.IsChecked;
                         break;
 
                     case "createLogs":
                         if (check.IsChecked != null)
-                            logsGrid.IsEnabled = (bool) check.IsChecked;
+                            LogsGrid.IsEnabled = (bool) check.IsChecked;
                         break;
                 }
             } catch { }
         }
 
-        private void saveSetting(string setting, object status) {
+        public static void SaveSetting(string setting, object status) {
             Settings.Default[setting] = status;
             Settings.Default.Save();
         }
 
-        private int getIntegerValue(string value) {
+        private int GetIntegerValue(string value) {
             Int32.TryParse(value, out var a);
             if (value == "0")
                 return 0;
@@ -150,19 +149,19 @@ namespace powerful_youtube_dl.window {
             return a;
         }
 
-        private string vTemp = "";
+        private string _vTemp = "";
 
-        private void saveValueGotFocus(object sender, RoutedEventArgs e) {
-            vTemp = ((TextBox) sender).Text;
+        private void SaveValueGotFocus(object sender, RoutedEventArgs e) {
+            _vTemp = ((TextBox) sender).Text;
         }
 
-        private void maxDownloadLostFocus(object sender, RoutedEventArgs e) {
+        private void MaxDownloadLostFocus(object sender, RoutedEventArgs e) {
             TextBox box = (TextBox) sender;
-            int a = getIntegerValue(box.Text);
+            int a = GetIntegerValue(box.Text);
             if (a > -1) {
-                saveSetting(box.Name, a);
+                SaveSetting(box.Name, a);
             } else
-                box.Text = vTemp;
+                box.Text = _vTemp;
         }
     }
 }

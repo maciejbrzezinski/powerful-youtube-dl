@@ -1,46 +1,46 @@
-﻿using System;
+﻿using powerful_youtube_dl.web;
+using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using System.Windows;
-using powerful_youtube_dl.web;
 
 namespace powerful_youtube_dl.thinkingPart {
 
     internal class User {
-        public string userID, userURL;
+        public string UserId, UserUrl;
 
         public User(string link, int status) //(status) 0 - playlisty 1 - dodane
         {
             string id;
 
             if (link.Contains("/channel/")) {
-                int start = link.IndexOf("nnel/") + 5;
-                int finish = link.Substring(start).IndexOf("?");
+                int start = link.IndexOf("nnel/", StringComparison.Ordinal) + 5;
+                int finish = link.Substring(start).IndexOf("?", StringComparison.Ordinal);
                 if (finish == -1)
-                    finish = link.Substring(start).IndexOf("/");
-                userID = finish != -1 ? link.Substring(start, finish) : link.Substring(start);
+                    finish = link.Substring(start).IndexOf("/", StringComparison.Ordinal);
+                UserId = finish != -1 ? link.Substring(start, finish) : link.Substring(start);
 
-                id = "id=" + userID;
+                id = "id=" + UserId;
             } else {
-                int start = link.IndexOf("user/") + 5;
-                int finish = link.Substring(start).IndexOf("/");
-               string title = finish > 0 ? link.Substring(start, finish) : link.Substring(start);
+                int start = link.IndexOf("user/", StringComparison.Ordinal) + 5;
+                int finish = link.Substring(start).IndexOf("/", StringComparison.Ordinal);
+                string title = finish > 0 ? link.Substring(start, finish) : link.Substring(start);
                 id = "forUsername=" + title;
-                userID = getUserID(title);
+                UserId = GetUserId(title);
             }
 
-            userURL = link;
+            UserUrl = link;
             if (status == 0) {
-                string zapytanie = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=" + userID + "&maxResults=50&fields=items(id%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o";
-                string ResponseYouTubeAPI = new HTTP().GET(zapytanie);
-                getUserPlayLists(ResponseYouTubeAPI);
+                string zapytanie = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=" + UserId + "&maxResults=50&fields=items(id%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o";
+                string responseYouTubeApi = new Http().Get(zapytanie);
+                GetUserPlayLists(responseYouTubeApi);
             } else if (status == 1) {
-                string ResponseYouTubeAPI = new HTTP().GET("https://www.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails&" + id + "&maxResults=50&fields=items(contentDetails%2FrelatedPlaylists%2Fuploads%2Cid%2Csnippet%2Ftitle)%2CnextPageToken%2CpageInfo&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o");
-                getUserUploadedVideos(ResponseYouTubeAPI);
+                string responseYouTubeApi = new Http().Get("https://www.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails&" + id + "&maxResults=50&fields=items(contentDetails%2FrelatedPlaylists%2Fuploads%2Cid%2Csnippet%2Ftitle)%2CnextPageToken%2CpageInfo&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o");
+                GetUserUploadedVideos(responseYouTubeApi);
             }
         }
 
-        private void getUserPlayLists(string json) {
+        private void GetUserPlayLists(string json) {
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
             var result = jsSerializer.DeserializeObject(json);
             Dictionary<string, object> obj2 = (Dictionary<string, object>) (result);
@@ -56,11 +56,11 @@ namespace powerful_youtube_dl.thinkingPart {
             }
             try {
                 string nextPage = obj2["nextPageToken"].ToString();
-                getUserPlayLists(new HTTP().GET("https://www.googleapis.com/youtube/v3/playlists?part=snippet&" + userID + "&maxResults=50&pageToken=" + nextPage + "&fields=items(id%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-            } catch {}
+                GetUserPlayLists(new Http().Get("https://www.googleapis.com/youtube/v3/playlists?part=snippet&" + UserId + "&maxResults=50&pageToken=" + nextPage + "&fields=items(id%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
+            } catch { }
         }
 
-        private void getUserUploadedVideos(string json) {
+        private void GetUserUploadedVideos(string json) {
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
             var result = jsSerializer.DeserializeObject(json);
             Dictionary<string, object> obj2 = (Dictionary<string, object>) (result);
@@ -81,8 +81,8 @@ namespace powerful_youtube_dl.thinkingPart {
             new PlayList(id, title);
         }
 
-        private string getUserID(string title) {
-            string json = new HTTP().GET("https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername=" + title + "&fields=items%2Fid&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o");
+        private string GetUserId(string title) {
+            string json = new Http().Get("https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername=" + title + "&fields=items%2Fid&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o");
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
             var result = jsSerializer.DeserializeObject(json);
             Dictionary<string, object> obj2 = (Dictionary<string, object>) (result);

@@ -2,9 +2,8 @@
 
 namespace powerful_youtube_dl.window {
 
-    public partial class Dialog
-    {
-        private static int toOut = 2;
+    public partial class Dialog {
+        private static int _toOut = 2;
 
         public Dialog() {
         }
@@ -13,20 +12,19 @@ namespace powerful_youtube_dl.window {
         {
             InitializeComponent();
             Loaded += PromptDialog_Loaded;
-            toOut = 2;
-            txtQuestion.Text = question;
+            _toOut = 2;
+            TxtQuestion.Text = question;
             Title = title;
-            radio1.Content = radio11;
-            radio1.IsChecked = true;
-            radio2.Content = radio22;
+            Radio1.Content = radio11;
+            Radio1.IsChecked = true;
+            Radio2.Content = radio22;
         }
 
         public int Response {
-            get
-            {
-                if (radio1.IsChecked != null && (bool) radio1.IsChecked)
+            get {
+                if (Radio1.IsChecked != null && (bool) Radio1.IsChecked)
                     return 0;
-                if (radio2.IsChecked != null && (bool) radio2.IsChecked)
+                if (Radio2.IsChecked != null && (bool) Radio2.IsChecked)
                     return 1;
                 return 3;
             }
@@ -36,28 +34,28 @@ namespace powerful_youtube_dl.window {
             Dialog inst = new Dialog(question, title, radio11, radio22);
             inst.ShowDialog();
             if (inst.DialogResult == true)
-                toOut = inst.Response;
-            return toOut;
+                _toOut = inst.Response;
+            return _toOut;
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            toOut = 2;
+            _toOut = 2;
             Close();
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
-            if (radio1.IsChecked != null && (bool) radio1.IsChecked)
-                toOut = 0;
-            else if (radio2.IsChecked != null && (bool) radio2.IsChecked)
-                toOut = 1;
+            if (Radio1.IsChecked != null && (bool) Radio1.IsChecked)
+                _toOut = 0;
+            else if (Radio2.IsChecked != null && (bool) Radio2.IsChecked)
+                _toOut = 1;
             else
-                toOut = 3;
+                _toOut = 3;
             DialogResult = true;
             Close();
         }
 
         private void PromptDialog_Loaded(object sender, RoutedEventArgs e) {
-            radio1.Focus();
+            Radio1.Focus();
         }
     }
 }

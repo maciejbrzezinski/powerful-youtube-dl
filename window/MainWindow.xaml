@@ -4,32 +4,27 @@
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:window="clr-namespace:powerful_youtube_dl.window"
         x:Class="powerful_youtube_dl.window.MainWindow"
-        Title="Powerful YouTube DL" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1000" Height="700" ResizeMode="CanMinimize" StateChanged="tryToTray" Closing="closing">
+        Title="Powerful YouTube DL" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1000" Height="700" ResizeMode="CanMinimize" StateChanged="TryToTray" Closing="ClosingWindow">
     <Grid>
-        <TabControl x:Name="tabs" Margin="10" Padding="0">
+        <TabControl x:Name="Tabs" Margin="10" Padding="0">
             <TabItem Header="Dodaj" Margin="0" Padding="5" VerticalContentAlignment="Stretch">
                 <Grid Background="#FFE5E5E5" Margin="0">
                     <Button Content="Zacznij pobieranie" Margin="10,0,10,10" Click="Button_Click_3" FontSize="24" MinHeight="0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="60" />
-                    <TextBox x:Name="link" x:FieldModifier="public" Margin="10,10,206,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" GotFocus="link_GotFocus" VerticalAlignment="Top" Height="27" TextChanged="link_TextChanged" LostFocus="link_LostFocus" KeyUp="link_lSubmit" />
-                    <TextBox x:Name="search" x:FieldModifier="public" Margin="170,47,10,80" TextWrapping="Wrap" Text="Przeszukaj listę" Height="27" VerticalAlignment="Top" BorderThickness="0.1" KeyUp="searchAfterSubmit" GotMouseCapture="search_GotMouseCapture" TextChanged="search_TextChanged" />
+                    <TextBox x:Name="Link" x:FieldModifier="public" Margin="10,10,206,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" GotFocus="link_GotFocus" VerticalAlignment="Top" Height="27" TextChanged="link_TextChanged" LostFocus="link_LostFocus" KeyUp="link_lSubmit" />
+                    <TextBox x:Name="Search" x:FieldModifier="public" Margin="170,47,10,80" TextWrapping="Wrap" Text="Przeszukaj listę" Height="27" VerticalAlignment="Top" BorderThickness="0.1" KeyUp="SearchAfterSubmit" GotMouseCapture="search_GotMouseCapture" TextChanged="search_TextChanged" />
                     <Button Content="Załaduj" Margin="0,10,10,0" VerticalAlignment="Top" Width="186" Click="Button_Click_2" Height="27" HorizontalAlignment="Right" />
-                    <ListView x:Name="playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding pl._listOfPlayListsView}" SelectionChanged="playlist_SelectionChanged" BorderThickness="1" SelectedIndex="0" HorizontalAlignment="Left">
-                       
+                    <ListView x:Name="Playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding ListOfPlayListsView}" SelectionChanged="playlist_SelectionChanged" BorderThickness="1" SelectedIndex="0" HorizontalAlignment="Left">
                         <ListView.Resources>
                             <ContextMenu x:Key="ListViewContextMenu">
-                                <MenuItem x:Name="menuItem_CopyUsername"
-                                                  Header="Usuń" Click="contextDeletePlaylist">
-                                </MenuItem>
+                                <MenuItem x:Name="MenuDelete" Header="Usuń" Click="ContextDeletePlaylist" />
                                 <Separator />
-                                <MenuItem x:Name="menuItem_DeleteCreds"
-                                                  Header="AAAAAAAAAAAA">
-                                </MenuItem>
+                                <MenuItem x:Name="MenuNothing" Header="AAAAAAAAAAAA" />
                             </ContextMenu>
                         </ListView.Resources>
 
                         <ListView.ItemContainerStyle>
                             <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
-                                <Setter Property="ContextMenu" Value="{StaticResource ListViewContextMenu}"/>
+                                <Setter Property="ContextMenu" Value="{StaticResource ListViewContextMenu}" />
                             </Style>
                         </ListView.ItemContainerStyle>
 
@@ -38,15 +33,15 @@
                                 <GridViewColumn Header="">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate DataType="window:ListViewItemMy">
-                                            <CheckBox Margin="0" IsThreeState="True" IsChecked="{Binding Check}" VerticalAlignment="Top" Click="checkChanged"/>
+                                            <CheckBox Margin="0" IsThreeState="True" IsChecked="{Binding Check}" VerticalAlignment="Top" Click="CheckChanged" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Tytuł" DisplayMemberBinding="{Binding Title}"/>
+                                <GridViewColumn Header="Tytuł" DisplayMemberBinding="{Binding Title}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView x:Name="addVideos" x:FieldModifier="public" ItemsSource="{Binding videosInActivePlayList}" Margin="170,84,10,80" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" MinHeight="300" BorderThickness="0" MouseDoubleClick="openFolderOrBrowser">
+                    <ListView x:Name="AddVideos" x:FieldModifier="public" ItemsSource="{Binding VideosInActivePlayList}" Margin="170,84,10,80" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" MinHeight="300" BorderThickness="0" MouseDoubleClick="OpenFolderOrBrowser">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="">
@@ -64,7 +59,7 @@
                     </ListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="Ustawienia" Padding="5" VerticalContentAlignment="Stretch" GotFocus="openSetting" />
+            <TabItem Header="Ustawienia" Padding="5" VerticalContentAlignment="Stretch" GotFocus="OpenSetting" />
         </TabControl>
     </Grid>
 </controls:MetroWindow>

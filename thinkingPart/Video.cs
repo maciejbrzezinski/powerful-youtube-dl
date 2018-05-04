@@ -1,64 +1,66 @@
-﻿using System;
+﻿using powerful_youtube_dl.Properties;
+using powerful_youtube_dl.window;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using powerful_youtube_dl.Properties;
-using powerful_youtube_dl.window;
 using Application = System.Windows.Application;
 using Timer = System.Timers.Timer;
 
 namespace powerful_youtube_dl.thinkingPart {
 
     public class Video {
-        public static List<Video> _listOfVideos = new List<Video>();
+        public static List<Video> ListOfVideos = new List<Video>();
 
-        public static int currentlyDownloading, queueToDownload;
-        public static bool isManualDownload = true;
-        public string downloadPath;
-        public PlayList playList;
-        public ListViewItemMy position ;
-        private bool isDownloaded ;
-        public bool isVideoLoadedInActivePlaylist = false;
+        public static int CurrentlyDownloading, QueueToDownload;
+        public static bool IsManualDownload = true;
+        public PlayList PlayList;
+        public ListViewItemMy Position;
+        public bool IsDownloaded;
 
-        //public string videoID, videoTitle, videoDuration, videoURL;
-        public string lastMessage = "";
+        private string _lastPercent = "";
+        private string _lastMessage = "";
 
-        private string lastPercent = "";
-
-        public Video(string linkOrID, PlayList list) {
+        public Video(string linkOrId, PlayList list) {
             string id;
-            if (linkOrID.Length != 11) {
-                position = new ListViewItemMy();
-                id = linkOrID.Substring(linkOrID.IndexOf("v=") + 2, 11);
-                position.Link = linkOrID;
+            if (linkOrId.Length != 11) {
+                Position = new ListViewItemMy();
+                id = linkOrId.Substring(linkOrId.IndexOf("v=", StringComparison.Ordinal) + 2, 11);
+                Position.Link = linkOrId;
             } else {
-                position = new ListViewItemMy();
-                id = linkOrID;
-                position.Link = @"https://www.youtube.com/watch?v=" + id;
+                Position = new ListViewItemMy();
+                id = linkOrId;
+                Position.Link = @"https://www.youtube.com/watch?v=" + id;
             }
-            if (!isVideoLoaded(id)) {
-                position.Id = id;
-                playList = list;
-                position.Status = "---";
-                position.Check = false;
-                position.ParentV = this;
-                list.addToGetParams(this);
-                list._listOfVideosInPlayList.Add(this);
-                _listOfVideos.Add(this);
+            if (!IsVideoLoaded(id)) {
+                Position.Id = id;
+                PlayList = list;
+                Position.Status = "---";
+                Position.Check = false;
+                Position.ParentV = this;
+                list.AddToGetParams(this);
+                list.ListOfVideosInPlayList.Add(this);
+                ListOfVideos.Add(this);
             }
         }
 
         public void Download() {
-            queueToDownload++;
+            QueueToDownload++;
+            if (IsDownloaded) {
+                QueueToDownload--;
+                Position.Check = false;
+                return;
+            }
             Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo {FileName = Settings.Default.ytdlexe};
+            ProcessStartInfo startInfo = new ProcessStartInfo { FileName = Settings.Default.ytdlexe };
             if (Settings.Default.playlistAsFolder) {
-                downloadPath = Settings.Default.textDestination + "\\" + playList + "\\" + ToString() + ".mp3";
-                startInfo.Arguments = " -x -o \"" + Settings.Default.textDestination + "\\" + playList + "\\" + ToString() + ".mp3\" https://www.youtube.com/watch?v=" + position.Id;
+                Position.Path = Settings.Default.textDestination + "\\" + PlayList + "\\" + ToString() + ".mp3";
+                startInfo.Arguments = " -x -o \"" + Settings.Default.textDestination + "\\" + PlayList + "\\" + ToString() + ".mp3\" https://www.youtube.com/watch?v=" + Position.Id;
             } else {
-                downloadPath = Settings.Default.textDestination + "\\" + ToString() + ".mp3";
-                startInfo.Arguments = " -x -o \"" + Settings.Default.textDestination + "\\" + ToString() + ".mp3\" https://www.youtube.com/watch?v=" + position.Id;
+                Position.Path = Settings.Default.textDestination + "\\" + ToString() + ".mp3";
+                startInfo.Arguments = " -x -o \"" + Settings.Default.textDestination + "\\" + ToString() + ".mp3\" https://www.youtube.com/watch?v=" + Position.Id;
             }
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
@@ -70,51 +72,58 @@ namespace powerful_youtube_dl.thinkingPart {
             process.StartInfo = startInfo;
             Timer aTimer = new Timer();
             aTimer.Elapsed += (sender, e) => {
-                if (!isDownloaded && (isManualDownload || (!isManualDownload && Settings.Default.autoDownloadObserve))) {
-                    if (currentlyDownloading < Settings.Default.maxDownloading && !isDownloaded) {
-                        isDownloaded = true;
-                        queueToDownload--;
-                        currentlyDownloading++;
+                if (!IsDownloaded && (IsManualDownload || (!IsManualDownload && Settings.Default.autoDownloadObserve))) {
+                    if (CurrentlyDownloading < Settings.Default.maxDownloading && !IsDownloaded) {
+                        QueueToDownload--;
+                        CurrentlyDownloading++;
                         Statistics.BeginDownload(this);
+
                         process.Start();
 
                         string loger;
-                        while ((loger = process.StandardOutput.ReadLine()) != null) {
+                        while ((loger = process.StandardOutput.ReadLine()) != null)
                             cmd_DataReceived(loger);
-                        }
 
                         process.WaitForExit();
 
-                        if (lastMessage.Contains("Downloading video info webpage")) {
-                            MainWindow.invokeShit(DispatcherPriority.Send, async () => {
-                                ((MainWindow) Application.Current.MainWindow)?.deleteVideoFromAdd(position, playList.position.Id);
-                                playList._listOfVideosInPlayList.Remove(this);
+                        if (_lastMessage != null && _lastMessage.Contains("Downloading video info webpage")) {
+                            MainWindow.InvokeShit(DispatcherPriority.Send, async () => {
+                                Position.Check = false;
+                                ((MainWindow) Application.Current.MainWindow)?.DeleteVideoFromAdd(Position, PlayList.Position.Id);
+                                PlayList.ListOfVideosInPlayList.Remove(this);
                             });
+                        } else if (_lastMessage != null && !_lastMessage.Contains("[download] 100.0%") && !_lastMessage.Contains("[download] 100%")) {
+                            if (File.Exists(Position.Path + ".part")) {
+                                try {
+                                    File.Delete(Position.Path + ".part");
+                                } catch { }
+                            }
+                            aTimer.Enabled = true;
+                            return;
                         } else {
-                            MainWindow.invokeShit(DispatcherPriority.Send, async () => {
-                                position.Status = "Pobrano";
-                                position.Check = false;
+                            MainWindow.InvokeShit(DispatcherPriority.Normal, () => {
+                                Position.Status = "Pobrano";
+                                Position.Check = false;
                                 if (Settings.Default.messageAfterDownload)
-                                    MainWindow.showNotifyIconMessage("Pobrano plik", position.Title + " został pobrany", ToolTipIcon.Info, 100);
+                                    MainWindow.ShowNotifyIconMessage("Pobrano plik | " + PlayList, Position.Title, ToolTipIcon.Info, 100, Position.Path);
                             });
                             Statistics.CompleteDownload(this);
                         }
-                        currentlyDownloading--;
+                        CurrentlyDownloading--;
                         aTimer.Close();
                     }
                 }
-                if (!isDownloaded)
+                if (!IsDownloaded)
                     aTimer.Enabled = true;
             };
-            aTimer.Interval = 1000;
+            aTimer.Interval = 4000;
             aTimer.Enabled = true;
         }
 
         override
-        public string ToString()
-        {
-            if (position.Title != null) {
-                string toReturn = position.Title;
+        public string ToString() {
+            if (Position.Title != null) {
+                string toReturn = Position.Title;
                 toReturn = toReturn.Replace(@"\", @" ");
                 toReturn = toReturn.Replace(@"/", @" ");
                 toReturn = toReturn.Replace(@"|", @" ");
@@ -126,17 +135,17 @@ namespace powerful_youtube_dl.thinkingPart {
                 return toReturn;
             }
 
-            if (position.Id != null)
-                return position.Id;
+            if (Position.Id != null)
+                return Position.Id;
             return "";
         }
 
-        private static string getPercent(string value) {
+        private static string GetPercent(string value) {
             if (value != null) {
                 string start = "[download]   ";
                 string end = " of";
-                int st = value.IndexOf(start) + start.Length;
-                int en = value.IndexOf(end);
+                int st = value.IndexOf(start, StringComparison.Ordinal) + start.Length;
+                int en = value.IndexOf(end, StringComparison.Ordinal);
                 if (st > -1 && en > st) {
                     value = value.Substring(st, 5);
                     return value;
@@ -146,24 +155,24 @@ namespace powerful_youtube_dl.thinkingPart {
         }
 
         private void cmd_DataReceived(string value) {
-            if (lastMessage != null && lastMessage != value) {
-                lastMessage = value;
+            if (_lastMessage != null && _lastMessage != value) {
+                _lastMessage = value;
                 try {
-                    MainWindow.invokeShit(DispatcherPriority.Normal, async () => {
-                        string prc = getPercent(value);
-                        if (prc != "---" && lastPercent != null && lastPercent != prc) {
+                    MainWindow.InvokeShit(DispatcherPriority.Send, async () => {
+                        string prc = GetPercent(value);
+                        if (prc != "---" && _lastPercent != null && _lastPercent != prc) {
                             Console.WriteLine(value);
-                            lastPercent = prc;
-                            position.Status = prc;
+                            _lastPercent = prc;
+                            Position.Status = prc;
                         }
                     });
                 } catch { }
             }
         }
 
-        public static bool isVideoLoaded(string id) {
-            for (int i = 0; i < _listOfVideos.Count; i++) {
-                if (_listOfVideos[i].position.Id == id)
+        public static bool IsVideoLoaded(string id) {
+            for (int i = 0; i < ListOfVideos.Count; i++) {
+                if (ListOfVideos[i].Position.Id == id)
                     return true;
             }
             return false;

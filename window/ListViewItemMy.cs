@@ -1,58 +1,66 @@
-﻿using System.ComponentModel;
-using powerful_youtube_dl.thinkingPart;
+﻿using powerful_youtube_dl.thinkingPart;
+using System.ComponentModel;
 
 namespace powerful_youtube_dl.window {
 
     public class ListViewItemMy : INotifyPropertyChanged {
-        private bool? check;
+        private bool? _check;
 
-        private Video parentV;
-        private PlayList parentPL;
+        private Video _parentV;
+        private PlayList _parentPl;
 
-        private string title, duration, status, id, link;
-        private int licznik;
+        private string _title, _duration, _status, _id, _link, _path;
+        private int _licznik;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string Link {
-            get => link;
+        public string Path {
+            get => _path;
             set {
-                link = value;
+                _path = value;
+                NotifyPropertyChanged("Path");
+            }
+        }
+
+        public string Link {
+            get => _link;
+            set {
+                _link = value;
                 NotifyPropertyChanged("Link");
             }
         }
 
         public string Id {
-            get => id;
+            get => _id;
             set {
-                id = value;
+                _id = value;
                 NotifyPropertyChanged("Id");
             }
         }
 
         public bool? Check {
-            get => check;
+            get => _check;
             set {
-                check = value;
-                if (parentPL == null && parentV != null) {
+                _check = value;
+                if (_parentPl == null && _parentV != null) {
                     if (CheckBool) {
-                        if (licznik == 0) {
-                            licznik++;
-                            parentV.playList.checkedCount++;
+                        if (_licznik == 0) {
+                            _licznik++;
+                            _parentV.PlayList.CheckedCount++;
                         }
                     } else {
-                        if (licznik == 1) {
-                            licznik--;
-                            parentV.playList.checkedCount--;
+                        if (_licznik == 1) {
+                            _licznik--;
+                            _parentV.PlayList.CheckedCount--;
                         }
                     }
 
-                    if (parentV.playList.checkedCount == parentV.playList._listOfVideosInPlayList.Count)
-                        parentV.playList.position.Check = true;
-                    else if (parentV.playList.checkedCount == 0)
-                        parentV.playList.position.Check = false;
+                    if (_parentV.PlayList.CheckedCount == _parentV.PlayList.ListOfVideosInPlayList.Count)
+                        _parentV.PlayList.Position.Check = true;
+                    else if (_parentV.PlayList.CheckedCount == 0)
+                        _parentV.PlayList.Position.Check = false;
                     else
-                        parentV.playList.position.Check = null;
+                        _parentV.PlayList.Position.Check = null;
                 }
                 NotifyPropertyChanged("Check");
             }
@@ -60,48 +68,50 @@ namespace powerful_youtube_dl.window {
 
         public bool CheckBool {
             get {
-                if (check != null)
-                    return (bool) check;
+                if (_check != null)
+                    return (bool) _check;
                 return false;
             }
         }
 
         public string Duration {
-            get => duration;
+            get => _duration;
             set {
-                duration = value;
+                _duration = value;
                 NotifyPropertyChanged("Duration");
             }
         }
 
         public Video ParentV {
-            get => parentV;
+            get => _parentV;
             set {
-                parentV = value;
+                _parentV = value;
                 NotifyPropertyChanged("ParentV");
             }
         }
 
-        public PlayList ParentPL {
-            get => parentPL;
+        public PlayList ParentPl {
+            get => _parentPl;
             set {
-                parentPL = value;
+                _parentPl = value;
                 NotifyPropertyChanged("ParentPL");
             }
         }
 
         public string Status {
-            get => status;
+            get => _status;
             set {
-                status = value;
+                _status = value;
+                if (_status == "Pobrano")
+                    _parentV.IsDownloaded = true;
                 NotifyPropertyChanged("Status");
             }
         }
 
         public string Title {
-            get => title;
+            get => _title;
             set {
-                title = value;
+                _title = value;
                 NotifyPropertyChanged("Title");
             }
         }

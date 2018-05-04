@@ -5,45 +5,45 @@ using System.Threading.Tasks;
 namespace powerful_youtube_dl.thinkingPart {
 
     public class DownloadHandler {
-        public static List<Video> toDownload = new List<Video>();
-        public static bool isDownloading;
+        public static List<Video> ToDownload = new List<Video>();
+        public static bool IsDownloading;
 
         public static void Load(PlayList list) {
-            foreach (Video video in list._listOfVideosInPlayList) {
-                if (video.position != null && video.position.CheckBool && !toDownload.Contains(video) && video.position.Title != null)
-                    toDownload.Add(video);
+            foreach (Video video in list.ListOfVideosInPlayList) {
+                if (video.Position != null && video.Position.CheckBool && !ToDownload.Contains(video) && video.Position.Title != null)
+                    ToDownload.Add(video);
             }
         }
 
         public static void Load() {
-            foreach (Video video in Video._listOfVideos) {
-                if (video.position != null && video.position.CheckBool && !toDownload.Contains(video) && video.position.Title != null)
-                    toDownload.Add(video);
+            foreach (Video video in Video.ListOfVideos) {
+                if (video.Position != null && video.Position.CheckBool && !ToDownload.Contains(video) && video.Position.Title != null)
+                    ToDownload.Add(video);
             }
         }
 
         public static void Load(Video video) {
-            if (video.position != null && video.position.CheckBool && !toDownload.Contains(video) && video.position.Title != null)
-                toDownload.Add(video);
+            if (video.Position != null && video.Position.CheckBool && !ToDownload.Contains(video) && video.Position.Title != null)
+                ToDownload.Add(video);
         }
 
         public static async Task DownloadQueueAsync() {
-            if (CheckFields() && !isDownloading) {
-                isDownloading = true;
+            if (CheckFields() && !IsDownloading) {
+                IsDownloading = true;
                 while (true) {
-                    if (toDownload.Count > 0) {
+                    if (ToDownload.Count > 0) {
                         again:
-                        if (Video.queueToDownload < 15) {
-                            toDownload[0].Download();
-                            toDownload.RemoveAt(0);
+                        if (Video.QueueToDownload < 15) {
+                            ToDownload[0].Download();
+                            ToDownload.RemoveAt(0);
                         } else {
-                            await Task.Delay(3000);
+                            await Task.Delay(1000);
                             goto again;
                         }
                     } else
                         break;
                 }
-                isDownloading = false;
+                IsDownloading = false;
             }
         }
 
@@ -60,7 +60,7 @@ namespace powerful_youtube_dl.thinkingPart {
                 response += count + ". Nie wybrano lokalizacji zapisywania plików!\n\n";
                 allowDownload = false;
             }
-            if (toDownload.Count == 0)
+            if (ToDownload.Count == 0)
                 allowDownload = false;
 
             if (response != "")
