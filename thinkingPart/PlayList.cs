@@ -5,7 +5,6 @@ using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 using powerful_youtube_dl.Properties;
 using powerful_youtube_dl.web;
@@ -23,6 +22,7 @@ namespace powerful_youtube_dl.thinkingPart {
 
         public List<Video> _listOfVideosInPlayList = new List<Video>();
         public ListViewItemMy position;
+        public int checkedCount;
 
         public PlayList() {
             if (_listOfPlayListsView == null)
@@ -97,7 +97,7 @@ namespace powerful_youtube_dl.thinkingPart {
                     Check = false,
                     Link = "https://www.youtube.com/playlist?list=" + id,
                     ParentPL = this
-            };
+                };
 
                 Thread ths = new Thread(() => {
                     getPlayListVideos(new HTTP().GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
@@ -140,7 +140,6 @@ namespace powerful_youtube_dl.thinkingPart {
                     _listOfPlayListsView.Add(singleVideos.position);
                     _listOfPlayLists.Add(singleVideos);
                 }
-
                 ((MainWindow) Application.Current.MainWindow)?.addVideoToList(video.position, singleVideos.position.Id);
             }
         }
@@ -235,10 +234,14 @@ namespace powerful_youtube_dl.thinkingPart {
             }
         }
 
-        public void checkChanged(bool isChecked) {
+        public void checkChanged(bool? isChecked) {
             int count = _listOfVideosInPlayList.Count;
-            for (int i = 0; i < count; i++)
-                _listOfVideosInPlayList[i].position.Check = isChecked;
+            for (int i = 0; i < count; i++) {
+                if (isChecked != null)
+                    _listOfVideosInPlayList[i].position.Check = isChecked;
+                else
+                    _listOfVideosInPlayList[i].position.Check = _listOfVideosInPlayList[i].position.Status != "Pobrano";
+            }
         }
 
         override
@@ -284,7 +287,7 @@ namespace powerful_youtube_dl.thinkingPart {
                             break;
                         }
                     }
-                    if(currentIndex==-1 || _listOfVideosInPlayList.Count==0)
+                    if (currentIndex == -1 || _listOfVideosInPlayList.Count == 0)
                         return;
                     Video current = _listOfVideosInPlayList[currentIndex];
 

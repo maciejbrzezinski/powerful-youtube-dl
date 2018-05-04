@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using powerful_youtube_dl.Properties;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using Microsoft.Win32;
-using powerful_youtube_dl.Properties;
 using Application = System.Windows.Forms.Application;
 using CheckBox = System.Windows.Controls.CheckBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -124,11 +124,13 @@ namespace powerful_youtube_dl.window {
                         break;
 
                     case "autoObservePlaylists":
-                        if (check.IsChecked != null) observePlaylistGrid.IsEnabled = (bool) check.IsChecked;
+                        if (check.IsChecked != null)
+                            observePlaylistGrid.IsEnabled = (bool) check.IsChecked;
                         break;
 
                     case "createLogs":
-                        if (check.IsChecked != null) logsGrid.IsEnabled = (bool) check.IsChecked;
+                        if (check.IsChecked != null)
+                            logsGrid.IsEnabled = (bool) check.IsChecked;
                         break;
                 }
             } catch { }

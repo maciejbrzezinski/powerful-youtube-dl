@@ -38,7 +38,7 @@
                                 <GridViewColumn Header="">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate DataType="window:ListViewItemMy">
-                                            <CheckBox Margin="0" IsChecked="{Binding Check}" VerticalAlignment="Top" Unchecked="checkChanged" Checked="checkChanged"/>
+                                            <CheckBox Margin="0" IsThreeState="True" IsChecked="{Binding Check}" VerticalAlignment="Top" Click="checkChanged"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

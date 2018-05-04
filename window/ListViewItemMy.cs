@@ -10,6 +10,7 @@ namespace powerful_youtube_dl.window {
         private PlayList parentPL;
 
         private string title, duration, status, id, link;
+        private int licznik;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -33,14 +34,32 @@ namespace powerful_youtube_dl.window {
             get => check;
             set {
                 check = value;
+                if (parentPL == null && parentV != null) {
+                    if (CheckBool) {
+                        if (licznik == 0) {
+                            licznik++;
+                            parentV.playList.checkedCount++;
+                        }
+                    } else {
+                        if (licznik == 1) {
+                            licznik--;
+                            parentV.playList.checkedCount--;
+                        }
+                    }
+
+                    if (parentV.playList.checkedCount == parentV.playList._listOfVideosInPlayList.Count)
+                        parentV.playList.position.Check = true;
+                    else if (parentV.playList.checkedCount == 0)
+                        parentV.playList.position.Check = false;
+                    else
+                        parentV.playList.position.Check = null;
+                }
                 NotifyPropertyChanged("Check");
             }
         }
 
-        public bool CheckBool
-        {
-            get
-            {
+        public bool CheckBool {
+            get {
                 if (check != null)
                     return (bool) check;
                 return false;
@@ -87,8 +106,7 @@ namespace powerful_youtube_dl.window {
             }
         }
 
-        private void NotifyPropertyChanged(string propertyName)
-        {
+        private void NotifyPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }

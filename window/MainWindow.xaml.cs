@@ -122,18 +122,17 @@ namespace powerful_youtube_dl.window {
             return menu;
         }
 
-        private void contextDeletePlaylist(object sender, RoutedEventArgs e)
-        {
+        private void contextDeletePlaylist(object sender, RoutedEventArgs e) {
             int oldIndex = playlist.SelectedIndex;
             ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentPL.contextDeletePlaylist();
             if (playlist.Items.Count == 0)
                 deleteAllVideosFromList();
-            else if (playlist.Items.Count > 0 && oldIndex!=0)
-                playlist.SelectedIndex = oldIndex-1;
+            else if (playlist.Items.Count > 0 && oldIndex != 0)
+                playlist.SelectedIndex = oldIndex - 1;
             else
                 playlist.SelectedIndex = 0;
 
-            
+
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e) {
@@ -245,7 +244,7 @@ namespace powerful_youtube_dl.window {
                                 if (index < PlayList._listOfPlayLists.Count && j < PlayList._listOfPlayLists[index]._listOfVideosInPlayList.Count) {
                                     PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].isVideoLoadedInActivePlaylist = true;
                                     addVideoToList(PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].position, PlayList._listOfPlayLists[index].position.Id);
-                                } 
+                                }
                             });
                             await Task.Delay(2);
                         } else
@@ -430,8 +429,11 @@ namespace powerful_youtube_dl.window {
 
         private void checkChanged(object sender, RoutedEventArgs e) {
             var isChecked = ((CheckBox) sender).IsChecked;
-            bool toDownload = isChecked != null && (bool) isChecked;
-            ((ListViewItemMy) ((CheckBox) sender).DataContext).ParentPL.checkChanged(toDownload);
+            //if (isChecked == null)
+            //    ((CheckBox) sender).IsChecked = false;
+            //isChecked = ((CheckBox) sender).IsChecked;
+            //bool toDownload = isChecked != null && (bool) isChecked;
+            ((ListViewItemMy) ((CheckBox) sender).DataContext).ParentPL.checkChanged(isChecked);
         }
     }
 }

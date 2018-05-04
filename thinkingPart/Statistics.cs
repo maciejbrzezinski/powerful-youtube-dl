@@ -1,7 +1,7 @@
-﻿using System;
+﻿using powerful_youtube_dl.Properties;
+using System;
 using System.IO;
 using System.Windows.Threading;
-using powerful_youtube_dl.Properties;
 
 namespace powerful_youtube_dl.thinkingPart {
 

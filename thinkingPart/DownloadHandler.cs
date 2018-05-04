@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using powerful_youtube_dl.Properties;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using powerful_youtube_dl.Properties;
 
 namespace powerful_youtube_dl.thinkingPart {
 
