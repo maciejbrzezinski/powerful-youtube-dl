@@ -71,7 +71,6 @@ namespace powerful_youtube_dl.window {
                         Video.isManualDownload = false;
                         string plaURL = o;
                         pl = new PlayList(plaURL);
-                        pl.position.Menu = createPlaylistMenu(pl);
                     } catch { }
                 }
             } else
@@ -117,48 +116,24 @@ namespace powerful_youtube_dl.window {
             ni.ShowBalloonTip(miliseconds);
         }
 
-        private ContextMenu createMenu() {
+        private static ContextMenu createMenu() {
             ContextMenu menu = new ContextMenu();
             menu.MenuItems.Add("Wyjdź", (s, e) => Application.Current.Shutdown());
             return menu;
         }
 
-        public System.Windows.Controls.ContextMenu createPlaylistMenu(PlayList toDelete) {
-            System.Windows.Controls.ContextMenu menu = new System.Windows.Controls.ContextMenu();
-            MenuItem item = new MenuItem { Header = "Usuń" };
-            item.Click += (s, e) => deletePlaylist(toDelete);
-            menu.Items.Add(item);
-            return menu;
-        }
-
-        private void deletePlaylist(PlayList toDelete) {
-            int index = PlayList._listOfPlayListsView.IndexOf(toDelete.position);
-            foreach (Video v in toDelete._listOfVideosInPlayList)
-                Video._listOfVideos.Remove(v);
-            PlayList._listOfPlayListsView.Remove(toDelete.position);
-            PlayList.removePlaylistFromSettings(toDelete.position.Link);
-            PlayList._listOfPlayLists.Remove(toDelete);
-            toDelete._listOfVideosInPlayList.Clear();
-
-            if (PlayList._listOfPlayListsView.Count > 0) {
-                if (PlayList._listOfPlayListsView.Count > index)
-                    playlist.SelectedIndex = index;
-                else {
-                    while (true) {
-                        index--;
-                        if (index == -1) {
-                            playlist.SelectedItem = null;
-                            break;
-                        }
-                        if (PlayList._listOfPlayListsView.Count > index) {
-                            playlist.SelectedIndex = index;
-                            break;
-                        }
-                    }
-                }
-            } else {
+        private void contextDeletePlaylist(object sender, RoutedEventArgs e)
+        {
+            int oldIndex = playlist.SelectedIndex;
+            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentPL.contextDeletePlaylist();
+            if (playlist.Items.Count == 0)
                 deleteAllVideosFromList();
-            }
+            else if (playlist.Items.Count > 0 && oldIndex!=0)
+                playlist.SelectedIndex = oldIndex-1;
+            else
+                playlist.SelectedIndex = 0;
+
+            
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e) {
@@ -258,7 +233,7 @@ namespace powerful_youtube_dl.window {
         private void playlist_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             selectedPlaylistIndex = playlist.SelectedIndex;
             int index = playlist.SelectedIndex;
-            if (index != -1) {
+            if (index != -1 && index < PlayList._listOfPlayLists.Count) {
                 deleteAllVideosFromList();
 
                 Thread ths = new Thread(async () => {
@@ -267,10 +242,10 @@ namespace powerful_youtube_dl.window {
                         if (index == selectedPlaylistIndex) {
                             int j = i;
                             invokeShit(DispatcherPriority.Send, async () => {
-                                if (j < PlayList._listOfPlayLists[index]._listOfVideosInPlayList.Count) {
+                                if (index < PlayList._listOfPlayLists.Count && j < PlayList._listOfPlayLists[index]._listOfVideosInPlayList.Count) {
                                     PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].isVideoLoadedInActivePlaylist = true;
                                     addVideoToList(PlayList._listOfPlayLists[index]._listOfVideosInPlayList[j].position, PlayList._listOfPlayLists[index].position.Id);
-                                }
+                                } 
                             });
                             await Task.Delay(2);
                         } else

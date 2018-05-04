@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 using powerful_youtube_dl.Properties;
 using powerful_youtube_dl.web;
@@ -96,7 +97,7 @@ namespace powerful_youtube_dl.thinkingPart {
                     Check = false,
                     Link = "https://www.youtube.com/playlist?list=" + id,
                     ParentPL = this
-                };
+            };
 
                 Thread ths = new Thread(() => {
                     getPlayListVideos(new HTTP().GET("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
@@ -283,6 +284,8 @@ namespace powerful_youtube_dl.thinkingPart {
                             break;
                         }
                     }
+                    if(currentIndex==-1 || _listOfVideosInPlayList.Count==0)
+                        return;
                     Video current = _listOfVideosInPlayList[currentIndex];
 
                     Dictionary<string, object> temp2 = (Dictionary<string, object>) vid["contentDetails"];
@@ -367,6 +370,16 @@ namespace powerful_youtube_dl.thinkingPart {
             if (hours.Length == 2)
                 hours = "0" + hours;
             return hours + minutes + seconds;
+        }
+
+        public void contextDeletePlaylist() {
+            foreach (Video v in _listOfVideosInPlayList)
+                Video._listOfVideos.Remove(v);
+
+            _listOfPlayListsView.Remove(position);
+            removePlaylistFromSettings(position.Link);
+            _listOfPlayLists.Remove(this);
+            _listOfVideosInPlayList.Clear();
         }
     }
 }

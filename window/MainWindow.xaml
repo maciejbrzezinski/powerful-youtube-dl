@@ -13,9 +13,28 @@
                     <TextBox x:Name="link" x:FieldModifier="public" Margin="10,10,206,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" GotFocus="link_GotFocus" VerticalAlignment="Top" Height="27" TextChanged="link_TextChanged" LostFocus="link_LostFocus" KeyUp="link_lSubmit" />
                     <TextBox x:Name="search" x:FieldModifier="public" Margin="170,47,10,80" TextWrapping="Wrap" Text="Przeszukaj listę" Height="27" VerticalAlignment="Top" BorderThickness="0.1" KeyUp="searchAfterSubmit" GotMouseCapture="search_GotMouseCapture" TextChanged="search_TextChanged" />
                     <Button Content="Załaduj" Margin="0,10,10,0" VerticalAlignment="Top" Width="186" Click="Button_Click_2" Height="27" HorizontalAlignment="Right" />
-                    <ListView x:Name="playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding pl._listOfPlayListsView}" SelectionChanged="playlist_SelectionChanged" Background="White" BorderBrush="#FFE0E0E0" BorderThickness="1" SelectedIndex="1" HorizontalAlignment="Left">
+                    <ListView x:Name="playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding pl._listOfPlayListsView}" SelectionChanged="playlist_SelectionChanged" BorderThickness="1" SelectedIndex="0" HorizontalAlignment="Left">
+                       
+                        <ListView.Resources>
+                            <ContextMenu x:Key="ListViewContextMenu">
+                                <MenuItem x:Name="menuItem_CopyUsername"
+                                                  Header="Usuń" Click="contextDeletePlaylist">
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem x:Name="menuItem_DeleteCreds"
+                                                  Header="AAAAAAAAAAAA">
+                                </MenuItem>
+                            </ContextMenu>
+                        </ListView.Resources>
+
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
+                                <Setter Property="ContextMenu" Value="{StaticResource ListViewContextMenu}"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
                         <ListView.View>
-                            <GridView>   
+                            <GridView>
                                 <GridViewColumn Header="">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate DataType="window:ListViewItemMy">

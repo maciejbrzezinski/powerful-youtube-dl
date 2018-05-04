@@ -8,19 +8,10 @@ namespace powerful_youtube_dl.window {
 
         private Video parentV;
         private PlayList parentPL;
-        private System.Windows.Controls.ContextMenu menu;
 
         private string title, duration, status, id, link;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public System.Windows.Controls.ContextMenu Menu {
-            get => menu;
-            set {
-                menu = value;
-                NotifyPropertyChanged("Menu");
-            }
-        }
 
         public string Link {
             get => link;
