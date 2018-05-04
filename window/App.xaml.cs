@@ -1,10 +1,8 @@
-﻿using System.Windows;
-
-namespace powerful_youtube_dl {
+﻿namespace powerful_youtube_dl.window {
 
     /// <summary>
     /// Logika interakcji dla klasy App.xaml
     /// </summary>
-    public partial class App : Application {
+    public partial class App {
     }
 }

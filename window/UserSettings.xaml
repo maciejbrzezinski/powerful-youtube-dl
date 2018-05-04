@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:powerful_youtube_dl.window"
-        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
         Title="Settings" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" VerticalAlignment="Top">
-    <Grid x:Name="grid1" VerticalAlignment="Top">
+    <Grid VerticalAlignment="Top">
         <Grid x:Name="ytdlexe" Margin="10,10,10,0" Height="43" VerticalAlignment="Top">
             <TextBox x:Name="textYTDL" Height="23" Margin="10,10,120,0" TextWrapping="Wrap" Text="Ścierzka do youtube-dl.exe" VerticalAlignment="Top" IsEnabled="False" />
             <Button Content="Wybierz" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="90" Height="26" Click="selectYoutubeDLPath" />

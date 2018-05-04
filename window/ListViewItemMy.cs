@@ -1,17 +1,25 @@
 ﻿using System.ComponentModel;
+using powerful_youtube_dl.thinkingPart;
 
-namespace powerful_youtube_dl {
+namespace powerful_youtube_dl.window {
 
     public class ListViewItemMy : INotifyPropertyChanged {
-        private bool check;
+        private bool? check;
 
-        private Video parent;
+        private Video parentV;
+        private PlayList parentPL;
+        private System.Windows.Controls.ContextMenu menu;
 
         private string title, duration, status, id, link;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ListViewItemMy() {
+        public System.Windows.Controls.ContextMenu Menu {
+            get => menu;
+            set {
+                menu = value;
+                NotifyPropertyChanged("Menu");
+            }
         }
 
         public string Link {
@@ -30,11 +38,21 @@ namespace powerful_youtube_dl {
             }
         }
 
-        public bool Check {
+        public bool? Check {
             get => check;
             set {
                 check = value;
                 NotifyPropertyChanged("Check");
+            }
+        }
+
+        public bool CheckBool
+        {
+            get
+            {
+                if (check != null)
+                    return (bool) check;
+                return false;
             }
         }
 
@@ -46,11 +64,19 @@ namespace powerful_youtube_dl {
             }
         }
 
-        public Video Parent {
-            get => parent;
+        public Video ParentV {
+            get => parentV;
             set {
-                parent = value;
-                NotifyPropertyChanged("Parent");
+                parentV = value;
+                NotifyPropertyChanged("ParentV");
+            }
+        }
+
+        public PlayList ParentPL {
+            get => parentPL;
+            set {
+                parentPL = value;
+                NotifyPropertyChanged("ParentPL");
             }
         }
 
@@ -70,10 +96,9 @@ namespace powerful_youtube_dl {
             }
         }
 
-        private void NotifyPropertyChanged(string propertyName) {
-            if (PropertyChanged != null) {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

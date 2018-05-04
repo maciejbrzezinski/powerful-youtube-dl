@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using System.Windows;
+using powerful_youtube_dl.web;
 
 namespace powerful_youtube_dl.thinkingPart {
 
@@ -10,27 +11,20 @@ namespace powerful_youtube_dl.thinkingPart {
 
         public User(string link, int status) //(status) 0 - playlisty 1 - dodane
         {
-            string id = "";
+            string id;
 
             if (link.Contains("/channel/")) {
                 int start = link.IndexOf("nnel/") + 5;
                 int finish = link.Substring(start).IndexOf("?");
                 if (finish == -1)
                     finish = link.Substring(start).IndexOf("/");
-                if (finish != -1)
-                    userID = link.Substring(start, finish);
-                else
-                    userID = link.Substring(start);
+                userID = finish != -1 ? link.Substring(start, finish) : link.Substring(start);
 
                 id = "id=" + userID;
             } else {
-                string title;
                 int start = link.IndexOf("user/") + 5;
                 int finish = link.Substring(start).IndexOf("/");
-                if (finish > 0)
-                    title = link.Substring(start, finish);
-                else
-                    title = link.Substring(start);
+               string title = finish > 0 ? link.Substring(start, finish) : link.Substring(start);
                 id = "forUsername=" + title;
                 userID = getUserID(title);
             }
@@ -49,24 +43,21 @@ namespace powerful_youtube_dl.thinkingPart {
         private void getUserPlayLists(string json) {
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
             var result = jsSerializer.DeserializeObject(json);
-            Dictionary<string, object> obj2 = new Dictionary<string, object>();
-            obj2 = (Dictionary<string, object>) (result);
+            Dictionary<string, object> obj2 = (Dictionary<string, object>) (result);
 
-            System.Object[] val = (System.Object[]) obj2["items"];
+            Object[] val = (Object[]) obj2["items"];
 
             foreach (object item in val) {
                 Dictionary<string, object> vid = (Dictionary<string, object>) item;
                 Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
                 string playlistid = vid["id"].ToString();
                 string playlistTitle = temp["title"].ToString();
-                PlayList toAdd = new PlayList(playlistid, playlistTitle);
+                new PlayList(playlistid, playlistTitle);
             }
             try {
                 string nextPage = obj2["nextPageToken"].ToString();
                 getUserPlayLists(new HTTP().GET("https://www.googleapis.com/youtube/v3/playlists?part=snippet&" + userID + "&maxResults=50&pageToken=" + nextPage + "&fields=items(id%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-            } catch (Exception e) {
-                Console.WriteLine("TUTAJ");
-            }
+            } catch {}
         }
 
         private void getUserUploadedVideos(string json) {
@@ -74,32 +65,29 @@ namespace powerful_youtube_dl.thinkingPart {
             var result = jsSerializer.DeserializeObject(json);
             Dictionary<string, object> obj2 = (Dictionary<string, object>) (result);
 
-            System.Object[] val = (System.Object[]) obj2["items"];
+            Object[] val = (Object[]) obj2["items"];
 
             string id = "";
             string title = "";
             try {
                 Dictionary<string, object> idJ = (Dictionary<string, object>) val.GetValue(0);
                 id = idJ["id"].ToString();
-                System.Object v = (System.Object) idJ["snippet"];
+                Object v = idJ["snippet"];
                 Dictionary<string, object> vJ = (Dictionary<string, object>) v;
                 title = vJ["title"].ToString();
-            } catch (Exception e) {
-                Console.WriteLine("TUTAJ");
-            }
+            } catch { }
             id = id.Substring(2);
             id = "UU" + id;
-            PlayList user = new PlayList(id, title);
+            new PlayList(id, title);
         }
 
         private string getUserID(string title) {
             string json = new HTTP().GET("https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername=" + title + "&fields=items%2Fid&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o");
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
             var result = jsSerializer.DeserializeObject(json);
-            Dictionary<string, object> obj2 = new Dictionary<string, object>();
-            obj2 = (Dictionary<string, object>) (result);
+            Dictionary<string, object> obj2 = (Dictionary<string, object>) (result);
 
-            System.Object[] val = (System.Object[]) obj2["items"];
+            Object[] val = (Object[]) obj2["items"];
             string response = null;
             try {
                 Dictionary<string, object> id = (Dictionary<string, object>) val.GetValue(0);

@@ -1,14 +1,18 @@
 ﻿using System.Windows;
 
-namespace powerful_youtube_dl {
+namespace powerful_youtube_dl.window {
 
-    public partial class Dialog : Window {
+    public partial class Dialog
+    {
         private static int toOut = 2;
+
+        public Dialog() {
+        }
 
         public Dialog(string question, string title, string radio11, string radio22) // 0-pierwsze radio, 1-drugie radio, 2-anulowano, 3-niepoprawnie wypełniono
         {
             InitializeComponent();
-            this.Loaded += new RoutedEventHandler(PromptDialog_Loaded);
+            Loaded += PromptDialog_Loaded;
             toOut = 2;
             txtQuestion.Text = question;
             Title = title;
@@ -18,13 +22,13 @@ namespace powerful_youtube_dl {
         }
 
         public int Response {
-            get {
-                if ((bool) radio1.IsChecked)
+            get
+            {
+                if (radio1.IsChecked != null && (bool) radio1.IsChecked)
                     return 0;
-                else if ((bool) radio2.IsChecked)
+                if (radio2.IsChecked != null && (bool) radio2.IsChecked)
                     return 1;
-                else
-                    return 3;
+                return 3;
             }
         }
 
@@ -42,9 +46,9 @@ namespace powerful_youtube_dl {
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
-            if ((bool) radio1.IsChecked)
+            if (radio1.IsChecked != null && (bool) radio1.IsChecked)
                 toOut = 0;
-            else if ((bool) radio2.IsChecked)
+            else if (radio2.IsChecked != null && (bool) radio2.IsChecked)
                 toOut = 1;
             else
                 toOut = 3;
