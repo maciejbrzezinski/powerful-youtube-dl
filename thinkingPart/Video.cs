@@ -86,30 +86,23 @@ namespace powerful_youtube_dl.thinkingPart {
 
                         process.WaitForExit();
 
+                        CurrentlyDownloading--;
+
                         if (_lastMessage != null && _lastMessage.Contains("Downloading video info webpage")) {
                             MainWindow.InvokeShit(DispatcherPriority.Send, async () => {
                                 Position.Check = false;
                                 ((MainWindow) Application.Current.MainWindow)?.DeleteVideoFromAdd(Position, PlayList.Position.Id);
                                 PlayList.ListOfVideosInPlayList.Remove(this);
                             });
-                        } else if (_lastMessage != null && !_lastMessage.Contains("[download] 100.0%") && !_lastMessage.Contains("[download] 100%")) {
-                            if (File.Exists(Position.Path + ".part")) {
-                                try {
-                                    File.Delete(Position.Path + ".part");
-                                } catch { }
-                            }
-                            aTimer.Enabled = true;
-                            return;
                         } else {
-                            MainWindow.InvokeShit(DispatcherPriority.Normal, () => {
-                                Position.Status = "Pobrano";
-                                Position.Check = false;
-                                if (Settings.Default.messageAfterDownload)
-                                    MainWindow.ShowNotifyIconMessage("Pobrano plik | " + PlayList, Position.Title, ToolTipIcon.Info, 100, Position.Path);
-                            });
-                            Statistics.CompleteDownload(this);
+                            if (File.Exists(Position.Path + ".part")) {
+                                aTimer.Enabled = true;
+                                return;
+                            } else if (File.Exists(Position.Path)) {
+                                FinishDownload();
+                                Statistics.CompleteDownload(this);
+                            }
                         }
-                        CurrentlyDownloading--;
                         aTimer.Close();
                     }
                 }
@@ -118,6 +111,16 @@ namespace powerful_youtube_dl.thinkingPart {
             };
             aTimer.Interval = 4000;
             aTimer.Enabled = true;
+        }
+
+        private void FinishDownload() {
+            MainWindow.InvokeShit(DispatcherPriority.Normal, () => {
+                Position.Status = "Pobrano";
+                Position.Check = false;
+                if (Settings.Default.messageAfterDownload)
+                    MainWindow.ShowNotifyIconMessage("Pobrano plik | " + PlayList, Position.Title, ToolTipIcon.Info, 100, Position.Path);
+            });
+            Statistics.CompleteDownload(this);
         }
 
         override

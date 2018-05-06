@@ -122,6 +122,7 @@ namespace powerful_youtube_dl.window {
             popupIcon.BalloonTipClosed += (sender, args) => {
                 popupIcon.Icon = null;
                 popupIcon.Visible = false;
+                popupIcon.Dispose();
             };
             popupIcon.ShowBalloonTip(miliseconds);
         }

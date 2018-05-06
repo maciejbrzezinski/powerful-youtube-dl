@@ -104,6 +104,10 @@ namespace powerful_youtube_dl.window {
                 _status = value;
                 if (_status == "Pobrano")
                     _parentV.IsDownloaded = true;
+                else if (_parentV != null) {
+                    _parentV.IsDownloaded = false;
+                    Check = true;
+                }
                 NotifyPropertyChanged("Status");
             }
         }
