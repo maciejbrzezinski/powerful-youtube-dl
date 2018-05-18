@@ -144,6 +144,30 @@ namespace powerful_youtube_dl.window {
                 Playlist.SelectedIndex = 0;
         }
 
+        private void ContextPlaylistYT(object sender, RoutedEventArgs e) {
+            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentPl.ContextOpenYT();
+        }
+
+        private void ContextPlaylistPath(object sender, RoutedEventArgs e) {
+            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentPl.ContextOpenPath();
+        }
+
+        private void ContextVideoPlay(object sender, RoutedEventArgs e) {
+            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextPlayVideo();
+        }
+
+        private void ContextVideoYT(object sender, RoutedEventArgs e) {
+            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextOpenYT();
+        }
+
+        private void ContextVideoPath(object sender, RoutedEventArgs e) {
+            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextOpenPath();
+        }
+
+        private void ContextDeleteVideo(object sender, RoutedEventArgs e) {
+            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextDeleteVideo();
+        }
+
         private void Button_Click_2(object sender, RoutedEventArgs e) {
             LoadUrl();
         }

@@ -4,6 +4,7 @@ using powerful_youtube_dl.window;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -46,6 +47,7 @@ namespace powerful_youtube_dl.thinkingPart {
             } catch (Exception) {
                 id = link.Substring(link.IndexOf("list=", StringComparison.Ordinal) + 5, 24);
             }
+
             if (!CheckIfPlayListExists(id)) {
                 Position = new ListViewItemMy {
                     Title = GetTitle(id),
@@ -54,6 +56,13 @@ namespace powerful_youtube_dl.thinkingPart {
                     Link = link,
                     ParentPl = this
                 };
+                string path = "";
+                if (Settings.Default.playlistAsFolder) {
+                    path = Settings.Default.textDestination + "\\" + Position.Title;
+                } else {
+                    path = Settings.Default.textDestination;
+                }
+                Position.Path = path;
 
                 ListOfPlayLists.Add(this);
 
@@ -97,6 +106,13 @@ namespace powerful_youtube_dl.thinkingPart {
                     Link = "https://www.youtube.com/playlist?list=" + id,
                     ParentPl = this
                 };
+                string path = "";
+                if (Settings.Default.playlistAsFolder) {
+                    path = Settings.Default.textDestination + "\\" + Position.Title;
+                } else {
+                    path = Settings.Default.textDestination;
+                }
+                Position.Path = path;
 
                 Thread ths = new Thread(() => {
                     GetPlayListVideos(new Http().Get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + Position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
@@ -130,8 +146,15 @@ namespace powerful_youtube_dl.thinkingPart {
                     Position = new ListViewItemMy {
                         Title = "Pojedyncze",
                         Check = false,
-                        ParentPl = this
+                        ParentPl = this,
                     };
+                    string path = "";
+                    if (Settings.Default.playlistAsFolder) {
+                        path = Settings.Default.textDestination + "\\" + Position.Title;
+                    } else {
+                        path = Settings.Default.textDestination;
+                    }
+                    Position.Path = path;
                     SingleVideos = this;
                 }
                 if (!IsVisible) {
@@ -376,6 +399,15 @@ namespace powerful_youtube_dl.thinkingPart {
             RemovePlaylistFromSettings(Position.Link);
             ListOfPlayLists.Remove(this);
             ListOfVideosInPlayList.Clear();
+        }
+
+        public void ContextOpenPath() {
+            string argument = "/select, \"" + Position.Path + "\"";
+            Process.Start("explorer.exe", argument);
+        }
+
+        public void ContextOpenYT() {
+            Process.Start(Position.Link);
         }
     }
 }

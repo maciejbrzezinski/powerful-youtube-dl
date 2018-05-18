@@ -16,9 +16,10 @@
                     <ListView x:Name="Playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding ListOfPlayListsView}" SelectionChanged="playlist_SelectionChanged" BorderThickness="1" SelectedIndex="0" HorizontalAlignment="Left">
                         <ListView.Resources>
                             <ContextMenu x:Key="ListViewContextMenu">
-                                <MenuItem x:Name="MenuDelete" Header="Usuń" Click="ContextDeletePlaylist" />
+                                <MenuItem x:Name="MenuYT" Header="Otwórz w YouTube" Click="ContextPlaylistYT" />
+                                <MenuItem x:Name="MenuPath" Header="Otwórz w eksploratorze" Click="ContextPlaylistPath" />
                                 <Separator />
-                                <MenuItem x:Name="MenuNothing" Header="AAAAAAAAAAAA" />
+                                <MenuItem x:Name="MenuDelete" Header="Usuń" Click="ContextDeletePlaylist" />
                             </ContextMenu>
                         </ListView.Resources>
 
@@ -42,6 +43,20 @@
                         </ListView.View>
                     </ListView>
                     <ListView x:Name="AddVideos" x:FieldModifier="public" ItemsSource="{Binding VideosInActivePlayList}" Margin="170,84,10,80" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" MinHeight="300" BorderThickness="0" MouseDoubleClick="OpenFolderOrBrowser">
+                        <ListView.Resources>
+                            <ContextMenu x:Key="ListViewContextVideo">
+                                <MenuItem x:Name="VideoYT" Header="Otwórz w YouTube" Click="ContextVideoYT" />
+                                <MenuItem x:Name="VideoPath" Header="Otwórz w eksploratorze" Click="ContextVideoPath" />
+                                <MenuItem x:Name="VideoPlay" Header="Odtwórz" Click="ContextVideoPlay" />
+                                <Separator />
+                                <MenuItem x:Name="VideoDelete" Header="Usuń" Click="ContextDeleteVideo" />
+                            </ContextMenu>
+                        </ListView.Resources>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
+                                <Setter Property="ContextMenu" Value="{StaticResource ListViewContextVideo}" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="">

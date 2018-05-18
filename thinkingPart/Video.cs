@@ -180,5 +180,26 @@ namespace powerful_youtube_dl.thinkingPart {
             }
             return false;
         }
+
+        public void ContextOpenPath() {
+            string argument = "/select, \"" + Position.Path + "\"";
+            Process.Start("explorer.exe", argument);
+        }
+
+        public void ContextOpenYT() {
+            if (Position.Link != null)
+                Process.Start(Position.Link);
+        }
+
+        public void ContextDeleteVideo() {
+            Position.Check = false;
+            ((MainWindow) Application.Current.MainWindow)?.DeleteVideoFromAdd(Position, PlayList.Position.Id);
+            PlayList.ListOfVideosInPlayList.Remove(this);
+        }
+
+        public void ContextPlayVideo() {
+            if (Position.Path != null)
+                Process.Start(Position.Path);
+        }
     }
 }
