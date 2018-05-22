@@ -67,7 +67,7 @@ namespace powerful_youtube_dl.window {
                 foreach (string o in Settings.Default.playlists) {
                     try {
                         Video.IsManualDownload = false;
-                        new PlayList(o);
+                        new PlayList(o, null);
                     } catch { }
                 }
             } else
@@ -189,13 +189,13 @@ namespace powerful_youtube_dl.window {
                     if (wynik == 0)
                         new PlayList(new Video(url, listId));
                     else if (wynik == 1)
-                        new PlayList(url);
+                        new PlayList(url, null);
                     else if (wynik == 3)
                         MessageBox.Show("Wystąpił błąd!", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error);
                 } else
                     new PlayList(new Video(url, listId));
             } else if (url.Contains("playlist") || url.Contains("list")) {
-                new PlayList(url);
+                new PlayList(url, null);
             } else
                 Error("Podany link jest nieprawidłowy!");
 

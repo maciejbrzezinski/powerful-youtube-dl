@@ -37,82 +37,30 @@ namespace powerful_youtube_dl.thinkingPart {
             }
         }
 
-        public PlayList(string link) {
+        public PlayList(string urlOrId, string name) {
             if (MainWindow.ListOfPlayListsView == null)
                 MainWindow.ListOfPlayListsView = new ObservableCollection<ListViewItemMy>();
 
-            string id;
-            try {
-                id = link.Substring(link.IndexOf("list=", StringComparison.Ordinal) + 5, 34); //24
-            } catch (Exception) {
-                id = link.Substring(link.IndexOf("list=", StringComparison.Ordinal) + 5, 24);
-            }
+            string id = GetPlaylistIdFromURL(urlOrId);
+            if (id == urlOrId)
+                urlOrId = "https://www.youtube.com/playlist?list=" + id;
+            if (name == null)
+                name = GetTitle(id);
 
             if (!CheckIfPlayListExists(id)) {
                 Position = new ListViewItemMy {
-                    Title = GetTitle(id),
+                    Title = name,
                     Id = id,
                     Check = false,
-                    Link = link,
+                    Link = urlOrId,
                     ParentPl = this
                 };
-                string path = "";
+
                 if (Settings.Default.playlistAsFolder) {
-                    path = Settings.Default.textDestination + "\\" + Position.Title;
+                    Position.Path = Settings.Default.textDestination + "\\" + Position.Title;
                 } else {
-                    path = Settings.Default.textDestination;
+                    Position.Path = Settings.Default.textDestination;
                 }
-                Position.Path = path;
-
-                ListOfPlayLists.Add(this);
-
-                Thread ths = new Thread(() => {
-                    GetPlayListVideos(new Http().Get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + Position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-                    GetParamsOfVideos();
-                    Statistics.LoadedPlaylist(this);
-                    if (Settings.Default.autoObservePlaylists && Settings.Default.autoDownloadObserve && !Video.IsManualDownload) {
-                        DownloadHandler.Load(this);
-                        DownloadHandler.DownloadQueueAsync();
-                    }
-                });
-                ths.Start();
-
-                MainWindow.ListOfPlayListsView.Add(Position);
-                AddPlayListToSettings(Position.Link);
-
-                DispatcherTimer checkingTimer = new DispatcherTimer();
-                checkingTimer.Tick += checkPlayList_Tick;
-                checkingTimer.Interval = new TimeSpan(0, 5, 0);
-                checkingTimer.Start();
-            } else
-                MainWindow.Error("Ta playlista jest już dodana!");
-        }
-
-        private void checkPlayList_Tick(object sender, EventArgs e) {
-            if (Settings.Default.autoObservePlaylists) {
-                getPlaylistVideos_Timer(new Http().Get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + Position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-                GetParamsOfVideos();
-            }
-        }
-
-        public PlayList(string id, string title) {
-            if (MainWindow.ListOfPlayListsView == null)
-                MainWindow.ListOfPlayListsView = new ObservableCollection<ListViewItemMy>();
-            if (!CheckIfPlayListExists(id)) {
-                Position = new ListViewItemMy {
-                    Title = title,
-                    Id = id,
-                    Check = false,
-                    Link = "https://www.youtube.com/playlist?list=" + id,
-                    ParentPl = this
-                };
-                string path = "";
-                if (Settings.Default.playlistAsFolder) {
-                    path = Settings.Default.textDestination + "\\" + Position.Title;
-                } else {
-                    path = Settings.Default.textDestination;
-                }
-                Position.Path = path;
 
                 Thread ths = new Thread(() => {
                     GetPlayListVideos(new Http().Get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + Position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
@@ -134,7 +82,7 @@ namespace powerful_youtube_dl.thinkingPart {
                 checkingTimer.Interval = new TimeSpan(0, 5, 0);
                 checkingTimer.Start();
             } else
-                MainWindow.Error("Playlista o nazwie " + title + " jest już dodana!");
+                MainWindow.Error("Playlista o nazwie " + name + " jest już dodana!");
         }
 
         public PlayList(Video video) {
@@ -163,6 +111,21 @@ namespace powerful_youtube_dl.thinkingPart {
                     ListOfPlayLists.Add(SingleVideos);
                 }
                 ((MainWindow) Application.Current.MainWindow)?.AddVideoToList(video.Position, SingleVideos.Position.Id);
+            }
+        }
+
+        private static string GetPlaylistIdFromURL(string url) {
+            try { return url.Substring(url.IndexOf("list=", StringComparison.Ordinal) + 5, 34); }
+            catch {
+                try { return url.Substring(url.IndexOf("list=", StringComparison.Ordinal) + 5, 24); }
+                catch { return url; }
+            }
+        }
+
+        private void checkPlayList_Tick(object sender, EventArgs e) {
+            if (Settings.Default.autoObservePlaylists) {
+                getPlaylistVideos_Timer(new Http().Get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + Position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
+                GetParamsOfVideos();
             }
         }
 
@@ -379,7 +342,8 @@ namespace powerful_youtube_dl.thinkingPart {
                 start = tmp.IndexOf("H", StringComparison.Ordinal);
                 if (start > 0)
                     hours = tmp.Substring(0, start) + ":";
-            } catch {
+            }
+            catch {
                 Console.WriteLine(@"TUTAJ");
             }
             if (seconds.Length == 1)

@@ -9,10 +9,18 @@ namespace powerful_youtube_dl.window {
         private Video _parentV;
         private PlayList _parentPl;
 
-        private string _title, _duration, _status, _id, _link, _path;
+        private string _title, _duration, _status, _id, _link, _path, _toolTip;
         private int _licznik;
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public string ToolTip {
+            get => _toolTip;
+            set {
+                _toolTip = value;
+                NotifyPropertyChanged("ToolTip");
+            }
+        }
 
         public string Path {
             get => _path;

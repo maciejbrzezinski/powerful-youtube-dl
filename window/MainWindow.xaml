@@ -26,9 +26,17 @@
                         <ListView.ItemContainerStyle>
                             <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
                                 <Setter Property="ContextMenu" Value="{StaticResource ListViewContextMenu}" />
+                                <Setter Property="ToolTip">
+                                    <Setter.Value>
+                                        <UniformGrid Columns="1">
+                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}"/>
+                                            <Separator/>
+                                            <TextBlock Text="{Binding Link, StringFormat=URL:   \{0\}}"/>
+                                        </UniformGrid>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </ListView.ItemContainerStyle>
-
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="">

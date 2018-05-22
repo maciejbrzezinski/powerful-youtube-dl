@@ -175,7 +175,7 @@ namespace powerful_youtube_dl.thinkingPart {
 
         public static bool IsVideoLoaded(string id) {
             for (int i = 0; i < ListOfVideos.Count; i++) {
-                if (ListOfVideos[i].Position.Id == id)
+                if (ListOfVideos[i]!=null && ListOfVideos[i].Position != null && ListOfVideos[i].Position.Id == id)
                     return true;
             }
             return false;
