@@ -117,10 +117,12 @@
     </Compile>
     <Compile Include="thinkingPart\DownloadHandler.cs" />
     <Compile Include="web\HTTP.cs" />
-    <Compile Include="window\ListViewItemMy.cs" />
+    <Compile Include="window\CommonThingsView.cs" />
+    <Compile Include="window\VideoView.cs" />
     <Compile Include="thinkingPart\PlayList.cs" />
     <Compile Include="thinkingPart\User.cs" />
     <Compile Include="thinkingPart\Video.cs" />
+    <Compile Include="window\PlaylistView.cs" />
     <Compile Include="window\UserSettings.xaml.cs">
       <DependentUpon>UserSettings.xaml</DependentUpon>
     </Compile>

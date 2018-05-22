@@ -29,9 +29,10 @@
                                 <Setter Property="ToolTip">
                                     <Setter.Value>
                                         <UniformGrid Columns="1">
+                                            <TextBlock Text="{Binding Link, StringFormat=URL:   \{0\}}"/>
                                             <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}"/>
                                             <Separator/>
-                                            <TextBlock Text="{Binding Link, StringFormat=URL:   \{0\}}"/>
+                                            
                                         </UniformGrid>
                                     </Setter.Value>
                                 </Setter>
@@ -41,7 +42,7 @@
                             <GridView>
                                 <GridViewColumn Header="">
                                     <GridViewColumn.CellTemplate>
-                                        <DataTemplate DataType="window:ListViewItemMy">
+                                        <DataTemplate DataType="window:PlaylistView">
                                             <CheckBox Margin="0" IsThreeState="True" IsChecked="{Binding Check}" VerticalAlignment="Top" Click="CheckChanged" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
@@ -69,7 +70,7 @@
                             <GridView>
                                 <GridViewColumn Header="">
                                     <GridViewColumn.CellTemplate>
-                                        <DataTemplate DataType="window:ListViewItemMy">
+                                        <DataTemplate DataType="window:VideoView">
                                             <CheckBox Margin="0" IsChecked="{Binding Check}" VerticalAlignment="Top" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>

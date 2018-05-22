@@ -21,17 +21,17 @@ namespace powerful_youtube_dl.thinkingPart {
         public List<Video> VideoIDsToGetParams = new List<Video>();
 
         public List<Video> ListOfVideosInPlayList = new List<Video>();
-        public ListViewItemMy Position;
+        public PlaylistView Position;
         public int CheckedCount;
 
         public PlayList() {
             if (MainWindow.ListOfPlayListsView == null)
-                MainWindow.ListOfPlayListsView = new ObservableCollection<ListViewItemMy>();
+                MainWindow.ListOfPlayListsView = new ObservableCollection<PlaylistView>();
             if (SingleVideos == null) {
-                Position = new ListViewItemMy {
+                Position = new PlaylistView {
                     Title = "Pojedyncze",
                     Check = false,
-                    ParentPl = this
+                    ParentPlaylist = this
                 };
                 SingleVideos = this;
             }
@@ -39,7 +39,7 @@ namespace powerful_youtube_dl.thinkingPart {
 
         public PlayList(string urlOrId, string name) {
             if (MainWindow.ListOfPlayListsView == null)
-                MainWindow.ListOfPlayListsView = new ObservableCollection<ListViewItemMy>();
+                MainWindow.ListOfPlayListsView = new ObservableCollection<PlaylistView>();
 
             string id = GetPlaylistIdFromURL(urlOrId);
             if (id == urlOrId)
@@ -48,12 +48,12 @@ namespace powerful_youtube_dl.thinkingPart {
                 name = GetTitle(id);
 
             if (!CheckIfPlayListExists(id)) {
-                Position = new ListViewItemMy {
+                Position = new PlaylistView {
                     Title = name,
                     Id = id,
                     Check = false,
                     Link = urlOrId,
-                    ParentPl = this
+                    ParentPlaylist = this
                 };
 
                 if (Settings.Default.playlistAsFolder) {
@@ -87,14 +87,14 @@ namespace powerful_youtube_dl.thinkingPart {
 
         public PlayList(Video video) {
             if (MainWindow.ListOfPlayListsView == null)
-                MainWindow.ListOfPlayListsView = new ObservableCollection<ListViewItemMy>();
+                MainWindow.ListOfPlayListsView = new ObservableCollection<PlaylistView>();
 
             if (video.Position != null) {
                 if (SingleVideos == null) {
-                    Position = new ListViewItemMy {
+                    Position = new PlaylistView {
                         Title = "Pojedyncze",
                         Check = false,
-                        ParentPl = this,
+                        ParentPlaylist = this,
                     };
                     string path = "";
                     if (Settings.Default.playlistAsFolder) {

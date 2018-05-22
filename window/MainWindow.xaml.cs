@@ -33,11 +33,11 @@ namespace powerful_youtube_dl.window {
     public partial class MainWindow {
         public static NotifyIcon Notify;
         public static List<string> DontLoad = new List<string>();
-        public ObservableCollection<ListViewItemMy> VideosInActivePlayList { get; set; }
-        public static ObservableCollection<ListViewItemMy> ListOfPlayListsView { get; set; }
+        public ObservableCollection<VideoView> VideosInActivePlayList { get; set; }
+        public static ObservableCollection<PlaylistView> ListOfPlayListsView { get; set; }
 
         public MainWindow() {
-            VideosInActivePlayList = new ObservableCollection<ListViewItemMy>();
+            VideosInActivePlayList = new ObservableCollection<VideoView>();
 
             InitializeComponent();
             DataContext = this;
@@ -135,7 +135,7 @@ namespace powerful_youtube_dl.window {
 
         private void ContextDeletePlaylist(object sender, RoutedEventArgs e) {
             int oldIndex = Playlist.SelectedIndex;
-            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentPl.ContextDeletePlaylist();
+            ((PlaylistView) ((MenuItem) sender).DataContext).ParentPlaylist.ContextDeletePlaylist();
             if (Playlist.Items.Count == 0)
                 DeleteAllVideosFromList();
             else if (Playlist.Items.Count > 0 && oldIndex != 0)
@@ -145,27 +145,27 @@ namespace powerful_youtube_dl.window {
         }
 
         private void ContextPlaylistYT(object sender, RoutedEventArgs e) {
-            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentPl.ContextOpenYT();
+            ((PlaylistView) ((MenuItem) sender).DataContext).ParentPlaylist.ContextOpenYT();
         }
 
         private void ContextPlaylistPath(object sender, RoutedEventArgs e) {
-            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentPl.ContextOpenPath();
+            ((PlaylistView) ((MenuItem) sender).DataContext).ParentPlaylist.ContextOpenPath();
         }
 
         private void ContextVideoPlay(object sender, RoutedEventArgs e) {
-            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextPlayVideo();
+            ((VideoView) ((MenuItem) sender).DataContext).ParentVideo.ContextPlayVideo();
         }
 
         private void ContextVideoYT(object sender, RoutedEventArgs e) {
-            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextOpenYT();
+            ((VideoView) ((MenuItem) sender).DataContext).ParentVideo.ContextOpenYT();
         }
 
         private void ContextVideoPath(object sender, RoutedEventArgs e) {
-            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextOpenPath();
+            ((VideoView) ((MenuItem) sender).DataContext).ParentVideo.ContextOpenPath();
         }
 
         private void ContextDeleteVideo(object sender, RoutedEventArgs e) {
-            ((ListViewItemMy) ((MenuItem) sender).DataContext).ParentV.ContextDeleteVideo();
+            ((VideoView) ((MenuItem) sender).DataContext).ParentVideo.ContextDeleteVideo();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e) {
@@ -263,20 +263,20 @@ namespace powerful_youtube_dl.window {
         }
 
         private void playlist_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            ListViewItemMy item = (ListViewItemMy) Playlist.SelectedItem;
+            PlaylistView item = (PlaylistView) Playlist.SelectedItem;
             int index = Playlist.SelectedIndex;
             if (index != -1 && index < PlayList.ListOfPlayLists.Count) {
                 DeleteAllVideosFromList();
                 Thread ths = new Thread(async () => {
-                    int x = item.ParentPl.ListOfVideosInPlayList.Count;
+                    int x = item.ParentPlaylist.ListOfVideosInPlayList.Count;
                     for (int i = 0; i < x; i++) {
                         int j = i;
                         if (index != -1) {
                             InvokeShit(DispatcherPriority.Send, async () => {
                                 if (index < PlayList.ListOfPlayLists.Count &&
-                                    j < item.ParentPl.ListOfVideosInPlayList.Count) {
-                                    AddVideoToList(item.ParentPl.ListOfVideosInPlayList[j].Position,
-                                        item.ParentPl.Position.Id);
+                                    j < item.ParentPlaylist.ListOfVideosInPlayList.Count) {
+                                    AddVideoToList(item.ParentPlaylist.ListOfVideosInPlayList[j].Position,
+                                        item.ParentPlaylist.Position.Id);
                                 } else
                                     index = -1;
                             });
@@ -301,14 +301,14 @@ namespace powerful_youtube_dl.window {
             DownloadHandler.DownloadQueueAsync();
         }
 
-        public void AddVideoToList(ListViewItemMy videom, string playlistId) {
+        public void AddVideoToList(VideoView videom, string playlistId) {
             int index = Playlist.SelectedIndex;
             if (index != -1 && PlayList.ListOfPlayLists[index].Position.Id == playlistId) {
                 VideosInActivePlayList.Add(videom);
             }
         }
 
-        public void DeleteVideoFromAdd(ListViewItemMy pos, string playlistId) {
+        public void DeleteVideoFromAdd(VideoView pos, string playlistId) {
             int index = Playlist.SelectedIndex;
             if (index != -1 && PlayList.ListOfPlayLists[index].Position.Id == playlistId) {
                 VideosInActivePlayList.Remove(pos);
@@ -333,7 +333,7 @@ namespace powerful_youtube_dl.window {
             if (String.IsNullOrEmpty(Search.Text))
                 return true;
             if (item != null)
-                return ((item as ListViewItemMy)?.Title.IndexOf(Search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+                return ((item as VideoView)?.Title.IndexOf(Search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
             return true;
         }
 
@@ -450,21 +450,21 @@ namespace powerful_youtube_dl.window {
 
         private void OpenFolderOrBrowser(object sender, MouseButtonEventArgs e) {
             ListView listView = (ListView) sender;
-            ListViewItemMy itemMy = (ListViewItemMy) listView.SelectedItem;
+            VideoView itemMy = (VideoView) listView.SelectedItem;
             if (itemMy != null) {
-                if (itemMy.ParentV.IsDownloaded) {
+                if (itemMy.ParentVideo.IsDownloaded) {
                     string path = itemMy.Path;
                     if (!File.Exists(path))
                         path += ".part";
                     string argument = "/select, \"" + path + "\"";
                     Process.Start("explorer.exe", argument);
                 } else
-                    Process.Start(itemMy.ParentV.Position.Link);
+                    Process.Start(itemMy.ParentVideo.Position.Link);
             }
         }
 
         private void CheckChanged(object sender, RoutedEventArgs e) {
-            ((ListViewItemMy) ((CheckBox) sender).DataContext).ParentPl.CheckChanged(((CheckBox) sender).IsChecked);
+            ((PlaylistView) ((CheckBox) sender).DataContext).ParentPlaylist.CheckChanged(((CheckBox) sender).IsChecked);
         }
     }
 }

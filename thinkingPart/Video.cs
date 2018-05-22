@@ -17,7 +17,7 @@ namespace powerful_youtube_dl.thinkingPart {
         public static int CurrentlyDownloading, QueueToDownload;
         public static bool IsManualDownload = true;
         public PlayList PlayList;
-        public ListViewItemMy Position;
+        public VideoView Position;
         public bool IsDownloaded;
 
         private string _lastPercent = "";
@@ -26,11 +26,11 @@ namespace powerful_youtube_dl.thinkingPart {
         public Video(string linkOrId, PlayList list) {
             string id;
             if (linkOrId.Length != 11) {
-                Position = new ListViewItemMy();
+                Position = new VideoView();
                 id = linkOrId.Substring(linkOrId.IndexOf("v=", StringComparison.Ordinal) + 2, 11);
                 Position.Link = linkOrId;
             } else {
-                Position = new ListViewItemMy();
+                Position = new VideoView();
                 id = linkOrId;
                 Position.Link = @"https://www.youtube.com/watch?v=" + id;
             }
@@ -39,7 +39,8 @@ namespace powerful_youtube_dl.thinkingPart {
                 PlayList = list;
                 Position.Status = "---";
                 Position.Check = false;
-                Position.ParentV = this;
+                Position.ParentVideo = this;
+                Position.ParentPlaylist = list;
                 list.AddToGetParams(this);
                 list.ListOfVideosInPlayList.Add(this);
                 ListOfVideos.Add(this);
