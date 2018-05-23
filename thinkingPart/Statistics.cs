@@ -20,10 +20,16 @@ namespace powerful_youtube_dl.thinkingPart {
         }
 
         private void SaveLog(object sender, EventArgs e) {
-            _logPath = Settings.Default.logsDestination;
-            if (_logPath != "") {
-                using (TextWriter w = File.AppendText(_logPath + "\\" + "Logs.txt"))
-                    w.WriteLine(_message);
+            DispatcherTimer timer = (DispatcherTimer) sender;
+            if (Properties.Settings.Default.createLogs) {
+                timer.Interval = new TimeSpan(0, 0, 5);
+                _logPath = Settings.Default.logsDestination;
+                if (_logPath != "") {
+                    using (TextWriter w = File.AppendText(_logPath + "\\" + "Logs.txt"))
+                        w.WriteLine(_message);
+                }
+            } else {
+                timer.Interval = new TimeSpan(0, 0, 30);
             }
         }
 
