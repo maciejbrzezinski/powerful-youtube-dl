@@ -64,7 +64,7 @@ namespace powerful_youtube_dl.thinkingPart {
                 allowDownload = false;
 
             if (response != "")
-                window.MainWindow.Error(response);
+                BasicFunctionality.Error(response);
             return allowDownload;
         }
     }

@@ -11,7 +11,7 @@ using Timer = System.Timers.Timer;
 
 namespace powerful_youtube_dl.thinkingPart {
 
-    public class Video {
+    public class Video : BasicFunctionality {
         public static List<Video> ListOfVideos = new List<Video>();
 
         public static int CurrentlyDownloading, QueueToDownload;
@@ -44,6 +44,7 @@ namespace powerful_youtube_dl.thinkingPart {
                 list.AddToGetParams(this);
                 list.ListOfVideosInPlayList.Add(this);
                 ListOfVideos.Add(this);
+                list.Position.CountVideos += 1;
             }
         }
 
@@ -90,10 +91,11 @@ namespace powerful_youtube_dl.thinkingPart {
                         CurrentlyDownloading--;
 
                         if (_lastMessage != null && _lastMessage.Contains("Downloading video info webpage")) {
-                            MainWindow.InvokeShit(DispatcherPriority.Send, async () => {
+                            InvokeShit(DispatcherPriority.Send, async () => {
                                 Position.Check = false;
                                 ((MainWindow) Application.Current.MainWindow)?.DeleteVideoFromAdd(Position, PlayList.Position.Id);
                                 PlayList.ListOfVideosInPlayList.Remove(this);
+                                PlayList.Position.CountVideos -= 1;
                             });
                         } else {
                             if (File.Exists(Position.Path + ".part")) {
@@ -115,11 +117,11 @@ namespace powerful_youtube_dl.thinkingPart {
         }
 
         private void FinishDownload() {
-            MainWindow.InvokeShit(DispatcherPriority.Normal, () => {
+            InvokeShit(DispatcherPriority.Normal, () => {
                 Position.Status = "Pobrano";
                 Position.Check = false;
                 if (Settings.Default.messageAfterDownload)
-                    MainWindow.ShowNotifyIconMessage("Pobrano plik | " + PlayList, Position.Title, ToolTipIcon.Info, 100, Position.Path);
+                    BasicFunctionality.ShowNotifyIconMessage("Pobrano plik | " + PlayList, Position.Title, ToolTipIcon.Info, 100, Position.Path);
             });
             Statistics.CompleteDownload(this);
         }
@@ -162,7 +164,7 @@ namespace powerful_youtube_dl.thinkingPart {
             if (_lastMessage != null && _lastMessage != value) {
                 _lastMessage = value;
                 try {
-                    MainWindow.InvokeShit(DispatcherPriority.Send, async () => {
+                    InvokeShit(DispatcherPriority.Send, async () => {
                         string prc = GetPercent(value);
                         if (prc != "---" && _lastPercent != null && _lastPercent != prc) {
                             Console.WriteLine(value);
@@ -182,20 +184,11 @@ namespace powerful_youtube_dl.thinkingPart {
             return false;
         }
 
-        public void ContextOpenPath() {
-            string argument = "/select, \"" + Position.Path + "\"";
-            Process.Start("explorer.exe", argument);
-        }
-
-        public void ContextOpenYT() {
-            if (Position.Link != null)
-                Process.Start(Position.Link);
-        }
-
         public void ContextDeleteVideo() {
             Position.Check = false;
             ((MainWindow) Application.Current.MainWindow)?.DeleteVideoFromAdd(Position, PlayList.Position.Id);
             PlayList.ListOfVideosInPlayList.Remove(this);
+            PlayList.Position.CountVideos -= 1;
         }
 
         public void ContextPlayVideo() {

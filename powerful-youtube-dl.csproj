@@ -111,6 +111,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="thinkingPart\BasicFunctionality.cs" />
     <Compile Include="thinkingPart\Statistics.cs" />
     <Compile Include="window\Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>

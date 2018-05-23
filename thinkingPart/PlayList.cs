@@ -13,7 +13,7 @@ using System.Windows.Threading;
 
 namespace powerful_youtube_dl.thinkingPart {
 
-    public class PlayList {
+    public class PlayList : BasicFunctionality {
         public static List<PlayList> ListOfPlayLists = new List<PlayList>();
         public static PlayList SingleVideos;
         public static bool IsVisible;
@@ -82,7 +82,7 @@ namespace powerful_youtube_dl.thinkingPart {
                 checkingTimer.Interval = new TimeSpan(0, 5, 0);
                 checkingTimer.Start();
             } else
-                MainWindow.Error("Playlista o nazwie " + name + " jest już dodana!");
+                BasicFunctionality.Error("Playlista o nazwie " + name + " jest już dodana!");
         }
 
         public PlayList(Video video) {
@@ -141,15 +141,6 @@ namespace powerful_youtube_dl.thinkingPart {
                 Settings.Default.playlists.Remove(link);
                 Settings.Default.Save();
             }
-        }
-
-        private bool CheckIfPlayListExists(string id) {
-            foreach (PlayList exists in ListOfPlayLists) {
-                if (exists.Position.Id == id) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private string GetTitle(string id) {
@@ -215,16 +206,6 @@ namespace powerful_youtube_dl.thinkingPart {
             if (obj2.ContainsKey("nextPageToken")) {
                 string nextPage = obj2["nextPageToken"].ToString();
                 GetPlayListVideos(new Http().Get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=" + nextPage + "&playlistId=" + Position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-            }
-        }
-
-        public void CheckChanged(bool? isChecked) {
-            int count = ListOfVideosInPlayList.Count;
-            for (int i = 0; i < count; i++) {
-                if (isChecked != null)
-                    ListOfVideosInPlayList[i].Position.Check = isChecked;
-                else
-                    ListOfVideosInPlayList[i].Position.Check = !ListOfVideosInPlayList[i].IsDownloaded;
             }
         }
 
@@ -298,23 +279,13 @@ namespace powerful_youtube_dl.thinkingPart {
                 }
             }
             foreach (Video v in VideoIDsToGetParams) {
-                MainWindow.InvokeShit(DispatcherPriority.Send, async () => {
+                InvokeShit(DispatcherPriority.Send, async () => {
                     ((MainWindow) Application.Current.MainWindow)?.DeleteVideoFromAdd(v.Position, Position.Id);
                 });
                 ListOfVideosInPlayList.Remove(v);
+                Position.CountVideos -= 1;
             }
             VideoIDsToGetParams = new List<Video>();
-        }
-
-        public static bool CheckIfVideoIsOnDisk(Video video) {
-            string path;
-            if (Settings.Default.playlistAsFolder)
-                path = Settings.Default.textDestination + "\\" + video.PlayList + "\\" + video + ".mp3";
-            else
-                path = Settings.Default.textDestination + "\\" + video + ".mp3";
-            if (File.Exists(path))
-                return true;
-            return false;
         }
 
         public void AddToGetParams(Video v) {
@@ -363,15 +334,6 @@ namespace powerful_youtube_dl.thinkingPart {
             RemovePlaylistFromSettings(Position.Link);
             ListOfPlayLists.Remove(this);
             ListOfVideosInPlayList.Clear();
-        }
-
-        public void ContextOpenPath() {
-            string argument = "/select, \"" + Position.Path + "\"";
-            Process.Start("explorer.exe", argument);
-        }
-
-        public void ContextOpenYT() {
-            Process.Start(Position.Link);
         }
     }
 }

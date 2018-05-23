@@ -16,8 +16,9 @@
                     <ListView x:Name="Playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding ListOfPlayListsView}" SelectionChanged="playlist_SelectionChanged" BorderThickness="1" SelectedIndex="0" HorizontalAlignment="Left">
                         <ListView.Resources>
                             <ContextMenu x:Key="ListViewContextMenu">
-                                <MenuItem x:Name="MenuYT" Header="Otwórz w YouTube" Click="ContextPlaylistYT" />
-                                <MenuItem x:Name="MenuPath" Header="Otwórz w eksploratorze" Click="ContextPlaylistPath" />
+                                <MenuItem x:Name="MenuYT" Header="Otwórz w YouTube" Click="ContextOpenYT" />
+                                <MenuItem x:Name="MenuCopyURL" Header="Kopiuj adres playlisty do schowka" Click="ContextCopyLink" />
+                                <MenuItem x:Name="MenuPath" Header="Otwórz w eksploratorze" Click="ContextOpenPath" />
                                 <Separator />
                                 <MenuItem x:Name="MenuDelete" Header="Usuń" Click="ContextDeletePlaylist" />
                             </ContextMenu>
@@ -29,10 +30,10 @@
                                 <Setter Property="ToolTip">
                                     <Setter.Value>
                                         <UniformGrid Columns="1">
-                                            <TextBlock Text="{Binding Link, StringFormat=URL:   \{0\}}"/>
-                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}"/>
+                                            <TextBlock Text="{Binding CountVideos, StringFormat=Ilość filmów:   \{0\}}"/>
                                             <Separator/>
-                                            
+                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}"/>
+                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}"/>
                                         </UniformGrid>
                                     </Setter.Value>
                                 </Setter>
@@ -54,8 +55,9 @@
                     <ListView x:Name="AddVideos" x:FieldModifier="public" ItemsSource="{Binding VideosInActivePlayList}" Margin="170,84,10,80" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" MinHeight="300" BorderThickness="0" MouseDoubleClick="OpenFolderOrBrowser">
                         <ListView.Resources>
                             <ContextMenu x:Key="ListViewContextVideo">
-                                <MenuItem x:Name="VideoYT" Header="Otwórz w YouTube" Click="ContextVideoYT" />
-                                <MenuItem x:Name="VideoPath" Header="Otwórz w eksploratorze" Click="ContextVideoPath" />
+                                <MenuItem x:Name="VideoYT" Header="Otwórz w YouTube" Click="ContextOpenYT" />
+                                <MenuItem x:Name="VideoCopyURL" Header="Kopiuj adres filmu do schowka" Click="ContextCopyLink" />
+                                <MenuItem x:Name="VideoPath" Header="Otwórz w eksploratorze" Click="ContextOpenPath" />
                                 <MenuItem x:Name="VideoPlay" Header="Odtwórz" Click="ContextVideoPlay" />
                                 <Separator />
                                 <MenuItem x:Name="VideoDelete" Header="Usuń" Click="ContextDeleteVideo" />
@@ -64,6 +66,15 @@
                         <ListView.ItemContainerStyle>
                             <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
                                 <Setter Property="ContextMenu" Value="{StaticResource ListViewContextVideo}" />
+                                <Setter Property="ToolTip">
+                                    <Setter.Value>
+                                        <UniformGrid Columns="1">
+                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}"/>
+                                            <Separator/>
+                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}"/>
+                                        </UniformGrid>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.View>

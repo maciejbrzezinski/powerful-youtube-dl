@@ -7,8 +7,7 @@ namespace powerful_youtube_dl.window {
 
         private PlayList _parentPl;
 
-        private string _title, _duration, _status, _id, _link, _path, _toolTip;
-        private int _licznik;
+        private string _title, _status, _id, _link, _path;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -25,14 +24,6 @@ namespace powerful_youtube_dl.window {
             set {
                 _status = value;
                 NotifyPropertyChanged("Status");
-            }
-        }
-
-        public string ToolTip {
-            get => _toolTip;
-            set {
-                _toolTip = value;
-                NotifyPropertyChanged("ToolTip");
             }
         }
 
