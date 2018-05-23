@@ -80,7 +80,7 @@ namespace powerful_youtube_dl.thinkingPart {
         }
 
         public static void ShowNotifyIconMessage(string title, string message, ToolTipIcon icon, int miliseconds, string path) {
-            NotifyIcon popupIcon = new NotifyIcon();
+            NotifyIcon popupIcon = MainWindow.Notify;
             popupIcon.BalloonTipText = message;
             popupIcon.BalloonTipIcon = icon;
             popupIcon.BalloonTipTitle = title;
