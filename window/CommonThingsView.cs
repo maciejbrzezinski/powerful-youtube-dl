@@ -2,6 +2,7 @@
 using System.ComponentModel;
 
 namespace powerful_youtube_dl.window {
+
     public class CommonThingsView : INotifyPropertyChanged {
         protected bool? _check;
 

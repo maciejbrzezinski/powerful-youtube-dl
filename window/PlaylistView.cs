@@ -1,4 +1,5 @@
 ﻿namespace powerful_youtube_dl.window {
+
     public class PlaylistView : CommonThingsView {
         private int _countVideos;
 

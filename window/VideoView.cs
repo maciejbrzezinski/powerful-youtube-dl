@@ -1,8 +1,8 @@
 ﻿using powerful_youtube_dl.thinkingPart;
 
 namespace powerful_youtube_dl.window {
+
     public class VideoView : CommonThingsView {
-        
         private Video _parentV;
         private string _status, _duration;
         private int _licznik;
@@ -50,7 +50,7 @@ namespace powerful_youtube_dl.window {
                 if (_status == "Pobrano") {
                     _parentV.IsDownloaded = true;
                     Check = false;
-                } else if(_parentV!=null) {
+                } else if (_parentV != null) {
                     _parentV.IsDownloaded = false;
                     Check = true;
                 }

@@ -4,8 +4,6 @@ using powerful_youtube_dl.window;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;

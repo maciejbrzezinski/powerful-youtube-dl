@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -21,7 +20,6 @@ using CheckBox = System.Windows.Controls.CheckBox;
 using Clipboard = System.Windows.Clipboard;
 using ContextMenu = System.Windows.Forms.ContextMenu;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using ListView = System.Windows.Controls.ListView;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
@@ -138,7 +136,7 @@ namespace powerful_youtube_dl.window {
 
         private void ContextCopyLink(object sender, RoutedEventArgs e) {
             string link = ((CommonThingsView) ((MenuItem) sender).DataContext).Link;
-            BasicFunctionality.ContextOpenPath(link);
+            BasicFunctionality.CopyURL(link);
         }
 
         private void ContextVideoPlay(object sender, RoutedEventArgs e) {

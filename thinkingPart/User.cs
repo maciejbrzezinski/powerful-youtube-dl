@@ -57,7 +57,8 @@ namespace powerful_youtube_dl.thinkingPart {
             try {
                 string nextPage = obj2["nextPageToken"].ToString();
                 GetUserPlayLists(new Http().Get("https://www.googleapis.com/youtube/v3/playlists?part=snippet&" + UserId + "&maxResults=50&pageToken=" + nextPage + "&fields=items(id%2Csnippet%2Ftitle)&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
-            } catch { }
+            }
+            catch { }
         }
 
         private void GetUserUploadedVideos(string json) {
@@ -75,7 +76,8 @@ namespace powerful_youtube_dl.thinkingPart {
                 Object v = idJ["snippet"];
                 Dictionary<string, object> vJ = (Dictionary<string, object>) v;
                 title = vJ["title"].ToString();
-            } catch { }
+            }
+            catch { }
             id = id.Substring(2);
             id = "UU" + id;
             new PlayList(id, title);
@@ -92,7 +94,8 @@ namespace powerful_youtube_dl.thinkingPart {
             try {
                 Dictionary<string, object> id = (Dictionary<string, object>) val.GetValue(0);
                 response = id["id"].ToString();
-            } catch { MessageBox.Show("Wystąpił jakiś błąd, lub link do kanału jest niepoprawny", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error); }
+            }
+            catch { MessageBox.Show("Wystąpił jakiś błąd, lub link do kanału jest niepoprawny", "Powerful YouTube DL", MessageBoxButton.OK, MessageBoxImage.Error); }
             return response;
         }
     }

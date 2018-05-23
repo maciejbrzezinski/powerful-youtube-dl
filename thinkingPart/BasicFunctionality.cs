@@ -1,13 +1,14 @@
-﻿using System;
+﻿using powerful_youtube_dl.Properties;
+using powerful_youtube_dl.window;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using powerful_youtube_dl.Properties;
-using powerful_youtube_dl.window;
 
 namespace powerful_youtube_dl.thinkingPart {
+
     public class BasicFunctionality {
         public static Icon notifyIcon { get; set; }
 
@@ -20,7 +21,7 @@ namespace powerful_youtube_dl.thinkingPart {
         }
 
         public static void ContextOpenPath(string path) {
-            string argument = "/select, \"" + path+ "\"";
+            string argument = "/select, \"" + path + "\"";
             Process.Start("explorer.exe", argument);
         }
 

@@ -30,10 +30,10 @@
                                 <Setter Property="ToolTip">
                                     <Setter.Value>
                                         <UniformGrid Columns="1">
-                                            <TextBlock Text="{Binding CountVideos, StringFormat=Ilość filmów:   \{0\}}"/>
-                                            <Separator/>
-                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}"/>
-                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}"/>
+                                            <TextBlock Text="{Binding CountVideos, StringFormat=Ilość filmów:   \{0\}}" />
+                                            <Separator />
+                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}" />
+                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}" />
                                         </UniformGrid>
                                     </Setter.Value>
                                 </Setter>
@@ -69,9 +69,9 @@
                                 <Setter Property="ToolTip">
                                     <Setter.Value>
                                         <UniformGrid Columns="1">
-                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}"/>
-                                            <Separator/>
-                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}"/>
+                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}" />
+                                            <Separator />
+                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}" />
                                         </UniformGrid>
                                     </Setter.Value>
                                 </Setter>

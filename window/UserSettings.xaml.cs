@@ -118,7 +118,8 @@ namespace powerful_youtube_dl.window {
                         else {
                             try {
                                 _rkApp.DeleteValue("PowerfulYTDownloader");
-                            } catch { }
+                            }
+                            catch { }
                         }
                         break;
 
@@ -132,7 +133,8 @@ namespace powerful_youtube_dl.window {
                             LogsGrid.IsEnabled = (bool) check.IsChecked;
                         break;
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         public static void SaveSetting(string setting, object status) {
