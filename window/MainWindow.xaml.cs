@@ -272,29 +272,6 @@ namespace powerful_youtube_dl.window {
             }
         }
 
-        private string _tmpUrl = "";
-
-        private void link_LostFocus(object sender, RoutedEventArgs e) {
-            TextBox box = (TextBox) sender;
-            string url = box.Text;
-            if (BasicFunctionality.CheckIfYoutubeUrl(url)) {
-                _tmpUrl = url;
-                if (Settings.Default.autoLoadLink)
-                    AutoLoad();
-            } else
-                box.Text = _tmpUrl;
-        }
-
-        private void link_TextChanged(object sender, TextChangedEventArgs e) {
-            TextBox box = (TextBox) sender;
-            string url = box.Text;
-            if (BasicFunctionality.CheckIfYoutubeUrl(url)) {
-                _tmpUrl = url;
-                if (Settings.Default.autoLoadLink)
-                    AutoLoad();
-            }
-        }
-
         private void AutoLoad() {
             if (!DontLoad.Contains(_tmpUrl)) {
                 DontLoad.Add(_tmpUrl);
@@ -313,17 +290,6 @@ namespace powerful_youtube_dl.window {
             ss.ShowDialog();
         }
 
-        private void link_lSubmit(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Enter)
-                return;
-            TextBox box = (TextBox) sender;
-            if (BasicFunctionality.CheckIfYoutubeUrl(box.Text)) {
-                _tmpUrl = box.Text;
-                if (Settings.Default.autoLoadLink)
-                    AutoLoad();
-            }
-        }
-
         private void CheckChanged(object sender, RoutedEventArgs e) {
             bool? isCheckedPlaylist = ((CheckBox) sender).IsChecked;
             PlayList playList = ((PlaylistView) ((CheckBox) sender).DataContext).ParentPlaylist;
@@ -334,20 +300,33 @@ namespace powerful_youtube_dl.window {
             BasicFunctionality.OpenFolderOrBrowserVideo((VideoView) sender);
         }
 
+        private string _tmpUrl = "";
+
+        private void link_LostFocus(object sender, RoutedEventArgs e) {
+            if (!BasicFunctionality.CheckIfYoutubeUrl(Link.Text))
+                Link.Text = "Link do kanału, playlisty lub video";
+        }
+
+        private void link_TextChanged(object sender, TextChangedEventArgs e) {
+            if (BasicFunctionality.CheckIfYoutubeUrl(Link.Text)) {
+                _tmpUrl = Link.Text;
+                if (Settings.Default.autoLoadLink)
+                    AutoLoad();
+            }
+        }
+
         private void Link_GotMouseCapture(object sender, MouseEventArgs e) {
-            Video.IsManualDownload = true;
-            TextBox box = (TextBox) sender;
-            if (box.Text == "")
-                box.Text = _tmpUrl;
+            if (Link.Text == "")
+                Link.Text = _tmpUrl;
             if (BasicFunctionality.CheckIfYoutubeUrl(Clipboard.GetText())) {
                 _tmpUrl = Clipboard.GetText();
-                box.Text = _tmpUrl;
+                Link.Text = _tmpUrl;
                 if (Settings.Default.autoLoadLink)
-                    AutoLoad();  
+                    AutoLoad();
             }
-            if (box.CaretIndex == 0) {
-                box.Focus();
-                box.SelectAll();
+            if (Link.CaretIndex == 0) {
+                Link.Focus();
+                Link.SelectAll();
             }
         }
 
@@ -359,6 +338,15 @@ namespace powerful_youtube_dl.window {
         private void Link_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e) {
             Link.Focus();
             Link.SelectAll();
+        }
+
+        private void link_lSubmit(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Enter)
+                return;
+            if (BasicFunctionality.CheckIfYoutubeUrl(Link.Text))
+                LoadUrl();
+            else
+                BasicFunctionality.Error("Podany link jest nieprawidłowy");
         }
     }
 }
