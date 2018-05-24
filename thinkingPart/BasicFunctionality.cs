@@ -84,8 +84,6 @@ namespace powerful_youtube_dl.thinkingPart {
             popupIcon.BalloonTipText = message;
             popupIcon.BalloonTipIcon = icon;
             popupIcon.BalloonTipTitle = title;
-            popupIcon.Visible = true;
-            popupIcon.Icon = notifyIcon;
             popupIcon.BalloonTipClicked += (sender, args) => {
                 if (!File.Exists(path))
                     path += ".part";
