@@ -4,23 +4,23 @@
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:window="clr-namespace:powerful_youtube_dl.window"
         x:Class="powerful_youtube_dl.window.MainWindow"
-        Title="Powerful YouTube DL" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1000" Height="700" ResizeMode="CanMinimize" StateChanged="TryToTray" Closing="ClosingWindow">
+        Title="Powerful YouTube DL" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1000" Height="700" StateChanged="TryToTray" Closing="ClosingWindow">
     <Grid>
         <TabControl x:Name="Tabs" Margin="10" Padding="0">
-            <TabItem Header="Dodaj" Margin="0" Padding="5" VerticalContentAlignment="Stretch">
+            <TabItem Header="{DynamicResource tabDownload}" Margin="0" Padding="10,5" VerticalContentAlignment="Stretch">
                 <Grid Background="#FFE5E5E5" Margin="0">
-                    <Button Content="Zacznij pobieranie" Margin="10,0,10,10" Click="Button_Click_3" FontSize="24" MinHeight="0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="60" />
-                    <TextBox x:Name="Link" x:FieldModifier="public" Margin="10,10,206,0" TextWrapping="Wrap" Text="Link do kanału, playlisty lub video" VerticalAlignment="Top" Height="27" TextChanged="link_TextChanged" LostFocus="link_LostFocus" KeyUp="link_lSubmit" GotMouseCapture="Link_GotMouseCapture" GotFocus="Link_GotFocus" PreviewMouseDoubleClick="Link_PreviewMouseDoubleClick" />
-                    <TextBox x:Name="Search" x:FieldModifier="public" Margin="170,47,10,80" TextWrapping="Wrap" Text="Przeszukaj listę" Height="27" VerticalAlignment="Top" BorderThickness="0.1" KeyUp="SearchAfterSubmit" GotMouseCapture="search_GotMouseCapture" TextChanged="search_TextChanged" />
-                    <Button Content="Załaduj" Margin="0,10,10,0" VerticalAlignment="Top" Width="186" Click="Button_Click_2" Height="27" HorizontalAlignment="Right" />
+                    <Button Content="{DynamicResource btnStartDownload}" Margin="10,0,10,10" Click="Button_Click_3" FontSize="24" MinHeight="0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="60" />
+                    <TextBox x:Name="Link" x:FieldModifier="public" Margin="10,10,206,0" TextWrapping="Wrap" Text="{DynamicResource textboxUrl}" VerticalAlignment="Top" Height="27" TextChanged="link_TextChanged" LostFocus="link_LostFocus" KeyUp="link_lSubmit" GotMouseCapture="Link_GotMouseCapture" GotFocus="Link_GotFocus" PreviewMouseDoubleClick="Link_PreviewMouseDoubleClick" />
+                    <TextBox x:Name="Search" x:FieldModifier="public" Margin="170,47,10,80" TextWrapping="Wrap" Text="{DynamicResource textboxSearch}" Height="27" VerticalAlignment="Top" BorderThickness="0.1" KeyUp="SearchAfterSubmit" GotMouseCapture="search_GotMouseCapture" TextChanged="search_TextChanged" />
+                    <Button Content="{DynamicResource btnLoadUrl}" Margin="0,10,10,0" VerticalAlignment="Top" Width="186" Click="Button_Click_2" Height="27" HorizontalAlignment="Right" />
                     <ListView x:Name="Playlist" x:FieldModifier="public" Margin="10,47,0,80" Width="150" ItemsSource="{Binding ListOfPlayListsView}" SelectionChanged="playlist_SelectionChanged" BorderThickness="1" SelectedIndex="0" HorizontalAlignment="Left">
                         <ListView.Resources>
                             <ContextMenu x:Key="ListViewContextMenu">
-                                <MenuItem x:Name="MenuYT" Header="Otwórz w YouTube" Click="ContextOpenYT" />
-                                <MenuItem x:Name="MenuCopyURL" Header="Kopiuj adres playlisty do schowka" Click="ContextCopyLink" />
-                                <MenuItem x:Name="MenuPath" Header="Otwórz w eksploratorze" Click="ContextOpenPath" />
+                                <MenuItem x:Name="MenuYT" Header="{DynamicResource contextOpenYt}" Click="ContextOpenYT" />
+                                <MenuItem x:Name="MenuCopyURL" Header="{DynamicResource contextCopyUrl}" Click="ContextCopyLink" />
+                                <MenuItem x:Name="MenuPath" Header="{DynamicResource contextOpenExplorer}" Click="ContextOpenPath" />
                                 <Separator />
-                                <MenuItem x:Name="MenuDelete" Header="Usuń" Click="ContextDeletePlaylist" />
+                                <MenuItem x:Name="MenuDelete" Header="{DynamicResource contextDelete}" Click="ContextDeletePlaylist" />
                             </ContextMenu>
                         </ListView.Resources>
 
@@ -30,10 +30,10 @@
                                 <Setter Property="ToolTip">
                                     <Setter.Value>
                                         <UniformGrid Columns="1">
-                                            <TextBlock Text="{Binding CountVideos, StringFormat=Ilość filmów:   \{0\}}" />
+                                            <TextBlock Text="{Binding CountVideos, StringFormat=\{DynamicResource tooltipVideoCount\}\{0\}}" />
                                             <Separator />
-                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}" />
-                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}" />
+                                            <TextBlock Text="{Binding Id, StringFormat=\{DynamicResource tooltipID\}\{0\}}" />
+                                            <TextBlock Text="{Binding Path, StringFormat=\{DynamicResource tooltipPath\}\{0\}}" />
                                         </UniformGrid>
                                     </Setter.Value>
                                 </Setter>
@@ -48,19 +48,19 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Tytuł" DisplayMemberBinding="{Binding Title}" />
+                                <GridViewColumn Header="{DynamicResource listviewTitle}" DisplayMemberBinding="{Binding Title}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
                     <ListView x:Name="AddVideos" x:FieldModifier="public" ItemsSource="{Binding VideosInActivePlayList}" Margin="170,84,10,80" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" MinHeight="300" BorderThickness="0" MouseDoubleClick="OpenFolderOrBrowser">
                         <ListView.Resources>
                             <ContextMenu x:Key="ListViewContextVideo">
-                                <MenuItem x:Name="VideoYT" Header="Otwórz w YouTube" Click="ContextOpenYT" />
-                                <MenuItem x:Name="VideoCopyURL" Header="Kopiuj adres filmu do schowka" Click="ContextCopyLink" />
-                                <MenuItem x:Name="VideoPath" Header="Otwórz w eksploratorze" Click="ContextOpenPath" />
-                                <MenuItem x:Name="VideoPlay" Header="Odtwórz" Click="ContextVideoPlay" />
+                                <MenuItem x:Name="VideoYT" Header="{DynamicResource contextOpenYt}" Click="ContextOpenYT" />
+                                <MenuItem x:Name="VideoCopyURL" Header="{DynamicResource contextCopyUrl}" Click="ContextCopyLink" />
+                                <MenuItem x:Name="VideoPath" Header="{DynamicResource contextOpenExplorer}" Click="ContextOpenPath" />
+                                <MenuItem x:Name="VideoPlay" Header="{DynamicResource contextPlayMP3}" Click="ContextVideoPlay" />
                                 <Separator />
-                                <MenuItem x:Name="VideoDelete" Header="Usuń" Click="ContextDeleteVideo" />
+                                <MenuItem x:Name="VideoDelete" Header="{DynamicResource contextDelete}" Click="ContextDeleteVideo" />
                             </ContextMenu>
                         </ListView.Resources>
                         <ListView.ItemContainerStyle>
@@ -69,9 +69,9 @@
                                 <Setter Property="ToolTip">
                                     <Setter.Value>
                                         <UniformGrid Columns="1">
-                                            <TextBlock Text="{Binding Id, StringFormat=ID:   \{0\}}" />
+                                            <TextBlock Text="{Binding Id, StringFormat=\{DynamicResource  tooltipID\}\{0\}}" />
                                             <Separator />
-                                            <TextBlock Text="{Binding Path, StringFormat=Miejsce na dysku:  \{0\}}" />
+                                            <TextBlock Text="{Binding Path, StringFormat=\{DynamicResource tooltipPath\}\{0\}}" />
                                         </UniformGrid>
                                     </Setter.Value>
                                 </Setter>
@@ -86,15 +86,15 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Tytuł" Width="557" DisplayMemberBinding="{Binding Title}" />
-                                <GridViewColumn Header="Czas trwania" Width="115" DisplayMemberBinding="{Binding Duration}" />
-                                <GridViewColumn Header="Status" Width="100" DisplayMemberBinding="{Binding Status}" />
+                                <GridViewColumn Header="{DynamicResource listviewTitle}" Width="557" DisplayMemberBinding="{Binding Title}" />
+                                <GridViewColumn Header="{DynamicResource listviewDuration}" Width="115" DisplayMemberBinding="{Binding Duration}" />
+                                <GridViewColumn Header="{DynamicResource listviewStatus}" Width="100" DisplayMemberBinding="{Binding Status}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="Ustawienia" Padding="5" VerticalContentAlignment="Stretch" GotFocus="OpenSetting" />
+            <TabItem Header="{DynamicResource tabSettings}" Padding="10,5" VerticalContentAlignment="Stretch" GotFocus="OpenSetting" />
         </TabControl>
     </Grid>
 </controls:MetroWindow>

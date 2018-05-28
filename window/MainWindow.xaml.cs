@@ -37,6 +37,8 @@ namespace powerful_youtube_dl.window {
         public MainWindow() {
             VideosInActivePlayList = new ObservableCollection<VideoView>();
 
+            SetLanguageDictionary();
+
             InitializeComponent();
             DataContext = this;
             StartTray();
@@ -77,6 +79,20 @@ namespace powerful_youtube_dl.window {
 
             if (Settings.Default.startMinimized && Settings.Default.startWithSystem)
                 Hide();
+        }
+
+        private void SetLanguageDictionary() {
+            Resources.MergedDictionaries.Clear();
+            ResourceDictionary dict = new ResourceDictionary();
+            switch (Thread.CurrentThread.CurrentCulture.ToString()) {
+                case "en-US":
+                    dict.Source = new Uri("pack://application:,,,/powerful-youtube-dl;component/Languages/EN.xaml", UriKind.Absolute);
+                    break;
+                default:
+                    dict.Source = new Uri("pack://application:,,,/powerful-youtube-dl;component/Languages/PL.xaml", UriKind.Absolute);
+                    break;
+            }
+            Resources.MergedDictionaries.Add(dict);
         }
 
         private void StartTray() {

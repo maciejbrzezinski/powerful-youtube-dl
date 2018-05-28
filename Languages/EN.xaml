@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="tabDownload">Download</system:String>
+    <system:String x:Key="tabSettings">Settings</system:String>
+    <system:String x:Key="btnStartDownload">Start download</system:String>
+    <system:String x:Key="textboxUrl">URL to channel, playlist or single video</system:String>
+    <system:String x:Key="textboxSearch">Search in playlist</system:String>
+    <system:String x:Key="btnLoadUrl">Load</system:String>
+    <system:String x:Key="contextOpenYt">Open on YouTube</system:String>
+    <system:String x:Key="contextOpenExplorer">Open in explorer</system:String>
+    <system:String x:Key="contextCopyUrl">Copy to clipboard</system:String>
+    <system:String x:Key="contextDelete">Delete</system:String>
+    <system:String x:Key="contextPlayMP3">Play</system:String>
+    <system:String x:Key="tooltipVideoCount">Videos count:   </system:String>
+    <system:String x:Key="tooltipID">ID:   </system:String>
+    <system:String x:Key="tooltipPath">Path:   </system:String>
+    <system:String x:Key="listviewTitle">Title</system:String>
+    <system:String x:Key="listviewDuration">Duration</system:String>
+    <system:String x:Key="listviewStatus">Status</system:String>
+    
+    
+    <!--<system:String x:Key="close">Close</system:String>
+    <system:String x:Key="close">Close</system:String>
+    <system:String x:Key="close">Close</system:String>-->
+</ResourceDictionary>

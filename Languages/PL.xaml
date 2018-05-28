@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="tabDownload">Pobieranie</system:String>
+    <system:String x:Key="tabSettings">Ustawienia</system:String>
+    <system:String x:Key="btnStartDownload">Rozpocznij pobieranie</system:String>
+    <system:String x:Key="textboxUrl">Link do kanału, playlisty lub video</system:String>
+    <system:String x:Key="textboxSearch">Przeszukaj listę</system:String>
+    <system:String x:Key="btnLoadUrl">Załaduj</system:String>
+    <system:String x:Key="contextOpenYt">Otwórz w Youtube</system:String>
+    <system:String x:Key="contextOpenExplorer">Otwórz w eksploratorze</system:String>
+    <system:String x:Key="contextCopyUrl">Kopiuj link do schowka</system:String>
+    <system:String x:Key="contextDelete">Usuń</system:String>
+    <system:String x:Key="contextPlayMP3">Odtwórz</system:String>
+    <system:String x:Key="tooltipVideoCount">Ilość filmów:   </system:String>
+    <system:String x:Key="tooltipID">ID:   </system:String>
+    <system:String x:Key="tooltipPath">Lokalizacja na dysku:   </system:String>
+    <system:String x:Key="listviewTitle">Tytuł</system:String>
+    <system:String x:Key="listviewDuration">Czas trwania</system:String>
+    <system:String x:Key="listviewStatus">Status</system:String>
+    
+    
+    <!--<system:String x:Key="close">Close</system:String>
+    <system:String x:Key="close">Close</system:String>
+    <system:String x:Key="close">Close</system:String>-->
+</ResourceDictionary>
