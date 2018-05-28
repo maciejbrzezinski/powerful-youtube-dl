@@ -48,6 +48,9 @@ namespace powerful_youtube_dl.window {
                 UserSettings.SaveSetting("firstRun", false);
             }
 
+            TagLib.Id3v2.Tag.DefaultVersion = 3;
+            TagLib.Id3v2.Tag.ForceDefaultVersion = true;
+
             Timer.Elapsed += (sender1, e1) => {
                 BasicFunctionality.InvokeShit(DispatcherPriority.Normal, async () => {
                     if (AddVideos != null) {
@@ -297,7 +300,8 @@ namespace powerful_youtube_dl.window {
         }
 
         private void OpenFolderOrBrowser(object sender, MouseButtonEventArgs e) {
-            BasicFunctionality.OpenFolderOrBrowserVideo((VideoView) sender);
+            VideoView data = ((VideoView) ((System.Windows.Controls.ListView) sender).SelectedItem);
+            BasicFunctionality.OpenFolderOrBrowserVideo(data);
         }
 
         private string _tmpUrl = "";

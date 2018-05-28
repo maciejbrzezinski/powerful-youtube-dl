@@ -34,7 +34,7 @@ namespace powerful_youtube_dl.thinkingPart {
                 id = linkOrId;
                 Position.Link = @"https://www.youtube.com/watch?v=" + id;
             }
-            if (!IsVideoLoaded(id)) {
+            if (!IsVideoLoaded(id) && Position!=null) {
                 Position.Id = id;
                 PlayList = list;
                 Position.Status = "---";
@@ -46,6 +46,10 @@ namespace powerful_youtube_dl.thinkingPart {
                 ListOfVideos.Add(this);
                 list.Position.CountVideos += 1;
             }
+        }
+
+        public Video(FileInfo fileInfo) {
+
         }
 
         public void Download() {
@@ -102,6 +106,7 @@ namespace powerful_youtube_dl.thinkingPart {
                                 aTimer.Enabled = true;
                                 return;
                             } else if (File.Exists(Position.Path)) {
+                                Position.File = TagLib.File.Create(Position.Path, "taglib/mp3", TagLib.ReadStyle.None);
                                 FinishDownload();
                                 Statistics.CompleteDownload(this);
                             }
@@ -123,6 +128,7 @@ namespace powerful_youtube_dl.thinkingPart {
                 if (Settings.Default.messageAfterDownload)
                     BasicFunctionality.ShowNotifyIconMessage("Pobrano plik | " + PlayList, Position.Title, ToolTipIcon.Info, 100, Position.Path);
             });
+            WriteID3Title(Position.File, Position.Id);
             Statistics.CompleteDownload(this);
         }
 

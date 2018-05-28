@@ -29,6 +29,34 @@ namespace powerful_youtube_dl.thinkingPart {
             System.Windows.Clipboard.SetText(link);
         }
 
+        public static string ReadID3Title(TagLib.File file) {
+            TagLib.Tag tagv1 = file.GetTag(TagLib.TagTypes.Id3v2);
+            return tagv1.Title;
+        }
+
+        public static void WriteID3Title(TagLib.File file, string id) {
+            file.Tag.Title = id;
+            file.Save();
+           // file.Dispose();
+        }
+
+        public static bool CheckIfVideoIsOnDisk(Video video) {
+            string path;
+            if (Settings.Default.playlistAsFolder)
+                path = Settings.Default.textDestination + "\\" + video.PlayList + "\\" + video + ".mp3";
+            else {
+                path = Settings.Default.textDestination + "\\" + video + ".mp3";
+            }
+            if (File.Exists(path)) {
+                video.Position.File = TagLib.File.Create(path, "taglib/mp3", TagLib.ReadStyle.None);
+                if (ReadID3Title(video.Position.File) == null) {
+                    WriteID3Title(video.Position.File, video.Position.Id);
+                }
+                return true;
+            }
+            return false;
+        }
+
         public static bool CheckIfPlayListExists(string id) {
             foreach (PlayList exists in PlayList.ListOfPlayLists) {
                 if (exists.Position.Id == id) {
@@ -59,17 +87,6 @@ namespace powerful_youtube_dl.thinkingPart {
                 } else
                     Process.Start(sender.ParentVideo.Position.Link);
             }
-        }
-
-        public static bool CheckIfVideoIsOnDisk(Video video) {
-            string path;
-            if (Settings.Default.playlistAsFolder)
-                path = Settings.Default.textDestination + "\\" + video.PlayList + "\\" + video + ".mp3";
-            else
-                path = Settings.Default.textDestination + "\\" + video + ".mp3";
-            if (File.Exists(path))
-                return true;
-            return false;
         }
 
         public static void InvokeShit(DispatcherPriority priority, Action action) {

@@ -6,6 +6,7 @@ namespace powerful_youtube_dl.window {
         private Video _parentV;
         private string _status, _duration;
         private int _licznik;
+        TagLib.File _file;
 
         public override bool? Check {
             get => _check;
@@ -32,6 +33,14 @@ namespace powerful_youtube_dl.window {
                         ParentPlaylist.Position.Check = null;
                 }
                 NotifyPropertyChanged("Check");
+            }
+        }
+
+        public TagLib.File File {
+            get => _file;
+            set {
+                _file = value;
+                NotifyPropertyChanged("File");
             }
         }
 

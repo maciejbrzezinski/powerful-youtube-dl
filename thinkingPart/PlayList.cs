@@ -4,6 +4,7 @@ using powerful_youtube_dl.window;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;
@@ -15,6 +16,8 @@ namespace powerful_youtube_dl.thinkingPart {
         public static List<PlayList> ListOfPlayLists = new List<PlayList>();
         public static PlayList SingleVideos;
         public static bool IsVisible;
+        public List<string> deletedId = new List<string>();
+        public List<FileInfo> deletedFileInfo = new List<FileInfo>();
 
         public List<Video> VideoIDsToGetParams = new List<Video>();
 
@@ -192,19 +195,47 @@ namespace powerful_youtube_dl.thinkingPart {
                 Dictionary<string, object> vid = (Dictionary<string, object>) item;
                 Dictionary<string, object> temp = (Dictionary<string, object>) vid["snippet"];
                 string title = temp["title"].ToString(); // resourceId -> videoId
+                Dictionary<string, object> vid2 = (Dictionary<string, object>) temp["resourceId"];
+                string id = vid2["videoId"].ToString();
                 if (title != "Deleted video" && title != "Private video") {
-                    Dictionary<string, object> vid2 = (Dictionary<string, object>) temp["resourceId"];
-                    string id = vid2["videoId"].ToString();
                     Video toAdd = new Video(id, this);
                     if (toAdd.Position != null) {
                         toAdd.Position.Title = title;
                     }
+                } else {
+                    deletedId.Add(id);
                 }
             }
             if (obj2.ContainsKey("nextPageToken")) {
                 string nextPage = obj2["nextPageToken"].ToString();
                 GetPlayListVideos(new Http().Get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=" + nextPage + "&playlistId=" + Position.Id + "&fields=items(snippet(resourceId%2FvideoId%2Ctitle))%2CnextPageToken&key=AIzaSyAa33VM7zG0hnceZEEGdroB6DerP8fRJ6o"));
             }
+        }
+
+        private FileInfo CheckIfVideoIsOnDisk(string id) {
+            DirectoryInfo d = new DirectoryInfo(Position.Path);
+            FileInfo[] Files = d.GetFiles("*.mp3");
+            List<FileInfo> toCheck = new List<FileInfo>();
+            foreach (FileInfo f in Files) {
+                int count = ListOfVideosInPlayList.Count;
+                bool isDownloadedFile = false;
+                for (int i = 0; i < count; i++) {
+                    string tmp = ListOfVideosInPlayList[i].ToString() + ".mp3";
+                    if (f.Name == tmp) {
+                        isDownloadedFile = true;
+                        break;
+                    }
+                }
+                if (!isDownloadedFile)
+                    toCheck.Add(f);
+            }
+            foreach (FileInfo fi in toCheck) {
+                TagLib.File file = TagLib.File.Create(fi.FullName, "taglib/mp3", TagLib.ReadStyle.None);
+                TagLib.Tag tag = file.GetTag(TagLib.TagTypes.Id3v2);
+                if (tag.Title == id)
+                    return fi;
+            }
+            return null;
         }
 
         override
@@ -284,6 +315,12 @@ namespace powerful_youtube_dl.thinkingPart {
                 Position.CountVideos -= 1;
             }
             VideoIDsToGetParams = new List<Video>();
+
+            foreach (string tmpID in deletedId) {
+                FileInfo fileInfo = CheckIfVideoIsOnDisk(tmpID);
+                if (fileInfo != null)
+                    deletedFileInfo.Add(fileInfo);
+            }
         }
 
         public void AddToGetParams(Video v) {
